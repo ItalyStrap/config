@@ -12,7 +12,7 @@ interface Config_Interface {
 	/**
 	 * Retrieves all of the runtime configuration parameters
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 *
 	 * @return array
 	 */
@@ -38,7 +38,7 @@ interface Config_Interface {
 	/**
 	 * Push a configuration in via the key
 	 *
-	 * @since 1.0.0
+	 * @since 0.0.1
 	 *
 	 * @param string $parameter_key Key to be assigned, which also becomes the property
 	 * @param mixed $value Value to be assigned to the parameter key

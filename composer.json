@@ -1,0 +1,19 @@
+{
+    "name": "italystrap/config",
+    "description": "ItalyStrap configuration class for easily config object",
+    "type": "library",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "overclokk",
+            "email": "info@overclokk.net"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "ItalyStrap\\Config\\": "src/Config/"
+        }
+    },
+    "minimum-stability": "stable",
+    "require": {}
+}
