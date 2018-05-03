@@ -5,7 +5,7 @@
  * @package ItalyStrap
  */
 
-namespace ItalyStrap;
+namespace ItalyStrap\Config;
 
 interface Config_Interface {
 

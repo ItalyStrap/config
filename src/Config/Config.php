@@ -7,7 +7,7 @@
  * @package ItalyStrap
  */
 
-namespace ItalyStrap;
+namespace ItalyStrap\Config;
 
 use \ArrayObject;
 
@@ -17,21 +17,18 @@ use \ArrayObject;
 class Config extends ArrayObject implements Config_Interface {
 
 	/**
-	 * [$var description]
-	 *
 	 * @var array
 	 */
-	protected $config = array();
-	protected $default = array();
+	protected $items = array();
 
 	/**
-	 * [__construct description]
+	 * Init object
 	 *
-	 * @param [type] $config [description].
+	 * @param array $config
+	 * @param array $default
 	 */
 	function __construct( array $config = array(), array $default = array() ) {
-		$this->config = $config;
-		$this->default = $default;
+		$this->items = array_merge_recursive( $default, $config );
 	}
 
 	/**
@@ -42,7 +39,7 @@ class Config extends ArrayObject implements Config_Interface {
 	 * @return array
 	 */
 	public function all() {
-		return $this->config;
+		return $this->items;
 	}
 
 	/**
@@ -53,7 +50,7 @@ class Config extends ArrayObject implements Config_Interface {
 	 * @return mixed
 	 */
 	public function get( $key, $default = null ) {
-		return $this->config[ $key ];
+		return $this->items[ $key ];
 	}
 
 	/**
@@ -64,7 +61,7 @@ class Config extends ArrayObject implements Config_Interface {
 	 */
 	public function has( $key ) {
 
-		if ( ! array_key_exists( $key, $this->config ) ) {
+		if ( ! array_key_exists( $key, $this->items ) ) {
 			return false;
 		}
 
