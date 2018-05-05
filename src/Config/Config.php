@@ -78,6 +78,6 @@ class Config extends ArrayObject implements Config_Interface {
 	 * @return null
 	 */
 	public function push( $key, $value ) {
-
+		$this->items[ $key ] = $value;
 	}
 }
