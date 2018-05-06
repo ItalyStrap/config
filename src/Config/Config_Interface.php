@@ -2,7 +2,9 @@
 /**
  * Config Class that handle the classes configuration
  *
- * @package ItalyStrap
+ * @version 0.0.1-alpha
+ *
+ * @package ItalyStrap\Config
  */
 
 namespace ItalyStrap\Config;
@@ -11,8 +13,6 @@ interface Config_Interface {
 
 	/**
 	 * Retrieves all of the runtime configuration parameters
-	 *
-	 * @since 0.0.1
 	 *
 	 * @return array
 	 */
@@ -37,8 +37,6 @@ interface Config_Interface {
 
 	/**
 	 * Push a configuration in via the key
-	 *
-	 * @since 0.0.1
 	 *
 	 * @param string $parameter_key Key to be assigned, which also becomes the property
 	 * @param mixed $value Value to be assigned to the parameter key

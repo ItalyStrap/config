@@ -2,9 +2,9 @@
 /**
  * Config Class that handle the classes configuration
  *
- * @version 0.0.1
+ * @version 0.0.1-alpha
  *
- * @package ItalyStrap
+ * @package ItalyStrap\Config
  */
 
 namespace ItalyStrap\Config;

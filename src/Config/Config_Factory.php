@@ -2,9 +2,9 @@
 /**
  * Config Class that handle the classes configuration
  *
- * @version 0.0.1
+ * @version 0.0.1-alpha
  *
- * @package ItalyStrap
+ * @package ItalyStrap\Config
  */
 
 namespace ItalyStrap\Config;
@@ -16,8 +16,6 @@ class Config_Factory {
 
 	/**
 	 * Load and return the Config object.
-	 *
-	 * @since 3.0.0
 	 *
 	 * @param  string|array $config File path and filename to the config array; or it is the
 	 *                                  configuration array.
