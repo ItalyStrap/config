@@ -28,7 +28,7 @@ class Config extends ArrayObject implements Config_Interface {
 	 * @param array $default
 	 */
 	function __construct( array $config = array(), array $default = array() ) {
-		$this->items = array_merge_recursive( $default, $config );
+		$this->items = array_replace_recursive( $default, $config );
 	}
 
 	/**
@@ -50,6 +50,11 @@ class Config extends ArrayObject implements Config_Interface {
 	 * @return mixed
 	 */
 	public function get( $key, $default = null ) {
+
+		if ( ! $this->has( $key ) ) {
+			$this->push( $key, $default );
+		}
+
 		return $this->items[ $key ];
 	}
 
@@ -61,11 +66,7 @@ class Config extends ArrayObject implements Config_Interface {
 	 */
 	public function has( $key ) {
 
-		if ( ! array_key_exists( $key, $this->items ) ) {
-			return false;
-		}
-
-		return true;
+		return (bool) array_key_exists( $key, $this->items );
 	}
 
 	/**
