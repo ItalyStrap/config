@@ -14,9 +14,9 @@
             "ItalyStrap\\Config\\": "src/Config/"
         }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "require": {},
     "require-dev": {
-        "lucatume/wp-browser": "~1.21"
+        "lucatume/wp-browser": "~2.0"
     }
 }

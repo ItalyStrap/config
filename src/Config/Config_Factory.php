@@ -24,7 +24,7 @@ class Config_Factory {
 	 *
 	 * @returns Fulcrum Returns the Config object
 	 */
-	public static function make( $config, $defaults = [] ) {
+	public static function make( $config = [], $defaults = [] ) {
 		return new Config( $config, $defaults );
 	}
 }
