@@ -16,5 +16,7 @@
     },
     "minimum-stability": "dev",
     "require": {},
-    "require-dev": {}
+    "require-dev": {
+        "lucatume/wp-browser": "~1.21"
+    }
 }
