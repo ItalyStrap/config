@@ -32,6 +32,16 @@ class ConfigTest extends \Codeception\Test\Unit
     }
 
     /**
+     * @covers class::fileExists()
+     */
+    public function testFileExists()
+    {
+        $this->assertFileExists( $this->config_file_name );
+        $this->assertFileExists( $this->default_file_name );
+        $this->assertFileExists( $this->empty_file_name );
+    }
+
+    /**
      * @test
      * it should be instantiatable
      */
@@ -78,7 +88,7 @@ class ConfigTest extends \Codeception\Test\Unit
 
         $config = new Config( $this->config_arr );
 
-        $this->assertTrue( $config->get( 'tizio' ) === [] );
+        $this->assertEquals( [], $config->get( 'tizio' ) );
     }
 
     /**
@@ -90,19 +100,19 @@ class ConfigTest extends \Codeception\Test\Unit
 
         $config = new Config( $this->config_arr );
 
-        $this->assertTrue( $config->get( 'noKey' ) === null );
+        $this->assertEquals( null, $config->get( 'noKey' ) );
     }
 
     /**
      * @test
-     * it should return_a_given_value_if_key_does_not_exists
+     * it should return_the_given_value_if_key_does_not_exists
      */
-    public function it_should_return_a_given_value_if_key_does_not_exists()
+    public function it_should_return_the_given_value_if_key_does_not_exists()
     {
 
         $config = new Config( $this->config_arr );
 
-        $this->assertTrue( $config->get( 'noKey', true ) === true );
+        $this->assertEquals( true, $config->get( 'noKey', true ) );
     }
 
     /**
@@ -112,17 +122,58 @@ class ConfigTest extends \Codeception\Test\Unit
     public function it_should_array_replace_recursively()
     {
 
-        $config = new Config( [ 'test' => 'value' ], [ 'test' => null ] );
+        $config = new Config( $this->config_arr, $this->default_arr );
 
-        $this->assertTrue( ! is_array( $config->get( 'test' ) ) );
-        $this->assertTrue( $config->get( 'test' ) === 'value' );
+        $this->assertTrue( ! is_array( $config->get( 'recursive' ) ) );
+
+        $this->assertEquals( 'not an array', $config->get( 'recursive' ) );
+
     }
 
     /**
-     * @covers class::fileExists()
+     * @test
+     * it should return_an_array
      */
-    public function testFileExists()
+    public function it_should_return_an_array()
     {
-        $this->assertTrue( file_exists( $this->config_file_name ) );
+
+        $config = new Config( $this->config_arr );
+
+        $this->assertTrue( is_array( $config->all() ) );
+        $this->assertEquals( $this->config_arr, $config->all() );
+
+    }
+
+    /**
+     * @test
+     * it should add_new_item
+     */
+    public function it_should_add_new_item()
+    {
+
+        $config = new Config( $this->config_arr, $this->default_arr );
+        $config->push( 'new_item', true );
+
+        $this->assertTrue( $config->get( 'new_item' ) );
+
+    }
+
+    /**
+     * @test
+     * it should merge_given_array
+     */
+    public function it_should_merge_given_array()
+    {
+
+        $config = new Config( $this->config_arr, $this->default_arr );
+
+        $new_array = [
+            'new_key'   => 'New Value',
+        ];
+
+        $config->merge( $new_array );
+
+        $this->assertEquals( 'New Value', $config->get( 'new_key' ) );
+
     }
 }

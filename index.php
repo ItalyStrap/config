@@ -36,4 +36,5 @@ use \ItalyStrap\Config\Config_Factory;
 
 $config = Config_Factory::make( [ 'test' => 'value' ], [ 'test' => null ] );
 
-// ddd( $config );
+// d( $config->test_null );
+// ddd( $config->test );

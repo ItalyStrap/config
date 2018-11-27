@@ -2,8 +2,6 @@
 /**
  * Config Class that handle the classes configuration
  *
- * @version 0.0.1-alpha
- *
  * @package ItalyStrap\Config
  */
 
@@ -29,6 +27,7 @@ class Config extends ArrayObject implements Config_Interface {
 	 */
 	function __construct( array $config = array(), array $default = array() ) {
 		$this->items = array_replace_recursive( $default, $config );
+		parent::__construct( $this->items, ArrayObject::ARRAY_AS_PROPS );
 	}
 
 	/**
@@ -39,7 +38,7 @@ class Config extends ArrayObject implements Config_Interface {
 	 * @return array
 	 */
 	public function all() {
-		return $this->items;
+		return (array) $this->items;
 	}
 
 	/**
@@ -80,5 +79,22 @@ class Config extends ArrayObject implements Config_Interface {
 	 */
 	public function push( $key, $value ) {
 		$this->items[ $key ] = $value;
+		$this->offsetSet( $key, $value );
+	}
+
+	/**
+	 * Merge a new array into this config
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $array_to_merge
+	 * @return null
+	 */
+	public function merge( array $array_to_merge ) {
+		$this->items = array_replace_recursive( $this->items, $array_to_merge );
+
+		array_walk( $this->items, function ( $value, $key )  {
+			$this->offsetSet( $key, $value );
+		} );
 	}
 }
