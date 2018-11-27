@@ -85,7 +85,7 @@ class Config extends ArrayObject implements Config_Interface {
 	/**
 	 * Merge a new array into this config
 	 *
-	 * @since 1.0.1
+	 * @since 1.1.0
 	 *
 	 * @param array $array_to_merge
 	 * @return null
