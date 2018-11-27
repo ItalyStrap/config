@@ -5,3 +5,7 @@
 [![Build Status](https://travis-ci.org/ItalyStrap/config.svg?branch=master)](https://travis-ci.org/ItalyStrap/config)
 
 ItalyStrap Config Module - a simple and useful configuration package
+
+#Documentation
+
+> TODO
