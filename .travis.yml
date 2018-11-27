@@ -1,3 +1,4 @@
+# https://www.theaveragedev.com/installing-and-setting-up-wordpress-and-nginx-for-travis-ci-tests/
 sudo: required
 
 language: php

@@ -31,10 +31,10 @@ Domain Path: Domain Path
 
 require( __DIR__ . '/vendor/autoload.php' );
 
-use \ItalyStrap\Config\Config;
-use \ItalyStrap\Config\Config_Factory;
+// use \ItalyStrap\Config\Config;
+// use \ItalyStrap\Config\Config_Factory;
 
-$config = Config_Factory::make( [ 'test' => 'value' ], [ 'test' => null ] );
+// $config = Config_Factory::make( [ 'test' => 'value' ], [ 'test' => null ] );
 
 // d( $config->test_null );
 // ddd( $config->test );
