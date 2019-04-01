@@ -66,15 +66,4 @@ add_action( 'wp_footer', function () {
 //	d( $config->test_null );
 // ddd( $config->test );
 
-	function remove ( ...$args ) {
-		d($args);
-	}
-
-
-	$arr = [3,4];
-
-	echo (...$arr);
-
-	d( ...$arr );
-
 } );
