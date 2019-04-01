@@ -15,19 +15,13 @@ use \ArrayObject;
 class Config extends ArrayObject implements Config_Interface {
 
 	/**
-	 * @var array
-	 */
-	protected $items = array();
-
-	/**
-	 * Init object
+	 * Config constructor
 	 *
 	 * @param array $config
 	 * @param array $default
 	 */
-	function __construct( array $config = array(), array $default = array() ) {
-		$this->items = array_replace_recursive( $default, $config );
-		parent::__construct( $this->items, ArrayObject::ARRAY_AS_PROPS );
+	function __construct( array $config = [], array $default = [] ) {
+		parent::__construct( array_replace_recursive( $default, $config ), ArrayObject::ARRAY_AS_PROPS );
 	}
 
 	/**
@@ -37,8 +31,8 @@ class Config extends ArrayObject implements Config_Interface {
 	 *
 	 * @return array
 	 */
-	public function all() {
-		return (array) $this->items;
+	public function all() : array {
+		return (array) $this->getArrayCopy();
 	}
 
 	/**
@@ -48,13 +42,13 @@ class Config extends ArrayObject implements Config_Interface {
 	 * @param  mixed   $default
 	 * @return mixed
 	 */
-	public function get( $key, $default = null ) {
+	public function get( string $key, $default = null ) {
 
-		if ( ! $this->has( $key ) ) {
-			$this->push( $key, $default );
+		if ( ! $this->offsetExists( $key ) ) {
+			return $default;
 		}
 
-		return $this->items[ $key ];
+		return $this->offsetGet( $key );
 	}
 
 	/**
@@ -63,9 +57,8 @@ class Config extends ArrayObject implements Config_Interface {
 	 * @param  string  $key
 	 * @return bool
 	 */
-	public function has( $key ) {
-
-		return (bool) array_key_exists( $key, $this->items );
+	public function has( string $key ) : bool {
+		return (bool) $this->offsetExists( $key );
 	}
 
 	/**
@@ -75,11 +68,30 @@ class Config extends ArrayObject implements Config_Interface {
 	 *
 	 * @param string $key Key to be assigned, which also becomes the property
 	 * @param mixed $value Value to be assigned to the parameter key
-	 * @return null
+	 * @return self
 	 */
-	public function push( $key, $value ) {
-		$this->items[ $key ] = $value;
+	public function push( string $key, $value ) : self {
 		$this->offsetSet( $key, $value );
+		return $this;
+	}
+
+	/**
+	 * Removes an item or multiple items.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @param  mixed ...$with_keys
+	 * @return self
+	 */
+	public function remove( ...$with_keys ) : self {
+
+		foreach ( $with_keys as $keys ) {
+			foreach ( (array) $keys as $k ) {
+				$this->offsetUnset( $k );
+			}
+		}
+
+		return $this;
 	}
 
 	/**
@@ -87,14 +99,62 @@ class Config extends ArrayObject implements Config_Interface {
 	 *
 	 * @since 1.1.0
 	 *
-	 * @param array $array_to_merge
-	 * @return null
+	 * @param array ...$array_to_merge
+	 * @return self
 	 */
-	public function merge( array $array_to_merge ) {
-		$this->items = array_replace_recursive( $this->items, $array_to_merge );
+	public function merge( array ...$array_to_merge ) : self {
 
-		array_walk( $this->items, function ( $value, $key )  {
-			$this->offsetSet( $key, $value );
-		} );
+		foreach ( $array_to_merge as $arr ) {
+			$items = array_replace_recursive( $this->getArrayCopy(), $arr );
+
+			foreach ( $items as $key => $value ) {
+				$this->offsetSet( $key, $value );
+			}
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Magic method when trying to get a property.
+	 *
+	 * @param  string  $key
+	 * @return mixed
+	 */
+	public function __get( string $key ) {
+		return $this->get( $key, null );
+	}
+
+	/**
+	 * Magic method when trying to set a property. Assume the property is
+	 * part of the collection and add it.
+	 *
+	 * @param  string  $key
+	 * @param  mixed   $value
+	 * @return self
+	 */
+	public function __set( string $key, $value ) : self {
+		return $this->push( $key, $value );
+	}
+
+	/**
+	 * Magic method when trying to unset a property.
+	 *
+	 * @param  string|array  $key
+	 * @return self
+	 */
+	public function __unset( $key ) : self {
+		$this->remove( $key );
+		return $this;
+	}
+
+	/**
+	 * Magic method when trying to check if a property has.
+	 *
+	 * @param  string  $key
+	 * @return bool
+	 */
+	public function __isset( string $key ) : bool {
+		return (bool) $this->has( $key );
 	}
 }

@@ -3,5 +3,7 @@ return [
 	'tizio'     => [],
 	'caio'      => '',
 	'sempronio' => '',
-	'recursive' => null,
+	'recursive' => [
+		'subKey'	=> 'subValue',
+	],
 ];

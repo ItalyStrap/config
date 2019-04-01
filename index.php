@@ -31,10 +31,50 @@ Domain Path: Domain Path
 
 require( __DIR__ . '/vendor/autoload.php' );
 
-// use \ItalyStrap\Config\Config;
-// use \ItalyStrap\Config\Config_Factory;
+ use \ItalyStrap\Config\Config;
+ use \ItalyStrap\Config\Config_Factory;
 
 // $config = Config_Factory::make( [ 'test' => 'value' ], [ 'test' => null ] );
-
+//
 // d( $config->test_null );
 // ddd( $config->test );
+
+add_action( 'wp_footer', function () {
+	$config = Config_Factory::make( [ 'test' => 'value', 'test2' => 'value2' ], [ 'test' => null ] );
+
+//	d( $config->all() );
+//
+//	d( $config->get( 'prova' ) );
+//	d( $config->get( 'test' ) );
+//
+//	d( $config->has( 'prova' ) );
+//	d( $config->has( 'test' ) );
+//
+//	$default = [
+//		'key'	=> 'value',
+//		'key1'	=> [
+//			'someKey'	=> 'someValue',
+//		],
+//	];
+
+//	d( $config->merge( $default )->merge( [ 'key1' => [ 'someKey'	=> 'someValuedfgasedga' ] ] ) );
+//	d( $config->merge( [ 'key1' => [ 1 ] ] ) );
+
+//	d( $config );
+//	d( $config->getArrayCopy() );
+
+//	d( $config->test_null );
+// ddd( $config->test );
+
+	function remove ( ...$args ) {
+		d($args);
+	}
+
+
+	$arr = [3,4];
+
+	echo (...$arr);
+
+	d( ...$arr );
+
+} );

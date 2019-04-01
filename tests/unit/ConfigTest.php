@@ -19,7 +19,7 @@ class ConfigTest extends \Codeception\Test\Unit
     protected function _before()
     {
         $this->config_file_name = __DIR__ . '/../_data/config/config.php';
-        $this->default_file_name = __DIR__ . '/../_data/config/config.php';
+        $this->default_file_name = __DIR__ . '/../_data/config/default.php';
         $this->empty_file_name = __DIR__ . '/../_data/config/config.php';
 
         $this->config_arr = require( $this->config_file_name );
@@ -56,6 +56,10 @@ class ConfigTest extends \Codeception\Test\Unit
         $this->assertInstanceOf( '\ItalyStrap\Config\Config_Interface', $config );
 
         $config = new Config( [], [] );
+        $this->assertInstanceOf( '\ItalyStrap\Config\Config', $config );
+        $this->assertInstanceOf( '\ItalyStrap\Config\Config_Interface', $config );
+
+        $config = new Config( $this->config_arr );
         $this->assertInstanceOf( '\ItalyStrap\Config\Config', $config );
         $this->assertInstanceOf( '\ItalyStrap\Config\Config_Interface', $config );
 
@@ -115,46 +119,52 @@ class ConfigTest extends \Codeception\Test\Unit
         $this->assertEquals( true, $config->get( 'noKey', true ) );
     }
 
+	/**
+	 * @test
+	 * it should return_an_array
+	 */
+	public function it_should_return_an_array()
+	{
+
+		$config = new Config( $this->config_arr );
+
+		$this->assertTrue( is_array( $config->all() ) );
+		$this->assertEquals( $this->config_arr, $config->all() );
+		$this->assertEquals( $config->all(), $config->getArrayCopy() );
+	}
+
+	/**
+	 * @test
+	 * it should add_new_item
+	 */
+	public function it_should_add_new_item()
+	{
+
+		$config = new Config( $this->config_arr, $this->default_arr );
+		$config->push( 'new_item', true );
+
+		$this->assertTrue( $config->get( 'new_item' ) );
+
+	}
+
     /**
      * @test
-     * it should array_replace_recursively
+     * it should replace_recursively
      */
-    public function it_should_array_replace_recursively()
+    public function it_should_replace_recursively()
     {
+
+        $config = new Config( $this->default_arr );
+		$this->assertEquals( $this->default_arr['recursive'], $config->get( 'recursive' ) );
 
         $config = new Config( $this->config_arr, $this->default_arr );
+        $this->assertEquals( $this->config_arr['recursive'], $config->get( 'recursive' ) );
+        $this->assertEquals( $this->config_arr['recursive'], $config->recursive );
+        $this->assertEquals( $this->config_arr['recursive']['subKey'], $config->recursive['subKey'] );
 
-        $this->assertTrue( ! is_array( $config->get( 'recursive' ) ) );
-
-        $this->assertEquals( 'not an array', $config->get( 'recursive' ) );
-
-    }
-
-    /**
-     * @test
-     * it should return_an_array
-     */
-    public function it_should_return_an_array()
-    {
-
-        $config = new Config( $this->config_arr );
-
-        $this->assertTrue( is_array( $config->all() ) );
-        $this->assertEquals( $this->config_arr, $config->all() );
-
-    }
-
-    /**
-     * @test
-     * it should add_new_item
-     */
-    public function it_should_add_new_item()
-    {
-
-        $config = new Config( $this->config_arr, $this->default_arr );
-        $config->push( 'new_item', true );
-
-        $this->assertTrue( $config->get( 'new_item' ) );
+        $this->assertNotEquals( $this->default_arr['recursive'], $config->get( 'recursive' ) );
+		$this->assertNotEquals( $this->default_arr['recursive'], $config->recursive );
+		$this->assertNotEquals( $this->default_arr['recursive']['subKey'], $config->recursive['subKey'] );
 
     }
 
@@ -169,11 +179,72 @@ class ConfigTest extends \Codeception\Test\Unit
 
         $new_array = [
             'new_key'   => 'New Value',
+			'recursive' => [
+				'subKey'	=> 'otherSubValue',
+			],
         ];
 
         $config->merge( $new_array );
 
         $this->assertEquals( 'New Value', $config->get( 'new_key' ) );
 
+		$this->assertEquals( $new_array['recursive'], $config->get( 'recursive' ) );
+		$this->assertEquals( $new_array['recursive'], $config['recursive'] );
+		$this->assertEquals( $new_array['recursive'], $config->recursive );
+		$this->assertEquals( $new_array['recursive']['subKey'], $config->recursive['subKey'] );
+    }
+
+    /**
+     * @test
+     * it_should_be_removed
+     */
+    public function it_should_be_removed()
+    {
+
+        $config = new Config( $this->config_arr, $this->default_arr );
+        $config->remove( 'recursive' );
+        $this->assertFalse( $config->has( 'recursive' ) );
+
+        $this->assertTrue( $config->has( 'tizio' ) );
+        $this->assertTrue( $config->has( 'caio' ) );
+
+		$config->remove( ['tizio', 'caio'] );
+
+		$this->assertFalse( $config->has( 'tizio' ) );
+		$this->assertFalse( $config->has( 'caio' ) );
+
+		$config = new Config( $this->config_arr, $this->default_arr );
+		$config->remove( ['recursive'] );
+		$this->assertFalse( $config->has( 'recursive' ) );
+
+		$config = new Config( $this->config_arr, $this->default_arr );
+		$this->assertTrue( $config->has( 'recursive' ) );
+		$this->assertTrue( $config->has( 'tizio' ) );
+		$config->remove( ['recursive'], 'tizio' );
+		$this->assertFalse( $config->has( 'recursive' ) );
+		$this->assertFalse( $config->has( 'tizio' ) );
+    }
+
+    /**
+     * @test
+     * it_should_be
+*/
+    public function it_should_be()
+    {
+    	$expected = 42;
+
+        $config = new Config();
+        $config->test = $expected;
+        $this->assertTrue( $config->has( 'test' ) );
+        $this->assertTrue( isset( $config->test ) );
+        $this->assertNotTrue( $config->has( 'some' ) );
+        $this->assertNotTrue( isset( $config->some ) );
+        $this->assertEquals( $expected, $config->get( 'test' ) );
+
+        $config[2] = 'value';
+        $this->assertTrue( $config->has(2) );
+
+        $config->push( 0, $expected );
+        $this->assertEquals( $expected, $config->get( 0 ) );
     }
 }

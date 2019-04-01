@@ -16,7 +16,7 @@ interface Config_Interface {
 	 *
 	 * @return array
 	 */
-	public function all();
+	public function all() : array ;
 
 	/**
 	 * Get the specified configuration value.
@@ -25,7 +25,7 @@ interface Config_Interface {
 	 * @param  mixed   $default
 	 * @return mixed
 	 */
-	public function get( $parameter_key, $default = null );
+	public function get( string $parameter_key, $default = null );
 
 	/**
 	 * Determine if the given configuration value exists.
@@ -33,7 +33,7 @@ interface Config_Interface {
 	 * @param  string  $parameter_key
 	 * @return bool
 	 */
-	public function has( $parameter_key );
+	public function has( string $parameter_key ) : bool ;
 
 	/**
 	 * Push a configuration in via the key
@@ -42,5 +42,25 @@ interface Config_Interface {
 	 * @param mixed $value Value to be assigned to the parameter key
 	 * @return null
 	 */
-	public function push( $parameter_key, $value );
+	public function push( string $parameter_key, $value );
+
+	/**
+	 * Removes an item or multiple items.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @param  mixed ...$with_keys
+	 * @return self
+	 */
+	public function remove( ...$with_keys );
+
+	/**
+	 * Merge a new array into this config
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param array ...$array_to_merge
+	 * @return null
+	 */
+	public function merge( array ...$array_to_merge );
 }
