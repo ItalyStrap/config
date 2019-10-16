@@ -15,7 +15,9 @@
         }
     },
     "minimum-stability": "stable",
-    "require": {},
+    "require": {
+        "php" : ">=7.0"
+    },
     "require-dev": {
         "lucatume/wp-browser": "~2.0"
     }

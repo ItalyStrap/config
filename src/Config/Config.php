@@ -5,12 +5,16 @@
  * @package ItalyStrap\Config
  */
 
+declare(strict_types=1);
+
 namespace ItalyStrap\Config;
 
 use \ArrayObject;
 
 /**
  * Config Class
+ *
+ * @todo Maybe some ideas: https://github.com/clean/data/blob/master/src/Collection.php
  */
 class Config extends ArrayObject implements Config_Interface {
 

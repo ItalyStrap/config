@@ -8,6 +8,7 @@ notifications:
 
 php:
   - '7.1'
+  - '7.2'
   - nightly
 
 matrix:
@@ -28,10 +29,10 @@ cache:
 addons:
   apt:
     packages:
-      # - libjpeg-dev
-      # - libpng12-dev
-      - php5-fpm
-      - php5-mysql
+      - libjpeg-dev
+      - libpng12-dev
+      - php7.0-fpm
+      - php7.0-mysql
       - nginx
   hosts:
     - wp.localhost
@@ -98,7 +99,7 @@ install:
 
 before_script:
   # restart Nnginx and PHP-FPM services
-  - sudo service php5-fpm restart
+  - sudo service php7.0-fpm restart
   - sudo service nginx restart
 
   # build Codeception modules
