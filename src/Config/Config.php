@@ -25,7 +25,7 @@ class Config extends ArrayObject implements Config_Interface {
 	 * @param array $default
 	 */
 	function __construct( array $config = [], array $default = [] ) {
-		parent::__construct( array_replace_recursive( $default, $config ), ArrayObject::ARRAY_AS_PROPS );
+		parent::__construct( \array_replace_recursive( $default, $config ), ArrayObject::ARRAY_AS_PROPS );
 	}
 
 	/**
@@ -101,15 +101,14 @@ class Config extends ArrayObject implements Config_Interface {
 	/**
 	 * Merge a new array into this config
 	 *
-	 * @since 1.1.0
-	 *
 	 * @param array ...$array_to_merge
 	 * @return self
+	 * @since 1.1.0
 	 */
 	public function merge( array ...$array_to_merge ) : self {
 
 		foreach ( $array_to_merge as $arr ) {
-			$items = array_replace_recursive( $this->getArrayCopy(), $arr );
+			$items = \array_replace_recursive( $this->getArrayCopy(), $arr );
 
 			foreach ( $items as $key => $value ) {
 				$this->offsetSet( $key, $value );
