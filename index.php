@@ -29,10 +29,12 @@ Domain Path: Domain Path
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+declare(strict_types=1);
+
 require( __DIR__ . '/vendor/autoload.php' );
 
- use \ItalyStrap\Config\Config;
- use \ItalyStrap\Config\Config_Factory;
+use \ItalyStrap\Config\Config;
+use \ItalyStrap\Config\Config_Factory;
 
 // $config = Config_Factory::make( [ 'test' => 'value' ], [ 'test' => null ] );
 //
@@ -50,20 +52,44 @@ add_action( 'wp_footer', function () {
 //	d( $config->has( 'prova' ) );
 //	d( $config->has( 'test' ) );
 //
-//	$default = [
-//		'key'	=> 'value',
-//		'key1'	=> [
-//			'someKey'	=> 'someValue',
-//		],
-//	];
+	$default = [
+		'key'	=> 'value',
+		'key1'	=> [
+			'subKey'	=> 'someValue',
+		],
+	];
 
-//	d( $config->merge( $default )->merge( [ 'key1' => [ 'someKey'	=> 'someValuedfgasedga' ] ] ) );
+	$config->merge( $default )->merge(
+		[
+			'key1' => [
+				'subKey'	=> 'someValuedfgasedga',
+				'nested'	=> [
+					'subSubKey'	=> 'nestedValue'
+				]
+			]
+		] );
+
+//	d( $config->get( 'key1.subKey' ) );
+//	d( $config->search( 'key1' ) );
+//	d( $config->search( 'key2' ) );
+//	d( $config->search( 'key1.subKey' ) );
+//	d( $config->search( 'key1.nested.subSubKey' ) );
+//	d( $config->search( 'key1.nested.subSubKeyfdgd' ) );
+
 //	d( $config->merge( [ 'key1' => [ 1 ] ] ) );
 
-//	d( $config );
+//	d( $config['key1']['subKe'] ?? '' );
+//	d( $config->key1['subKey'] ?? '' );
+//	d( $config->key1->subKey ?? '' );
 //	d( $config->getArrayCopy() );
 
 //	d( $config->test_null );
 // ddd( $config->test );
+//	d( $config->undefined );
 
+//	function bridge( &$check ){
+//		return $check ?? null;
+//	}
+//
+//	d( bridge( $config->undefined ) );
 } );

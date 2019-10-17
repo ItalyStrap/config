@@ -21,6 +21,7 @@
     "require-dev": {
         "lucatume/wp-browser": "~2.0",
         "brightnucleus/config": "^0.4.10",
-        "wpfulcrum/config": "^3.0"
+        "wpfulcrum/config": "^3.0",
+        "italystrap/debug": "^2.0"
     }
 }

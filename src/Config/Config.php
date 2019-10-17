@@ -15,6 +15,8 @@ use \ArrayObject;
  * Config Class
  *
  * @todo Maybe some ideas: https://github.com/clean/data/blob/master/src/Collection.php
+ * @todo Maybe some ideas: https://github.com/Radiergummi/libconfig/blob/master/src/Libconfig/Config.php
+ * @todo Maybe some ideas: https://github.com/balambasik/input/blob/master/src/Input.php
  */
 class Config extends ArrayObject implements Config_Interface {
 
@@ -48,7 +50,7 @@ class Config extends ArrayObject implements Config_Interface {
 	 */
 	public function get( string $key, $default = null ) {
 
-		if ( ! $this->offsetExists( $key ) ) {
+		if ( ! $this->has( $key ) ) {
 			return $default;
 		}
 
@@ -63,6 +65,28 @@ class Config extends ArrayObject implements Config_Interface {
 	 */
 	public function has( string $key ) : bool {
 		return (bool) $this->offsetExists( $key );
+	}
+
+	private function search( $key ) {
+
+		$array = $this->all();
+
+		if ( \strripos( $key, '.' ) === false ) {
+			return isset( $array[ $key ] );
+		}
+
+		$levels = \explode('.', $key );
+
+		foreach ( $levels as $level ) {
+
+			if ( ! isset( $array[ $level ] ) ) {
+				return false;
+			}
+
+			$array = $array[ $level ];
+		}
+
+		return (bool) $array;
 	}
 
 	/**
@@ -147,8 +171,7 @@ class Config extends ArrayObject implements Config_Interface {
 	 * @return self
 	 */
 	public function __unset( $key ) : self {
-		$this->remove( $key );
-		return $this;
+		return $this->remove( $key );
 	}
 
 	/**
@@ -158,6 +181,6 @@ class Config extends ArrayObject implements Config_Interface {
 	 * @return bool
 	 */
 	public function __isset( string $key ) : bool {
-		return (bool) $this->has( $key );
+		return $this->has( $key );
 	}
 }

@@ -228,7 +228,7 @@ class ConfigTest extends \Codeception\Test\Unit
     /**
      * @test
      * it_should_be
-*/
+	 */
     public function it_should_be()
     {
     	$expected = 42;
@@ -246,5 +246,31 @@ class ConfigTest extends \Codeception\Test\Unit
 
         $config->push( 0, $expected );
         $this->assertEquals( $expected, $config->get( 0 ) );
+    }
+
+	/**
+	 * @test
+	 */
+	public function it_should_be_iterable() {
+		$arr = [ 'key' => 'val' ];
+		$config = new Config( $arr );
+
+		foreach ( $config as $key => $value ) {
+			$this->assertTrue( $arr[ $key ] === $value );
+		}
+
+		foreach ( $config as $key => $value ) {
+			$this->assertTrue( $config->$key === $value );
+		}
+    }
+
+	/**
+	 * @test
+	 */
+	public function it_should_be_cauntable() {
+
+		$config = new Config( $this->config_arr );
+
+		$this->assertCount( \count( $this->config_arr ), $config );
     }
 }
