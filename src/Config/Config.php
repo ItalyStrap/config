@@ -4,12 +4,12 @@
  *
  * @package ItalyStrap\Config
  */
-
 declare(strict_types=1);
 
 namespace ItalyStrap\Config;
 
-use \ArrayObject;
+use ArrayObject;
+use BadMethodCallException;
 
 /**
  * Config Class
@@ -17,8 +17,32 @@ use \ArrayObject;
  * @todo Maybe some ideas: https://github.com/clean/data/blob/master/src/Collection.php
  * @todo Maybe some ideas: https://github.com/Radiergummi/libconfig/blob/master/src/Libconfig/Config.php
  * @todo Maybe some ideas: https://github.com/balambasik/input/blob/master/src/Input.php
+ * @todo Maybe some ideas: https://www.simonholywell.com/post/2017/04/php-and-immutability-part-two/
  */
-class Config extends ArrayObject implements Config_Interface {
+class Config extends ArrayObject implements ConfigInterface {
+
+	use ArrayObjectTrait;
+
+	/**
+	 * @var array
+	 */
+	private $storage = [];
+
+	/**
+	 * @var
+	 */
+	private $temp;
+
+	/**
+	 * @var
+	 */
+	private $default;
+
+	/**
+	 * Array key level delimiter
+	 * @var string
+	 */
+	private static $delimiter = ".";
 
 	/**
 	 * Config constructor
@@ -26,161 +50,145 @@ class Config extends ArrayObject implements Config_Interface {
 	 * @param array $config
 	 * @param array $default
 	 */
-	function __construct( array $config = [], array $default = [] ) {
-		parent::__construct( \array_replace_recursive( $default, $config ), ArrayObject::ARRAY_AS_PROPS );
+	function __construct( $config = [], $default = [] ) {
+		$this->merge( $default, $config );
+		parent::__construct( $this->storage, ArrayObject::ARRAY_AS_PROPS );
 	}
 
 	/**
-	 * Retrieves all of the runtime configuration parameters
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array
+	 * @inheritDoc
 	 */
 	public function all() : array {
-		return (array) $this->getArrayCopy();
+		return $this->getArrayCopy();
 	}
 
 	/**
-	 * Get the specified configuration value.
-	 *
-	 * @param  string  $key
-	 * @param  mixed   $default
-	 * @return mixed
+	 * @inheritDoc
 	 */
 	public function get( string $key, $default = null ) {
+		$this->default = $default;
 
 		if ( ! $this->has( $key ) ) {
-			return $default;
+			return $this->default;
 		}
 
-		return $this->offsetGet( $key );
+		// The class::temp variable is always setted by the class::has() method
+		return $this->temp;
 	}
 
 	/**
-	 * Determine if the given configuration value exists.
-	 *
-	 * @param  string  $key
-	 * @return bool
+	 * @inheritDoc
 	 */
 	public function has( string $key ) : bool {
-		return (bool) $this->offsetExists( $key );
+		$this->temp = $this->search( $this->storage, $key, $this->default );
+		return isset( $this->temp );
 	}
 
-	private function search( $key ) {
+	/**
+	 * @inheritDoc
+	 */
+	public function add( $key, $value ) {
+		$this->storage[ $key ] = $value;
+		parent::exchangeArray( $this->storage );
+		return $this;
+	}
 
-		$array = $this->all();
+	/**
+	 * @deprecated
+	 */
+	public function push( $key, $value ) {
+		return $this->add( $key, $value );
+	}
 
-		if ( \strripos( $key, '.' ) === false ) {
-			return isset( $array[ $key ] );
+	/**
+	 * @inheritDoc
+	 */
+	public function remove( ...$with_keys ): self {
+
+		foreach ( $with_keys as $keys ) {
+			foreach ( (array) $keys as $k ) {
+				unset( $this->storage[ $k ] );
+			}
 		}
 
-		$levels = \explode('.', $key );
+		parent::exchangeArray( $this->storage );
+		return $this;
+	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function merge( ...$array_to_merge ): Config {
+
+		foreach ( $array_to_merge as $key => $arr ) {
+
+			if ( $arr instanceof \Traversable ) {
+				$arr = \iterator_to_array( $arr );
+			}
+			// Make sure any value given is casting to array
+			$array_to_merge[ $key ] = (array) $arr;
+		}
+
+		// We don't need to foreach here, \array_replace_recursive() do the job for us.
+		$this->storage = \array_replace_recursive( $this->storage, ...$array_to_merge );
+		parent::exchangeArray( $this->storage );
+		return $this;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function toArray(): array {
+		return \iterator_to_array( $this );
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function toJson(): string {
+		return \json_encode( $this->toArray() );
+	}
+
+	/**
+	 * @link https://www.php.net/manual/en/class.arrayobject.php#107079
+	 *
+	 * @param $func
+	 * @param $argv
+	 * @return mixed
+	 */
+	public function __call( $func, $argv ) {
+
+		if ( ! \is_callable( $func ) || \substr( $func, 0, 6 ) !== 'array_' ) {
+			throw new BadMethodCallException(__CLASS__ . '->' . $func );
+		}
+
+		return \call_user_func_array( $func, \array_merge( [ $this->getArrayCopy() ], $argv ) );
+	}
+
+	/**
+	 * @todo In future move this method to its own class
+	 *
+	 * @param $array
+	 * @param $key
+	 * @param null $default
+	 * @return |null
+	 */
+	private static function search( $array, $key, $default = null ) {
+
+		if ( \strripos( $key, self::$delimiter ) === false ) {
+			return \array_key_exists( $key, $array ) ? $array[ $key ] : $default;
+		}
+
+		$levels = \explode( self::$delimiter, $key );
 		foreach ( $levels as $level ) {
 
-			if ( ! isset( $array[ $level ] ) ) {
-				return false;
+			if ( ! \array_key_exists( $level, $array ) ) {
+				return $default;
 			}
 
 			$array = $array[ $level ];
 		}
 
-		return (bool) $array;
-	}
-
-	/**
-	 * Push a configuration in via the key
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string $key Key to be assigned, which also becomes the property
-	 * @param mixed $value Value to be assigned to the parameter key
-	 * @return self
-	 */
-	public function push( string $key, $value ) : self {
-		$this->offsetSet( $key, $value );
-		return $this;
-	}
-
-	/**
-	 * Removes an item or multiple items.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param  mixed ...$with_keys
-	 * @return self
-	 */
-	public function remove( ...$with_keys ) : self {
-
-		foreach ( $with_keys as $keys ) {
-			foreach ( (array) $keys as $k ) {
-				$this->offsetUnset( $k );
-			}
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Merge a new array into this config
-	 *
-	 * @param array ...$array_to_merge
-	 * @return self
-	 * @since 1.1.0
-	 */
-	public function merge( array ...$array_to_merge ) : self {
-
-		foreach ( $array_to_merge as $arr ) {
-			$items = \array_replace_recursive( $this->getArrayCopy(), $arr );
-
-			foreach ( $items as $key => $value ) {
-				$this->offsetSet( $key, $value );
-			}
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Magic method when trying to get a property.
-	 *
-	 * @param  string  $key
-	 * @return mixed
-	 */
-	public function __get( string $key ) {
-		return $this->get( $key, null );
-	}
-
-	/**
-	 * Magic method when trying to set a property. Assume the property is
-	 * part of the collection and add it.
-	 *
-	 * @param  string  $key
-	 * @param  mixed   $value
-	 * @return self
-	 */
-	public function __set( string $key, $value ) : self {
-		return $this->push( $key, $value );
-	}
-
-	/**
-	 * Magic method when trying to unset a property.
-	 *
-	 * @param  string|array  $key
-	 * @return self
-	 */
-	public function __unset( $key ) : self {
-		return $this->remove( $key );
-	}
-
-	/**
-	 * Magic method when trying to check if a property has.
-	 *
-	 * @param  string  $key
-	 * @return bool
-	 */
-	public function __isset( string $key ) : bool {
-		return $this->has( $key );
+		return $array ?? $default;
 	}
 }

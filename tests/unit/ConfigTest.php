@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 use \ItalyStrap\Config\Config;
 
@@ -80,7 +81,23 @@ class ConfigTest extends \Codeception\Test\Unit
         $this->assertTrue( $config->has( 'tizio' ) );
         $this->assertTrue( $config->has( 'caio' ) );
         $this->assertTrue( $config->has( 'sempronio' ) );
+
         $this->assertFalse( $config->has( 'cesare' ) );
+        $this->assertFalse( $config->has( 'cesarergserg' ) );
+
+        return $config;
+    }
+
+    /**
+     * @test
+     * it should have key
+     */
+    public function it_should_have_and_get_key()
+    {
+        $config = $this->it_should_have_key();
+		$this->assertTrue( $config->has( 'sempronio' ) );
+		$this->assertIsArray( $config->get( 'recursive' ) );
+		$this->assertArrayHasKey( 'subKey', $config->get( 'recursive' ) );
     }
 
     /**
@@ -93,6 +110,20 @@ class ConfigTest extends \Codeception\Test\Unit
         $config = new Config( $this->config_arr );
 
         $this->assertEquals( [], $config->get( 'tizio' ) );
+        $this->assertEquals( [], $config->tizio );
+    }
+
+    /**
+     * @test
+     * it should get_key
+     */
+    public function it_should_set_key()
+    {
+        $config = new Config();
+        $config->var = 'Value';
+
+        $this->assertEquals( 'Value', $config->get( 'var' ) );
+        $this->assertEquals( 'Value', $config->var );
     }
 
     /**
@@ -141,7 +172,7 @@ class ConfigTest extends \Codeception\Test\Unit
 	{
 
 		$config = new Config( $this->config_arr, $this->default_arr );
-		$config->push( 'new_item', true );
+		$config->add( 'new_item', true );
 
 		$this->assertTrue( $config->get( 'new_item' ) );
 
@@ -192,6 +223,12 @@ class ConfigTest extends \Codeception\Test\Unit
 		$this->assertEquals( $new_array['recursive'], $config['recursive'] );
 		$this->assertEquals( $new_array['recursive'], $config->recursive );
 		$this->assertEquals( $new_array['recursive']['subKey'], $config->recursive['subKey'] );
+
+		$config->merge( $new_array, [ 'new_key'   => 'Value changed' ], [ 'new_key'   => 'Value changed2' ] );
+		$this->assertEquals( 'Value changed2', $config->get( 'new_key' ) );
+
+		$config->merge( 'Ciao' );
+		$this->assertEquals( 'Ciao', $config->get( '0' ) );
     }
 
     /**
@@ -229,23 +266,40 @@ class ConfigTest extends \Codeception\Test\Unit
      * @test
      * it_should_be
 	 */
-    public function it_should_be()
+    public function it_should_set_public_members()
     {
     	$expected = 42;
 
         $config = new Config();
         $config->test = $expected;
         $this->assertTrue( $config->has( 'test' ) );
-        $this->assertTrue( isset( $config->test ) );
+        $this->assertNotEmpty( $config->test );
+
         $this->assertNotTrue( $config->has( 'some' ) );
-        $this->assertNotTrue( isset( $config->some ) );
+        $this->assertEmpty( $config->some );
         $this->assertEquals( $expected, $config->get( 'test' ) );
 
         $config[2] = 'value';
-        $this->assertTrue( $config->has(2) );
+        $this->assertTrue( $config->has('2') );
 
-        $config->push( 0, $expected );
-        $this->assertEquals( $expected, $config->get( 0 ) );
+        $config->push( '0', $expected );
+        $this->assertEquals( $expected, $config->get( '0' ) );
+    }
+
+	/**
+	 * @test
+	 */
+	public function it_should_has_correct_items_on_get_Array_Copy() {
+		$arr1 = [ 'key' => 'Ciao' ];
+		$arr2 = [ 'otherKey'	=> 'Ariciao' ];
+
+		$arrMerged = \array_replace_recursive( $arr1, $arr2 );
+
+
+		$config = new Config( $arr1 );
+		$config->merge( $arr2 );
+
+		$this->assertTrue( $config->getArrayCopy() === $arrMerged );
     }
 
 	/**
@@ -267,10 +321,143 @@ class ConfigTest extends \Codeception\Test\Unit
 	/**
 	 * @test
 	 */
-	public function it_should_be_cauntable() {
+	public function it_should_be_countable() {
 
 		$config = new Config( $this->config_arr );
 
 		$this->assertCount( \count( $this->config_arr ), $config );
     }
+
+	/**
+	 * @test
+	 */
+	public function it_should_merge_config_object_in_array() {
+
+		$default = new Config( [ 'er' => 'sdf' ]);
+		$config = new Config( $this->config_arr );
+
+		$config->merge( $default );
+		$this->assertArrayHasKey( 'er', $config->all() );
+
+		$newconfig = new Config( $default );
+		$this->assertArrayHasKey( 'er', $newconfig->all() );
+
+		$iterator = new ArrayIterator( ['recipe'=>'pancakes', 'egg', 'milk', 'flour'] );
+		$newconfig = new Config( $iterator );
+		$this->assertArrayHasKey( 'recipe', $newconfig->all() );
+		$this->assertArrayHasKey( 'recipe', $newconfig );
+
+		$iterator = new ArrayIterator( ['recipe2'=>'pancakes', 'egg', 'milk', 'flour'] );
+		$newconfig->merge( $iterator );
+		$this->assertArrayHasKey( 'recipe2', $newconfig->all() );
+		$this->assertArrayHasKey( 'recipe2', $newconfig );
+
+		$stdobj = new \stdClass();
+		$stdobj->var = 'Value';
+
+		$anotherConfig = new Config( $stdobj );
+		$this->assertArrayHasKey( 'var', $anotherConfig );
+		$this->assertEquals( $stdobj->var, $anotherConfig->var );
+
+		$node = new class {
+			public $property;
+
+			public function myMethod($arg = '') {
+				return 'Tizio';
+			}
+		};
+
+		$anotherConfig->merge( $node );
+
+		/**
+		 * @todo https://www.php.net/manual/en/class.arrayobject.php#118872
+		 * Add callable method with injecting other instances
+		 */
+//		codecept_debug( $node->myMethod() );
+////		codecept_debug( $anotherConfig->myMethod() );
+//		codecept_debug( $method = $anotherConfig->myMethod );
+//		codecept_debug( $method() );
+//		codecept_debug( $anotherConfig->property );
+
+		/**
+		 * @todo https://www.php.net/manual/en/class.arrayobject.php#123572
+		 * Maybe add recursion?
+		 */
+    }
+
+	/**
+	 * @test
+	 */
+	public function it_shoud_return_array() {
+		$config = new Config( $this->config_arr );
+		$this->assertIsArray( $config->toArray() );
+		foreach ( $this->config_arr as $key => $value ) {
+			$this->assertArrayHasKey( $key, $config->toArray() );
+		}
+    }
+
+	/**
+	 * @test
+	 */
+	public function it_shoud_return_valid_json() {
+		$config = new Config( $this->config_arr );
+		$this->assertJson( $config->toJson() );
+		foreach ( $this->config_arr as $key => $value ) {
+			$this->assertStringContainsString( $key, $config->toJson() );
+		}
+		$this->assertEquals( \json_encode( $this->config_arr ), $config->toJson() );
+    }
+
+	/**
+	 * @test
+	 */
+	public function it_shoud_call_builtin_array_functions() {
+		$keys = \array_keys( $this->config_arr );
+
+		$config = new Config( $this->config_arr );
+		$this->assertEquals( $keys, $config->array_keys() );
+    }
+
+	/**
+	 * @test
+	 */
+	public function it_shoud_search_subkeys() {
+
+		$arr = [
+			'key'	=> [
+				'subKey'	=> 'subvalue',
+				'subSubKey'	=> [
+					'subSubKeyKey'	=> 'subSubValue'
+				],
+			],
+		];
+
+		$config = new Config( $arr );
+
+		$this->assertTrue( $config->has( 'key.subKey' ) );
+		$this->assertNotTrue( $config->has( 'key.subKeyfgsfg' ) );
+		$this->assertTrue( $config->has( 'key.subSubKey.subSubKeyKey' ) );
+
+		$this->assertEquals( $arr['key']['subKey'], $config->get( 'key.subKey' ), '' );
+		$this->assertEquals( $arr['key']['subSubKey'], $config->get( 'key.subSubKey' ), '' );
+		$this->assertEquals( $arr['key']['subSubKey']['subSubKeyKey'], $config->get( 'key.subSubKey.subSubKeyKey' ), '' );
+		$this->assertEquals( 'subSubValue', $config->get( 'key.subSubKey.subSubKeyKey' ), '' );
+	}
+
+	/**
+	 * @test
+	 */
+	public function it_shoud_have_callable_in_collection() {
+
+		$arr = [
+			'key'	=> function () {
+				return 'Ciao';
+			},
+		];
+
+		$config = new Config( $arr );
+		$this->assertIsCallable( $config->get( 'key' ) );
+		$callable = $config->get( 'key' );
+		$this->assertStringContainsString( 'Ciao', $callable() );
+	}
 }

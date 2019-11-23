@@ -2,10 +2,9 @@
 /**
  * Config Class that handle the classes configuration
  *
- * @deprecated
+ *
  * @package ItalyStrap\Config
  */
-
 declare(strict_types=1);
 
 namespace ItalyStrap\Config;
@@ -13,7 +12,7 @@ namespace ItalyStrap\Config;
 /**
  * Config Class
  */
-class Config_Factory {
+class ConfigFactory {
 
 	/**
 	 * Load and return the Config object.
@@ -25,7 +24,7 @@ class Config_Factory {
 	 *
 	 * @return Config Returns the Config object
 	 */
-	public static function make( $config = [], $defaults = [] ) : Config {
-		return ConfigFactory::make( $config, $defaults );
+	public static function make( $config = [], $defaults = [] ): Config {
+		return new Config( $config, $defaults );
 	}
 }

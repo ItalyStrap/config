@@ -2,7 +2,7 @@
     "name": "italystrap/config",
     "description": "ItalyStrap configuration class for easily config object",
     "type": "library",
-    "license": "GPL-2.0-or-later",
+    "license": "MIT",
     "authors": [
         {
             "name": "overclokk",
@@ -11,17 +11,17 @@
     ],
     "autoload": {
         "psr-4": {
-            "ItalyStrap\\Config\\": "src/Config/"
+            "ItalyStrap\\": "src/"
         }
     },
     "minimum-stability": "stable",
     "require": {
-        "php" : ">=7.0"
+        "php" : ">=7.2"
     },
     "require-dev": {
         "lucatume/wp-browser": "~2.0",
-        "brightnucleus/config": "^0.4.10",
-        "wpfulcrum/config": "^3.0",
+        "brightnucleus/config": "*",
+        "wpfulcrum/config": "*",
         "italystrap/debug": "^2.0"
     }
 }
