@@ -14,9 +14,8 @@ use BadMethodCallException;
 /**
  * Config Class
  *
- * @todo Maybe some ideas: https://github.com/clean/data/blob/master/src/Collection.php
- * @todo Maybe some ideas: https://github.com/Radiergummi/libconfig/blob/master/src/Libconfig/Config.php
- * @todo Maybe some ideas: https://github.com/balambasik/input/blob/master/src/Input.php
+ * @todo Maybe some ideas iterator: https://github.com/clean/data/blob/master/src/Collection.php
+ * @todo Maybe some ideas json to array: https://github.com/Radiergummi/libconfig/blob/master/src/Libconfig/Config.php
  * @todo Maybe some ideas: https://www.simonholywell.com/post/2017/04/php-and-immutability-part-two/
  */
 class Config extends ArrayObject implements ConfigInterface {
@@ -167,6 +166,8 @@ class Config extends ArrayObject implements ConfigInterface {
 
 	/**
 	 * @todo In future move this method to its own class
+	 *
+	 * @link https://github.com/balambasik/input/blob/master/src/Input.php
 	 *
 	 * @param $array
 	 * @param $key
