@@ -1,10 +1,10 @@
 # ItalyStrap Config API
 
-[![Build Status](https://travis-ci.org/italystrap/config.svg?branch=master)](https://travis-ci.org/ItalyStrap/cleaner)
-[![Latest Stable Version](https://img.shields.io/packagist/v/italystrap/config.svg)](https://packagist.org/packages/italystrap/cleaner)
-[![Total Downloads](https://img.shields.io/packagist/dt/italystrap/config.svg)](https://packagist.org/packages/italystrap/cleaner)
-[![Latest Unstable Version](https://img.shields.io/packagist/vpre/italystrap/config.svg)](https://packagist.org/packages/italystrap/cleaner)
-[![License](https://img.shields.io/packagist/l/italystrap/config.svg)](https://packagist.org/packages/italystrap/cleaner)
+[![Build Status](https://travis-ci.org/italystrap/config.svg?branch=master)](https://travis-ci.org/ItalyStrap/config)
+[![Latest Stable Version](https://img.shields.io/packagist/v/italystrap/config.svg)](https://packagist.org/packages/italystrap/config)
+[![Total Downloads](https://img.shields.io/packagist/dt/italystrap/config.svg)](https://packagist.org/packages/italystrap/config)
+[![Latest Unstable Version](https://img.shields.io/packagist/vpre/italystrap/config.svg)](https://packagist.org/packages/italystrap/config)
+[![License](https://img.shields.io/packagist/l/italystrap/config.svg)](https://packagist.org/packages/italystrap/config)
 ![PHP from Packagist](https://img.shields.io/packagist/php-v/italystrap/config)
 
 ItalyStrap Config Module - a simple and useful configuration package the OOP way
@@ -41,7 +41,7 @@ All feedback / bug reports / pull requests are welcome.
 
 Copyright (c) 2019 Enea Overclokk, ItalyStrap
 
-This code is licensed under the [GPL-2.0 or later](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html).
+This code is licensed under the [MIT](LICENSE).
 
 ## Credits
 

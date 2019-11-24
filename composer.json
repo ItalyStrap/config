@@ -1,6 +1,6 @@
 {
     "name": "italystrap/config",
-    "description": "ItalyStrap configuration class for easily config object",
+    "description": "ItalyStrap Config Module - a simple and useful configuration package the OOP way",
     "type": "library",
     "license": "MIT",
     "authors": [
