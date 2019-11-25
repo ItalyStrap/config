@@ -33,8 +33,7 @@ declare(strict_types=1);
 
 require( __DIR__ . '/vendor/autoload.php' );
 
-use \ItalyStrap\Config\Config;
-use \ItalyStrap\Config\Config_Factory;
+use ItalyStrap\Config\{Config, ConfigFactory};
 
 // $config = Config_Factory::make( [ 'test' => 'value' ], [ 'test' => null ] );
 //
@@ -42,7 +41,7 @@ use \ItalyStrap\Config\Config_Factory;
 // ddd( $config->test );
 
 add_action( 'wp_footer', function () {
-	$config = Config_Factory::make( [ 'test' => 'value', 'test2' => 'value2' ], [ 'test' => null ] );
+	$config = ConfigFactory::make( [ 'test' => 'value', 'test2' => 'value2' ], [ 'test' => null ] );
 
 //	d( $config->all() );
 //

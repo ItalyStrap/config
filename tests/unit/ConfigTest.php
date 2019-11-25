@@ -49,24 +49,29 @@ class ConfigTest extends \Codeception\Test\Unit
     public function it_should_be_instantiatable()
     {
         $config = new Config();
-        $this->assertInstanceOf( '\ItalyStrap\Config\Config', $config );
-        $this->assertInstanceOf( '\ItalyStrap\Config\Config_Interface', $config );
+        $this->assertInstanceOf( ItalyStrap\Config\Config::class, $config );
+        $this->assertInstanceOf( ItalyStrap\Config\Config_Interface::class, $config );
+        $this->assertInstanceOf( ItalyStrap\Config\ConfigInterface::class, $config );
 
         $config = new Config( [] );
-        $this->assertInstanceOf( '\ItalyStrap\Config\Config', $config );
-        $this->assertInstanceOf( '\ItalyStrap\Config\Config_Interface', $config );
+        $this->assertInstanceOf( ItalyStrap\Config\Config::class, $config );
+        $this->assertInstanceOf( ItalyStrap\Config\Config_Interface::class, $config );
+        $this->assertInstanceOf( ItalyStrap\Config\ConfigInterface::class, $config );
 
         $config = new Config( [], [] );
-        $this->assertInstanceOf( '\ItalyStrap\Config\Config', $config );
-        $this->assertInstanceOf( '\ItalyStrap\Config\Config_Interface', $config );
+        $this->assertInstanceOf( ItalyStrap\Config\Config::class, $config );
+        $this->assertInstanceOf( ItalyStrap\Config\Config_Interface::class, $config );
+        $this->assertInstanceOf( ItalyStrap\Config\ConfigInterface::class, $config );
 
         $config = new Config( $this->config_arr );
-        $this->assertInstanceOf( '\ItalyStrap\Config\Config', $config );
-        $this->assertInstanceOf( '\ItalyStrap\Config\Config_Interface', $config );
+        $this->assertInstanceOf( ItalyStrap\Config\Config::class, $config );
+        $this->assertInstanceOf( ItalyStrap\Config\Config_Interface::class, $config );
+        $this->assertInstanceOf( ItalyStrap\Config\ConfigInterface::class, $config );
 
         $config = new Config( $this->config_arr, $this->default_arr );
-        $this->assertInstanceOf( '\ItalyStrap\Config\Config', $config );
-        $this->assertInstanceOf( '\ItalyStrap\Config\Config_Interface', $config );
+        $this->assertInstanceOf( ItalyStrap\Config\Config::class, $config );
+        $this->assertInstanceOf( ItalyStrap\Config\Config_Interface::class, $config );
+        $this->assertInstanceOf( ItalyStrap\Config\ConfigInterface::class, $config );
     }
 
     /**

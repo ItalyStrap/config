@@ -27,11 +27,18 @@ composer require italystrap/config
 
 ## Basic Usage
 
-> TODO
+```php
+use ItalyStrap\Config\Config;
+
+$config = new Config( $configObjOrArrayOptional, $configDefaultOptional );
+
+$value = $config->get( 'key', $optionalDefaultValue ); 
+
+```
 
 ## Advanced Usage
 
-> TODO
+You can see more advanced example in the tests folder.
 
 ## Contributing
 
