@@ -465,4 +465,25 @@ class ConfigTest extends \Codeception\Test\Unit
 		$callable = $config->get( 'key' );
 		$this->assertStringContainsString( 'Ciao', $callable() );
 	}
+
+	/**
+	 * @test
+	 */
+//	public function it_shoud_execute_callable_from_collection() {
+//
+//		$arr = [
+//			'key'	=> function ( $arg ) {
+//				return $arg;
+//			},
+//		];
+//
+//		$config = new Config( $arr );
+//		$this->assertIsCallable( $config->get( 'key' ) );
+//
+//		codecept_debug( $config->key( 'ciao' ) );
+//
+//
+////		$callable = $config->get( 'key' );
+////		$this->assertStringContainsString( 'Ciao', $callable() );
+//	}
 }

@@ -19,7 +19,7 @@ class FilteredConfig extends Config
 	 * @return mixed|null Null if option not exists or its value is actually null.
 	 */
 	public function get( string $key, $default = null ) {
-		return apply_filters(
+		return \apply_filters(
 			$this->filterName( $key ),
 			parent::get( $key, $default )
 		);
