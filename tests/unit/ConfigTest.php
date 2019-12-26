@@ -107,6 +107,39 @@ class ConfigTest extends \Codeception\Test\Unit
 
     /**
      * @test
+     * it should have key
+     */
+    public function it_should_reset_default_member_on_every_call_and_only_return_value_if_exist()
+    {
+        $config = new Config( [ 'key' => 'value' ] );
+		$this->assertFalse( $config->has( 'some-key' ) );
+		$this->assertFalse( $config->has( 'some-key' ) );
+		$this->assertStringContainsString(
+			\strval( $config->get( 'some-key', 'default value' ) ),
+			'default value',
+			''
+		);
+		$this->assertFalse( $config->has( 'some-key' ) );
+		$this->assertStringContainsString(
+			\strval( $config->get( 'some-key', 'other default value' ) ),
+			'other default value',
+			''
+		);
+
+		$this->assertFalse( $config->has( 'some-key' ) );
+		$this->assertEmpty( $config->get( 'some-key' ), '' );
+
+		$this->assertStringContainsString(
+			\strval( $config->get( 'some-key', 'other default value' ) ),
+			'other default value',
+			''
+		);
+		$this->assertEmpty( $config->get( 'some-key' ), '' );
+		$this->assertFalse( $config->has( 'some-key' ) );
+    }
+
+    /**
+     * @test
      * it should get_key
      */
     public function it_should_get_key()
@@ -416,12 +449,12 @@ class ConfigTest extends \Codeception\Test\Unit
 	/**
 	 * @test
 	 */
-	public function it_shoud_call_builtin_array_functions() {
-		$keys = \array_keys( $this->config_arr );
-
-		$config = new Config( $this->config_arr );
-		$this->assertEquals( $keys, $config->array_keys() );
-    }
+//	public function it_shoud_call_builtin_array_functions() {
+//		$keys = \array_keys( $this->config_arr );
+//
+//		$config = new Config( $this->config_arr );
+//		$this->assertEquals( $keys, $config->array_keys() );
+//    }
 
 	/**
 	 * @test
@@ -447,6 +480,25 @@ class ConfigTest extends \Codeception\Test\Unit
 		$this->assertEquals( $arr['key']['subSubKey'], $config->get( 'key.subSubKey' ), '' );
 		$this->assertEquals( $arr['key']['subSubKey']['subSubKeyKey'], $config->get( 'key.subSubKey.subSubKeyKey' ), '' );
 		$this->assertEquals( 'subSubValue', $config->get( 'key.subSubKey.subSubKeyKey' ), '' );
+	}
+
+	/**
+	 * @test
+	 */
+	public function it_should_clone_have_empty_value() {
+		$arr = [ 'key'	=> 'value' ];
+		$config = new Config( $arr );
+
+		$this->assertStringContainsString( \strval( $config->get( 'key' ) ), $arr['key'], '' );
+		$this->assertTrue( $config->has( 'key' ), '' );
+		$this->assertNotEmpty( $config->get( 'key' ), '' );
+
+		$clone = clone $config;
+
+		$this->assertFalse( $clone->has( 'key' ), '' );
+		$this->assertEmpty( $clone->get( 'key' ), '' );
+
+		$this->assertNotSame( $config, $clone, '' );
 	}
 
 	/**

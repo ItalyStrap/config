@@ -28,12 +28,12 @@ class Config extends ArrayObject implements ConfigInterface {
 	private $storage = [];
 
 	/**
-	 * @var
+	 * @var array
 	 */
-	private $temp;
+	private $temp = [];
 
 	/**
-	 * @var
+	 * @var mixed
 	 */
 	private $default;
 
@@ -68,7 +68,7 @@ class Config extends ArrayObject implements ConfigInterface {
 		$this->default = $default;
 
 		if ( ! $this->has( $key ) ) {
-			return $this->default;
+			return $default;
 		}
 
 		// The class::temp variable is always setted by the class::has() method
@@ -80,6 +80,7 @@ class Config extends ArrayObject implements ConfigInterface {
 	 */
 	public function has( string $key ) : bool {
 		$this->temp = $this->search( $this->storage, $key, $this->default );
+		$this->default = null;
 		return isset( $this->temp );
 	}
 
@@ -149,28 +150,36 @@ class Config extends ArrayObject implements ConfigInterface {
 	}
 
 	/**
+	 *
+	 */
+	public function __clone() {
+		$this->storage = [];
+		parent::exchangeArray( $this->storage );
+	}
+
+	/**
 	 * @link https://www.php.net/manual/en/class.arrayobject.php#107079
 	 *
 	 * @param $func
 	 * @param $argv
 	 * @return mixed
 	 */
-	public function __call( $func, $argv ) {
-
-		if ( \array_key_exists( $func, $this->storage ) && \is_callable( $this->storage[ $func ] ) ) {
-			codecept_debug( $argv );
-			$new_func = function ( ...$argv ) use ( $func ) {
-				return $func( $argv );
-			};
-			return \call_user_func_array( $new_func, $argv );
-		}
-
-		if ( ! \is_callable( $func ) || \substr( $func, 0, 6 ) !== 'array_' ) {
-			throw new BadMethodCallException(__CLASS__ . '->' . $func );
-		}
-
-		return \call_user_func_array( $func, \array_merge( [ $this->getArrayCopy() ], $argv ) );
-	}
+//	public function __call( $func, $argv ) {
+//
+//		if ( \array_key_exists( $func, $this->storage ) && \is_callable( $this->storage[ $func ] ) ) {
+//			codecept_debug( $argv );
+//			$new_func = function ( ...$argv ) use ( $func ) {
+//				return $func( $argv );
+//			};
+//			return \call_user_func_array( $new_func, $argv );
+//		}
+//
+//		if ( ! \is_callable( $func ) || \substr( $func, 0, 6 ) !== 'array_' ) {
+//			throw new BadMethodCallException(__CLASS__ . '->' . $func );
+//		}
+//
+//		return \call_user_func_array( $func, \array_merge( [ $this->getArrayCopy() ], $argv ) );
+//	}
 
 	/**
 	 * @todo In future move this method to its own class
