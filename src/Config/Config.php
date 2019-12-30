@@ -209,4 +209,11 @@ class Config extends ArrayObject implements ConfigInterface {
 
 		return $array ?? $default;
 	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function count() {
+		return parent::count();
+	}
 }
