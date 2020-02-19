@@ -18,12 +18,13 @@ class FilteredConfig extends Config
 	 *
 	 * @return mixed|null Null if option not exists or its value is actually null.
 	 */
-	public function get( string $key, $default = null ) {
-		return \apply_filters(
-			$this->filterName( $key ),
-			parent::get( $key, $default )
-		);
-	}
+//	public function get( $key, $default = null ) {
+//		return \apply_filters(
+//			$this->filterName( $key ),
+//			parent::get( $key, $default )
+//		);
+//	}
+
 	/**
 	 * Normalize option name and key to snake_case filter tag.
 	 *
@@ -32,7 +33,7 @@ class FilteredConfig extends Config
 	 *
 	 * @return string
 	 */
-	private function filterName( string $default ): string {
-		return \strtolower( $default );
-	}
+//	private function filterName( string $default ): string {
+//		return \strtolower( $default );
+//	}
 }

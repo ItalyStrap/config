@@ -27,7 +27,7 @@ interface ConfigInterface extends Config_Interface, \ArrayAccess, \IteratorAggre
 	 * @param  mixed   $default
 	 * @return mixed
 	 */
-	public function get( string $parameter_key, $default = null );
+	public function get( $parameter_key, $default = null );
 
 	/**
 	 * Determine if the given configuration value exists.
@@ -35,7 +35,7 @@ interface ConfigInterface extends Config_Interface, \ArrayAccess, \IteratorAggre
 	 * @param  string  $parameter_key
 	 * @return bool
 	 */
-	public function has( string $parameter_key ): bool ;
+	public function has( $parameter_key ): bool ;
 
 	/**
 	 * Add a configuration in via the key

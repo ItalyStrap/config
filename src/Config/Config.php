@@ -14,6 +14,7 @@ use BadMethodCallException;
 /**
  * Config Class
  *
+ * @todo Immutable: https://github.com/jkoudys/immutable.php
  * @todo Maybe some ideas iterator: https://github.com/clean/data/blob/master/src/Collection.php
  * @todo Maybe some ideas json to array: https://github.com/Radiergummi/libconfig/blob/master/src/Libconfig/Config.php
  * @todo Maybe some ideas: https://www.simonholywell.com/post/2017/04/php-and-immutability-part-two/
@@ -64,7 +65,7 @@ class Config extends ArrayObject implements ConfigInterface {
 	/**
 	 * @inheritDoc
 	 */
-	public function get( string $key, $default = null ) {
+	public function get( $key, $default = null ) {
 		$this->default = $default;
 
 		if ( ! $this->has( $key ) ) {
@@ -78,7 +79,10 @@ class Config extends ArrayObject implements ConfigInterface {
 	/**
 	 * @inheritDoc
 	 */
-	public function has( string $key ) : bool {
+	public function has( $key ) : bool {
+
+		$this->assertKeyIsString( $key );
+
 		$this->temp = $this->search( $this->storage, $key, $this->default );
 		$this->default = null;
 		return isset( $this->temp );
@@ -215,5 +219,18 @@ class Config extends ArrayObject implements ConfigInterface {
 	 */
 	public function count() {
 		return parent::count();
+	}
+
+	/**
+	 * @param $key
+	 */
+	private function assertKeyIsString( $key ): void {
+		if ( !\is_string( $key ) ) {
+			throw new \TypeError( \sprintf(
+				'The argument type for %s must be a string, %s given.',
+				\get_class($this) . '::has()',
+				\gettype( $key )
+			) );
+		}
 	}
 }

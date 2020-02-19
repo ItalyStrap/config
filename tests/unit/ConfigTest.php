@@ -95,6 +95,17 @@ class ConfigTest extends \Codeception\Test\Unit
 
     /**
      * @test
+     */
+    public function it_should_thrown_type_error_if_provided_argument_is_not_a_string()
+    {
+
+        $config = new Config( $this->config_arr );
+        $this->expectException(TypeError::class);
+		$config->has( 1 );
+    }
+
+    /**
+     * @test
      * it should have key
      */
     public function it_should_have_and_get_key()
