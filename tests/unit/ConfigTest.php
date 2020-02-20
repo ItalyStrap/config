@@ -42,36 +42,46 @@ class ConfigTest extends \Codeception\Test\Unit
         $this->assertFileExists( $this->empty_file_name );
     }
 
+	private function getInstance( $val = [], $default = [] ) {
+		$sut = new Config($val, $default);
+		$this->assertInstanceOf( ItalyStrap\Config\Config::class, $sut );
+		$this->assertInstanceOf( ItalyStrap\Config\Config_Interface::class, $sut );
+		$this->assertInstanceOf( ItalyStrap\Config\ConfigInterface::class, $sut );
+		return $sut;
+    }
+
+	public function valueProvider() {
+		return [
+			'empty values'	=> [
+				false,
+				false
+			],
+			'one value'	=> [
+				[],
+				false
+			],
+			'two values'	=> [
+				[],
+				[]
+			],
+			'one array'	=> [
+				$this->config_arr,
+				false
+			],
+			'two array the second is the default'	=> [
+				$this->config_arr,
+				$this->default_arr
+			],
+		];
+    }
+
     /**
      * @test
-     * it should be instantiatable
+     * @dataProvider valueProvider()
      */
-    public function it_should_be_instantiatable()
+    public function it_should_be_instantiatable_with( $value, $default )
     {
-        $config = new Config();
-        $this->assertInstanceOf( ItalyStrap\Config\Config::class, $config );
-        $this->assertInstanceOf( ItalyStrap\Config\Config_Interface::class, $config );
-        $this->assertInstanceOf( ItalyStrap\Config\ConfigInterface::class, $config );
-
-        $config = new Config( [] );
-        $this->assertInstanceOf( ItalyStrap\Config\Config::class, $config );
-        $this->assertInstanceOf( ItalyStrap\Config\Config_Interface::class, $config );
-        $this->assertInstanceOf( ItalyStrap\Config\ConfigInterface::class, $config );
-
-        $config = new Config( [], [] );
-        $this->assertInstanceOf( ItalyStrap\Config\Config::class, $config );
-        $this->assertInstanceOf( ItalyStrap\Config\Config_Interface::class, $config );
-        $this->assertInstanceOf( ItalyStrap\Config\ConfigInterface::class, $config );
-
-        $config = new Config( $this->config_arr );
-        $this->assertInstanceOf( ItalyStrap\Config\Config::class, $config );
-        $this->assertInstanceOf( ItalyStrap\Config\Config_Interface::class, $config );
-        $this->assertInstanceOf( ItalyStrap\Config\ConfigInterface::class, $config );
-
-        $config = new Config( $this->config_arr, $this->default_arr );
-        $this->assertInstanceOf( ItalyStrap\Config\Config::class, $config );
-        $this->assertInstanceOf( ItalyStrap\Config\Config_Interface::class, $config );
-        $this->assertInstanceOf( ItalyStrap\Config\ConfigInterface::class, $config );
+		$sut = $this->getInstance( $value, $default );
     }
 
     /**
@@ -89,8 +99,43 @@ class ConfigTest extends \Codeception\Test\Unit
 
         $this->assertFalse( $config->has( 'cesare' ) );
         $this->assertFalse( $config->has( 'cesarergserg' ) );
+    }
 
-        return $config;
+	public function keyTypeProvider() {
+		return [
+			'int'	=> [
+				1, "a"
+			],
+			'string int'	=> [
+				"1", "b"
+			],
+//			'float'	=> [
+//				1.5,"c"
+//			],
+//			'bool'	=> [
+//				true,"d"
+//			],
+		];
+    }
+
+    /**
+     * @test
+     * @dataProvider keyTypeProvider()
+	 */
+    public function it_should_have_key_with( $key, $value )
+    {
+
+        $config = $this->getInstance([
+			$key	=> $value
+		]);
+
+        $this->assertTrue( $config->has( $key ) );
+
+        $expected = $value;
+        /** @var string $actual */
+        $actual = $config->get($key);
+
+        $this->assertStringMatchesFormat($expected, $actual, '');
     }
 
     /**
@@ -99,7 +144,7 @@ class ConfigTest extends \Codeception\Test\Unit
      */
     public function it_should_have_and_get_key()
     {
-        $config = $this->it_should_have_key();
+		$config = new Config( $this->config_arr );
 		$this->assertTrue( $config->has( 'sempronio' ) );
 		$this->assertIsArray( $config->get( 'recursive' ) );
 		$this->assertArrayHasKey( 'subKey', $config->get( 'recursive' ) );
@@ -320,7 +365,7 @@ class ConfigTest extends \Codeception\Test\Unit
         $config[2] = 'value';
         $this->assertTrue( $config->has('2') );
 
-        $config->push( '0', $expected );
+        $config->add( '0', $expected );
         $this->assertEquals( $expected, $config->get( '0' ) );
     }
 

@@ -188,7 +188,7 @@ class Config extends ArrayObject implements ConfigInterface {
 	 */
 	private static function search( $array, $key, $default = null ) {
 
-		if ( \strripos( $key, self::$delimiter ) === false ) {
+		if ( \is_int($key) || \strripos( $key, self::$delimiter ) === false ) {
 			return \array_key_exists( $key, $array ) ? $array[ $key ] : $default;
 		}
 
