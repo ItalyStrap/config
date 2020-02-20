@@ -1,15 +1,9 @@
 <?php
-/**
- * Config Class that handle the classes configuration
- *
- * @package ItalyStrap\Config
- */
 declare(strict_types=1);
 
 namespace ItalyStrap\Config;
 
 use ArrayObject;
-use BadMethodCallException;
 
 /**
  * Config Class
@@ -58,7 +52,7 @@ class Config extends ArrayObject implements ConfigInterface {
 	/**
 	 * @inheritDoc
 	 */
-	public function all() : array {
+	public function all(): array {
 		return $this->getArrayCopy();
 	}
 
@@ -79,10 +73,7 @@ class Config extends ArrayObject implements ConfigInterface {
 	/**
 	 * @inheritDoc
 	 */
-	public function has( $key ) : bool {
-
-		$this->assertKeyIsString( $key );
-
+	public function has( $key ): bool {
 		$this->temp = $this->search( $this->storage, $key, $this->default );
 		$this->default = null;
 		return isset( $this->temp );
@@ -107,7 +98,7 @@ class Config extends ArrayObject implements ConfigInterface {
 	/**
 	 * @inheritDoc
 	 */
-	public function remove( ...$with_keys ): self {
+	public function remove( ...$with_keys ): ConfigInterface {
 
 		foreach ( $with_keys as $keys ) {
 			foreach ( (array) $keys as $k ) {
@@ -122,7 +113,7 @@ class Config extends ArrayObject implements ConfigInterface {
 	/**
 	 * @inheritDoc
 	 */
-	public function merge( ...$array_to_merge ): Config {
+	public function merge( ...$array_to_merge ): ConfigInterface {
 
 		foreach ( $array_to_merge as $key => $arr ) {
 
@@ -219,18 +210,5 @@ class Config extends ArrayObject implements ConfigInterface {
 	 */
 	public function count() {
 		return parent::count();
-	}
-
-	/**
-	 * @param $key
-	 */
-	private function assertKeyIsString( $key ): void {
-		if ( !\is_string( $key ) ) {
-			throw new \TypeError( \sprintf(
-				'The argument type for %s must be a string, %s given.',
-				\get_class($this) . '::has()',
-				\gettype( $key )
-			) );
-		}
 	}
 }

@@ -52,7 +52,7 @@ interface ConfigInterface extends Config_Interface, \ArrayAccess, \IteratorAggre
 	 * @since 2.0.0
 	 *
 	 * @param  mixed ...$with_keys
-	 * @return self
+	 * @return ConfigInterface
 	 */
 	public function remove( ...$with_keys );
 
