@@ -1,12 +1,13 @@
 <?php
 declare(strict_types=1);
 
+use Codeception\Test\Unit;
 use \ItalyStrap\Config\Config;
 
-class ConfigTest extends \Codeception\Test\Unit
+class ConfigTest extends Unit
 {
     /**
-     * @var \UnitTester
+     * @var UnitTester
      */
     protected $tester;
     protected $config_file_name;
@@ -160,13 +161,13 @@ class ConfigTest extends \Codeception\Test\Unit
 		$this->assertFalse( $config->has( 'some-key' ) );
 		$this->assertFalse( $config->has( 'some-key' ) );
 		$this->assertStringContainsString(
-			\strval( $config->get( 'some-key', 'default value' ) ),
+			strval( $config->get( 'some-key', 'default value' ) ),
 			'default value',
 			''
 		);
 		$this->assertFalse( $config->has( 'some-key' ) );
 		$this->assertStringContainsString(
-			\strval( $config->get( 'some-key', 'other default value' ) ),
+			strval( $config->get( 'some-key', 'other default value' ) ),
 			'other default value',
 			''
 		);
@@ -175,7 +176,7 @@ class ConfigTest extends \Codeception\Test\Unit
 		$this->assertEmpty( $config->get( 'some-key' ), '' );
 
 		$this->assertStringContainsString(
-			\strval( $config->get( 'some-key', 'other default value' ) ),
+			strval( $config->get( 'some-key', 'other default value' ) ),
 			'other default value',
 			''
 		);
@@ -376,7 +377,7 @@ class ConfigTest extends \Codeception\Test\Unit
 		$arr1 = [ 'key' => 'Ciao' ];
 		$arr2 = [ 'otherKey'	=> 'Ariciao' ];
 
-		$arrMerged = \array_replace_recursive( $arr1, $arr2 );
+		$arrMerged = array_replace_recursive( $arr1, $arr2 );
 
 
 		$config = new Config( $arr1 );
@@ -408,7 +409,7 @@ class ConfigTest extends \Codeception\Test\Unit
 
 		$config = new Config( $this->config_arr );
 
-		$this->assertCount( \count( $this->config_arr ), $config );
+		$this->assertCount( count( $this->config_arr ), $config );
     }
 
 	/**
@@ -435,7 +436,7 @@ class ConfigTest extends \Codeception\Test\Unit
 		$this->assertArrayHasKey( 'recipe2', $newconfig->all() );
 		$this->assertArrayHasKey( 'recipe2', $newconfig );
 
-		$stdobj = new \stdClass();
+		$stdobj = new stdClass();
 		$stdobj->var = 'Value';
 
 		$anotherConfig = new Config( $stdobj );
@@ -488,7 +489,7 @@ class ConfigTest extends \Codeception\Test\Unit
 		foreach ( $this->config_arr as $key => $value ) {
 			$this->assertStringContainsString( $key, $config->toJson() );
 		}
-		$this->assertEquals( \json_encode( $this->config_arr ), $config->toJson() );
+		$this->assertEquals( json_encode( $this->config_arr ), $config->toJson() );
     }
 
 	/**
@@ -534,7 +535,7 @@ class ConfigTest extends \Codeception\Test\Unit
 		$arr = [ 'key'	=> 'value' ];
 		$config = new Config( $arr );
 
-		$this->assertStringContainsString( \strval( $config->get( 'key' ) ), $arr['key'], '' );
+		$this->assertStringContainsString( strval( $config->get( 'key' ) ), $arr['key'], '' );
 		$this->assertTrue( $config->has( 'key' ), '' );
 		$this->assertNotEmpty( $config->get( 'key' ), '' );
 

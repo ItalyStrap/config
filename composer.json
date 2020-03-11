@@ -12,7 +12,10 @@
     "autoload": {
         "psr-4": {
             "ItalyStrap\\": "src/"
-        }
+        },
+        "files": [
+            "classname-bc-aliases.php"
+        ]
     },
     "minimum-stability": "stable",
     "require": {
@@ -20,8 +23,8 @@
     },
     "require-dev": {
         "lucatume/wp-browser": "~2.0",
-        "brightnucleus/config": "*",
-        "wpfulcrum/config": "*",
+        "brightnucleus/config": "0.4.*",
+        "wpfulcrum/config": "3.0.*",
         "italystrap/debug": "^2.0",
         "phpunit/php-code-coverage": "^7.0"
     }

@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace ItalyStrap\Config;
 
-interface ConfigInterface extends Config_Interface, \ArrayAccess, \IteratorAggregate, \Countable
+interface ConfigInterface extends \ArrayAccess, \IteratorAggregate, \Countable
 {
 
 	/**
