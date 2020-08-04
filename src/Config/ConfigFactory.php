@@ -17,9 +17,9 @@ class ConfigFactory {
 	/**
 	 * Load and return the Config object.
 	 *
-	 * @param  string|array $config   File path and filename to the config array; or it is the
+	 * @param  array $config   File path and filename to the config array; or it is the
 	 *                                configuration array.
-	 * @param  string|array $defaults Specify a defaults array, which is then merged together
+	 * @param  array $defaults Specify a defaults array, which is then merged together
 	 *                                with the initial config array before creating the object.
 	 *
 	 * @return Config Returns the Config object

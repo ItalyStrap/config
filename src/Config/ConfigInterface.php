@@ -10,15 +10,15 @@ declare(strict_types=1);
 
 namespace ItalyStrap\Config;
 
-interface ConfigInterface extends \ArrayAccess, \IteratorAggregate, \Countable
-{
+interface ConfigInterface extends \ArrayAccess, \IteratorAggregate, \Countable {
+
 
 	/**
 	 * Retrieves all of the runtime configuration parameters
 	 *
 	 * @return array
 	 */
-	public function all(): array ;
+	public function all(): array;
 
 	/**
 	 * Get the specified configuration value.
@@ -35,14 +35,14 @@ interface ConfigInterface extends \ArrayAccess, \IteratorAggregate, \Countable
 	 * @param  string  $parameter_key
 	 * @return bool
 	 */
-	public function has( $parameter_key ): bool ;
+	public function has( $parameter_key ): bool;
 
 	/**
 	 * Add a configuration in via the key
 	 *
 	 * @param string|int $parameter_key Key to be assigned, which also becomes the property
 	 * @param mixed $value Value to be assigned to the parameter key
-	 * @return null
+	 * @return ConfigInterface
 	 */
 	public function add( $parameter_key, $value );
 
@@ -62,7 +62,7 @@ interface ConfigInterface extends \ArrayAccess, \IteratorAggregate, \Countable
 	 * @since 1.1.0
 	 *
 	 * @param array ...$array_to_merge
-	 * @return null
+	 * @return ConfigInterface
 	 */
 	public function merge( ...$array_to_merge );
 
@@ -71,13 +71,12 @@ interface ConfigInterface extends \ArrayAccess, \IteratorAggregate, \Countable
 	 *
 	 * @return array
 	 */
-	public function toArray(): array ;
+	public function toArray(): array;
 
 	/**
 	 * Return a Json object of items
 	 *
 	 * @return string
 	 */
-	public function toJson(): string ;
-
+	public function toJson(): string;
 }

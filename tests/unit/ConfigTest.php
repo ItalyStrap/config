@@ -4,29 +4,26 @@ declare(strict_types=1);
 namespace ItalyStrap\Tests;
 
 use ArrayIterator;
-use Codeception\Test\Unit;
 use \ItalyStrap\Config\Config;
 use ItalyStrap\Config\Config_Interface;
+use ItalyStrap\Config\ConfigFactory;
 use ItalyStrap\Config\ConfigInterface;
 use stdClass;
-use UnitTester;
 use function array_replace_recursive;
 use function is_array;
 use function json_encode;
-
+// phpcs:ignoreFile
 require_once 'BaseConfig.php';
 
-class ConfigTest extends BaseConfig
-{
-    protected function _before()
-    {
-		parent::_before();
-    }
+class ConfigTest extends BaseConfig {
 
-    protected function _after()
-    {
-    	parent::_after();
-    }
+	protected function _before() {
+		parent::_before();
+	}
+
+	protected function _after() {
+		parent::_after();
+	}
 
 	/**
 	 * @inheritDoc
@@ -37,24 +34,57 @@ class ConfigTest extends BaseConfig
 		$this->assertInstanceOf( Config_Interface::class, $sut );
 		$this->assertInstanceOf( ConfigInterface::class, $sut );
 		return $sut;
-    }
+	}
 
-    /**
-     * @test
-     * it should have key
-     */
-    public function it_should_have_key()
-    {
+	/**
+	 * @test
+	 */
+	public function factory() {
+		$sut = ConfigFactory::make([]);
+		$this->assertInstanceOf( Config::class, $sut );
+		$this->assertInstanceOf( Config_Interface::class, $sut );
+		$this->assertInstanceOf( ConfigInterface::class, $sut );
+	}
 
-        $config = $this->getInstance( $this->config_arr );
+	/**
+	 * @test
+	 */
+	public function offSetMethods() {
+		$sut = $this->getInstance();
+		$sut->offsetSet('key', 42);
+		$this->assertTrue($sut->offsetExists('key'), '');
+		$this->assertSame( $sut->offsetGet('key'), 42, '' );
+		$sut->offsetUnset('key');
+		$this->assertFalse($sut->offsetExists('key'), '');
+	}
 
-        $this->assertTrue( $config->has( 'tizio' ) );
-        $this->assertTrue( $config->has( 'caio' ) );
-        $this->assertTrue( $config->has( 'sempronio' ) );
+	/**
+	 * @test
+	 */
+	public function deprecatedPush() {
+		$sut = $this->getInstance();
+		$sut->push('key', 42);
+		$this->assertTrue($sut->has('key'), '');
+		$this->assertSame( $sut->get('key'), 42, '' );
+		$sut->remove('key');
+		$this->assertFalse($sut->has('key'), '');
+	}
 
-        $this->assertFalse( $config->has( 'cesare' ) );
-        $this->assertFalse( $config->has( 'cesarergserg' ) );
-    }
+	/**
+	 * @test
+	 * it should have key
+	 */
+	public function it_should_have_key() {
+
+		$config = $this->getInstance( $this->config_arr );
+
+		$this->assertTrue( $config->has( 'tizio' ) );
+		$this->assertTrue( $config->has( 'caio' ) );
+		$this->assertTrue( $config->has( 'sempronio' ) );
+
+		$this->assertFalse( $config->has( 'cesare' ) );
+		$this->assertFalse( $config->has( 'cesarergserg' ) );
+	}
 
 	public function keyTypeProvider() {
 		return [
@@ -71,47 +101,44 @@ class ConfigTest extends BaseConfig
 //				true,"d"
 //			],
 		];
-    }
+	}
 
-    /**
-     * @test
-     * @dataProvider keyTypeProvider()
+	/**
+	 * @test
+	 * @dataProvider keyTypeProvider()
 	 */
-    public function it_should_have_key_with( $key, $value )
-    {
+	public function it_should_have_key_with( $key, $value ) {
 
-        $config = $this->getInstance([
+		$config = $this->getInstance([
 			$key	=> $value
 		]);
 
-        $this->assertTrue( $config->has( $key ) );
+		$this->assertTrue( $config->has( $key ) );
 
-        $expected = $value;
-        /** @var string $actual */
-        $actual = $config->get($key);
+		$expected = $value;
+		/** @var string $actual */
+		$actual = $config->get($key);
 
-        $this->assertStringMatchesFormat($expected, $actual, '');
-    }
+		$this->assertStringMatchesFormat($expected, $actual, '');
+	}
 
-    /**
-     * @test
-     * it should have key
-     */
-    public function it_should_have_and_get_key()
-    {
+	/**
+	 * @test
+	 * it should have key
+	 */
+	public function it_should_have_and_get_key() {
 		$config = $this->getInstance( $this->config_arr );
 		$this->assertTrue( $config->has( 'sempronio' ) );
 		$this->assertIsArray( $config->get( 'recursive' ) );
 		$this->assertArrayHasKey( 'subKey', $config->get( 'recursive' ) );
-    }
+	}
 
-    /**
-     * @test
-     * it should have key
-     */
-    public function it_should_reset_default_member_on_every_call_and_only_return_value_if_exist()
-    {
-        $config = $this->getInstance( [ 'key' => 'value' ] );
+	/**
+	 * @test
+	 * it should have key
+	 */
+	public function it_should_reset_default_member_on_every_call_and_only_return_value_if_exist() {
+		$config = $this->getInstance( [ 'key' => 'value' ] );
 		$this->assertFalse( $config->has( 'some-key' ) );
 		$this->assertFalse( $config->has( 'some-key' ) );
 		$this->assertStringContainsString(
@@ -136,64 +163,59 @@ class ConfigTest extends BaseConfig
 		);
 		$this->assertEmpty( $config->get( 'some-key' ), '' );
 		$this->assertFalse( $config->has( 'some-key' ) );
-    }
+	}
 
-    /**
-     * @test
-     * it should get_key
-     */
-    public function it_should_get_key()
-    {
+	/**
+	 * @test
+	 * it should get_key
+	 */
+	public function it_should_get_key() {
 
-        $config = $this->getInstance( $this->config_arr );
+		$config = $this->getInstance( $this->config_arr );
 
-        $this->assertEquals( [], $config->get( 'tizio' ) );
-        $this->assertEquals( [], $config->tizio );
-    }
+		$this->assertEquals( [], $config->get( 'tizio' ) );
+		$this->assertEquals( [], $config->tizio );
+	}
 
-    /**
-     * @test
-     * it should get_key
-     */
-    public function it_should_set_key()
-    {
-        $config = $this->getInstance();
-        $config->var = 'Value';
+	/**
+	 * @test
+	 * it should get_key
+	 */
+	public function it_should_set_key() {
+		$config = $this->getInstance();
+		$config->var = 'Value';
 
-        $this->assertEquals( 'Value', $config->get( 'var' ) );
-        $this->assertEquals( 'Value', $config->var );
-    }
+		$this->assertEquals( 'Value', $config->get( 'var' ) );
+		$this->assertEquals( 'Value', $config->var );
+	}
 
-    /**
-     * @test
-     * it should return_null_if_key_does_not_exists
-     */
-    public function it_should_return_null_if_key_does_not_exists()
-    {
+	/**
+	 * @test
+	 * it should return_null_if_key_does_not_exists
+	 */
+	public function it_should_return_null_if_key_does_not_exists() {
 
-        $config = $this->getInstance( $this->config_arr );
+		$config = $this->getInstance( $this->config_arr );
 
-        $this->assertEquals( null, $config->get( 'noKey' ) );
-    }
+		$this->assertEquals( null, $config->get( 'noKey' ) );
+	}
 
-    /**
-     * @test
-     * it should return_the_given_value_if_key_does_not_exists
-     */
-    public function it_should_return_the_given_value_if_key_does_not_exists()
-    {
+	/**
+	 * @test
+	 * it should return_the_given_value_if_key_does_not_exists
+	 */
+	public function it_should_return_the_given_value_if_key_does_not_exists() {
 
-        $config = $this->getInstance( $this->config_arr );
+		$config = $this->getInstance( $this->config_arr );
 
-        $this->assertEquals( true, $config->get( 'noKey', true ) );
-    }
+		$this->assertEquals( true, $config->get( 'noKey', true ) );
+	}
 
 	/**
 	 * @test
 	 * it should return_an_array
 	 */
-	public function it_should_return_an_array()
-	{
+	public function it_should_return_an_array() {
 
 		$config = $this->getInstance( $this->config_arr );
 
@@ -206,56 +228,51 @@ class ConfigTest extends BaseConfig
 	 * @test
 	 * it should add_new_item
 	 */
-	public function it_should_add_new_item()
-	{
+	public function it_should_add_new_item() {
 
 		$config = $this->getInstance( $this->config_arr, $this->default_arr );
 		$config->add( 'new_item', true );
 
 		$this->assertTrue( $config->get( 'new_item' ) );
-
 	}
 
-    /**
-     * @test
-     * it should replace_recursively
-     */
-    public function it_should_replace_recursively()
-    {
+	/**
+	 * @test
+	 * it should replace_recursively
+	 */
+	public function it_should_replace_recursively() {
 
-        $config = $this->getInstance( $this->default_arr );
+		$config = $this->getInstance( $this->default_arr );
 		$this->assertEquals( $this->default_arr['recursive'], $config->get( 'recursive' ) );
 
-        $config = $this->getInstance( $this->config_arr, $this->default_arr );
-        $this->assertEquals( $this->config_arr['recursive'], $config->get( 'recursive' ) );
-        $this->assertEquals( $this->config_arr['recursive'], $config->recursive );
-        $this->assertEquals( $this->config_arr['recursive']['subKey'], $config->recursive['subKey'] );
+		$config = $this->getInstance( $this->config_arr, $this->default_arr );
+		$this->assertEquals( $this->config_arr['recursive'], $config->get( 'recursive' ) );
+		$this->assertEquals( $this->config_arr['recursive'], $config->recursive );
+		$this->assertEquals( $this->config_arr['recursive']['subKey'], $config->recursive['subKey'] );
 
-        $this->assertNotEquals( $this->default_arr['recursive'], $config->get( 'recursive' ) );
+		$this->assertNotEquals( $this->default_arr['recursive'], $config->get( 'recursive' ) );
 		$this->assertNotEquals( $this->default_arr['recursive'], $config->recursive );
 		$this->assertNotEquals( $this->default_arr['recursive']['subKey'], $config->recursive['subKey'] );
+	}
 
-    }
+	/**
+	 * @test
+	 * it should merge_given_array
+	 */
+	public function it_should_merge_given_array() {
 
-    /**
-     * @test
-     * it should merge_given_array
-     */
-    public function it_should_merge_given_array()
-    {
+		$config = $this->getInstance( $this->config_arr, $this->default_arr );
 
-        $config = $this->getInstance( $this->config_arr, $this->default_arr );
-
-        $new_array = [
-            'new_key'   => 'New Value',
+		$new_array = [
+			'new_key'   => 'New Value',
 			'recursive' => [
 				'subKey'	=> 'otherSubValue',
 			],
-        ];
+		];
 
-        $config->merge( $new_array );
+		$config->merge( $new_array );
 
-        $this->assertEquals( 'New Value', $config->get( 'new_key' ) );
+		$this->assertEquals( 'New Value', $config->get( 'new_key' ) );
 
 		$this->assertEquals( $new_array['recursive'], $config->get( 'recursive' ) );
 		$this->assertEquals( $new_array['recursive'], $config['recursive'] );
@@ -267,21 +284,20 @@ class ConfigTest extends BaseConfig
 
 		$config->merge( 'Ciao' );
 		$this->assertEquals( 'Ciao', $config->get( '0' ) );
-    }
+	}
 
-    /**
-     * @test
-     * it_should_be_removed
-     */
-    public function it_should_be_removed()
-    {
+	/**
+	 * @test
+	 * it_should_be_removed
+	 */
+	public function it_should_be_removed() {
 
-        $config = $this->getInstance( $this->config_arr, $this->default_arr );
-        $config->remove( 'recursive' );
-        $this->assertFalse( $config->has( 'recursive' ) );
+		$config = $this->getInstance( $this->config_arr, $this->default_arr );
+		$config->remove( 'recursive' );
+		$this->assertFalse( $config->has( 'recursive' ) );
 
-        $this->assertTrue( $config->has( 'tizio' ) );
-        $this->assertTrue( $config->has( 'caio' ) );
+		$this->assertTrue( $config->has( 'tizio' ) );
+		$this->assertTrue( $config->has( 'caio' ) );
 
 		$config->remove( ['tizio', 'caio'] );
 
@@ -298,31 +314,30 @@ class ConfigTest extends BaseConfig
 		$config->remove( ['recursive'], 'tizio' );
 		$this->assertFalse( $config->has( 'recursive' ) );
 		$this->assertFalse( $config->has( 'tizio' ) );
-    }
+	}
 
-    /**
-     * @test
-     * it_should_be
+	/**
+	 * @test
+	 * it_should_be
 	 */
-    public function it_should_set_public_members()
-    {
-    	$expected = 42;
+	public function it_should_set_public_members() {
+		$expected = 42;
 
-        $config = $this->getInstance();
-        $config->test = $expected;
-        $this->assertTrue( $config->has( 'test' ) );
-        $this->assertNotEmpty( $config->test );
+		$config = $this->getInstance();
+		$config->test = $expected;
+		$this->assertTrue( $config->has( 'test' ) );
+		$this->assertNotEmpty( $config->test );
 
-        $this->assertNotTrue( $config->has( 'some' ) );
-        $this->assertEmpty( $config->some );
-        $this->assertEquals( $expected, $config->get( 'test' ) );
+		$this->assertNotTrue( $config->has( 'some' ) );
+		$this->assertEmpty( $config->some );
+		$this->assertEquals( $expected, $config->get( 'test' ) );
 
-        $config[2] = 'value';
-        $this->assertTrue( $config->has('2') );
+		$config[2] = 'value';
+		$this->assertTrue( $config->has('2') );
 
-        $config->add( '0', $expected );
-        $this->assertEquals( $expected, $config->get( '0' ) );
-    }
+		$config->add( '0', $expected );
+		$this->assertEquals( $expected, $config->get( '0' ) );
+	}
 
 	/**
 	 * @test
@@ -338,7 +353,7 @@ class ConfigTest extends BaseConfig
 		$config->merge( $arr2 );
 
 		$this->assertTrue( $config->getArrayCopy() === $arrMerged );
-    }
+	}
 
 	/**
 	 * @test
@@ -354,7 +369,7 @@ class ConfigTest extends BaseConfig
 		foreach ( $config as $key => $value ) {
 			$this->assertTrue( $config->$key === $value );
 		}
-    }
+	}
 
 	/**
 	 * @test
@@ -364,7 +379,7 @@ class ConfigTest extends BaseConfig
 		$config = $this->getInstance( $this->config_arr );
 
 		$this->assertCount( count( $this->config_arr ), $config );
-    }
+	}
 
 	/**
 	 * @test
@@ -421,7 +436,7 @@ class ConfigTest extends BaseConfig
 		 * @todo https://www.php.net/manual/en/class.arrayobject.php#123572
 		 * Maybe add recursion?
 		 */
-    }
+	}
 
 	/**
 	 * @test
@@ -432,7 +447,7 @@ class ConfigTest extends BaseConfig
 		foreach ( $this->config_arr as $key => $value ) {
 			$this->assertArrayHasKey( $key, $config->toArray() );
 		}
-    }
+	}
 
 	/**
 	 * @test
@@ -444,7 +459,7 @@ class ConfigTest extends BaseConfig
 			$this->assertStringContainsString( $key, $config->toJson() );
 		}
 		$this->assertEquals( json_encode( $this->config_arr ), $config->toJson() );
-    }
+	}
 
 	/**
 	 * @test

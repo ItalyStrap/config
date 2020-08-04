@@ -13,9 +13,9 @@ use UnitTester;
 use function array_replace_recursive;
 use function is_array;
 use function json_encode;
+// phpcs:ignoreFile
+abstract class BaseConfig extends Unit {
 
-abstract class BaseConfig extends Unit
-{
 	/**
 	 * @var UnitTester
 	 */
@@ -29,8 +29,7 @@ abstract class BaseConfig extends Unit
 	protected $empty_arr;
 
 	// phpcs: ignore
-	protected function _before()
-	{
+	protected function _before() {
 		$this->config_file_name = __DIR__ . '/../_data/config/config.php';
 		$this->default_file_name = __DIR__ . '/../_data/config/default.php';
 		$this->empty_file_name = __DIR__ . '/../_data/config/config.php';
@@ -40,15 +39,13 @@ abstract class BaseConfig extends Unit
 		$this->empty_arr = require( $this->empty_file_name );
 	}
 
-	protected function _after()
-	{
+	protected function _after() {
 	}
 
 	/**
-	 * @covers class::fileExists()
+	 * @test
 	 */
-	public function testFileExists()
-	{
+	public function testFileExists() {
 		$this->assertFileExists( $this->config_file_name );
 		$this->assertFileExists( $this->default_file_name );
 		$this->assertFileExists( $this->empty_file_name );
@@ -64,8 +61,7 @@ abstract class BaseConfig extends Unit
 	/**
 	 * @test
 	 */
-	public function instanceOk()
-	{
+	public function instanceOk() {
 		$sut = $this->getInstance();
 	}
 
@@ -98,8 +94,7 @@ abstract class BaseConfig extends Unit
 	 * @test
 	 * @dataProvider valueProvider()
 	 */
-	public function itShouldBeInstantiatableWith( $value, $default )
-	{
+	public function itShouldBeInstantiatableWith( $value, $default ) {
 		$sut = $this->getInstance( $value, $default );
 	}
 

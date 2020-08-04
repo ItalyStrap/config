@@ -1,8 +1,11 @@
+# Directory
 /vendor/
 /_others/
 src/Collections/
 
-#Files
+# File
 *.local
 codeception.yml
 *.lock
+*.phar
+infection.json.dist

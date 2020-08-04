@@ -18,7 +18,7 @@ class Config extends ArrayObject implements ConfigInterface {
 	use ArrayObjectTrait;
 
 	/**
-	 * @var array
+	 * @var array[]
 	 */
 	private $storage = [];
 
@@ -44,7 +44,7 @@ class Config extends ArrayObject implements ConfigInterface {
 	 * @param array $config
 	 * @param array $default
 	 */
-	function __construct( $config = [], $default = [] ) {
+	public function __construct( $config = [], $default = [] ) {
 		$this->merge( $default, $config );
 		parent::__construct( $this->storage, ArrayObject::ARRAY_AS_PROPS );
 	}
@@ -116,7 +116,6 @@ class Config extends ArrayObject implements ConfigInterface {
 	public function merge( ...$array_to_merge ): ConfigInterface {
 
 		foreach ( $array_to_merge as $key => $arr ) {
-
 			if ( $arr instanceof \Traversable ) {
 				$arr = \iterator_to_array( $arr );
 			}
@@ -194,7 +193,6 @@ class Config extends ArrayObject implements ConfigInterface {
 
 		$levels = \explode( self::$delimiter, $key );
 		foreach ( $levels as $level ) {
-
 			if ( ! \array_key_exists( $level, $array ) ) {
 				return $default;
 			}

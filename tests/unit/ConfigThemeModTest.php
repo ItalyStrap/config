@@ -7,15 +7,15 @@ use ItalyStrap\Config\ConfigInterface;
 use ItalyStrap\Config\ConfigThemeMods;
 use ItalyStrap\Event\EventDispatcherInterface;
 use Prophecy\Argument;
-
+// phpcs:ignoreFile
 require_once 'BaseConfig.php';
 
-class ConfigThemeModTest extends BaseConfig
-{
-    /**
-     * @var \UnitTester
-     */
-    protected $tester;
+class ConfigThemeModTest extends BaseConfig {
+
+	/**
+	 * @var \UnitTester
+	 */
+	protected $tester;
 	/**
 	 * @var \Prophecy\Prophecy\ObjectProphecy
 	 */
@@ -45,17 +45,15 @@ class ConfigThemeModTest extends BaseConfig
 		return $this->config->reveal();
 	}
 
-	protected function _before()
-    {
-    	$this->config = $this->prophesize( ConfigInterface::class );
-    	$this->dispatcher = $this->prophesize( EventDispatcherInterface::class );
-    	parent::_before();
-    }
+	protected function _before() {
+		$this->config = $this->prophesize( ConfigInterface::class );
+		$this->dispatcher = $this->prophesize( EventDispatcherInterface::class );
+		parent::_before();
+	}
 
-    protected function _after()
-    {
-    	parent::_after();
-    }
+	protected function _after() {
+		parent::_after();
+	}
 
 	/**
 	 * @inheritDoc
@@ -69,11 +67,10 @@ class ConfigThemeModTest extends BaseConfig
 	/**
 	 * @test
 	 */
-    public function getAndAddOk()
-    {
-    	$this->dispatcher->filter('theme_mod_key', null )->willReturn('value');
+	public function getAndAddOk() {
+		$this->dispatcher->filter('theme_mod_key', null )->willReturn('value');
 
-		\tad\FunctionMockerLe\define('set_theme_mod', function ( string $parameter_key, string $value ){
+		\tad\FunctionMockerLe\define('set_theme_mod', function ( string $parameter_key, string $value ) {
 			$this->assertStringContainsString('key', $parameter_key, '');
 			$this->assertStringContainsString('value', $value, '');
 		});
@@ -87,10 +84,9 @@ class ConfigThemeModTest extends BaseConfig
 	/**
 	 * @test
 	 */
-    public function removeOk()
-    {
-    	$collection = [
-    		'key'	=> 'val',
+	public function removeOk() {
+		$collection = [
+			'key'	=> 'val',
 			'key2'	=> 'val2',
 		];
 
@@ -107,8 +103,7 @@ class ConfigThemeModTest extends BaseConfig
 	/**
 	 * @test
 	 */
-    public function mergeOk()
-    {
+	public function mergeOk() {
 
 		$collection = [
 			'key'	=> 'val',
