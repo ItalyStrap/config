@@ -26,6 +26,8 @@
         "brightnucleus/config": "0.4.*",
         "wpfulcrum/config": "3.0.*",
         "italystrap/debug": "^2.0",
-        "phpunit/php-code-coverage": "^7.0"
+        "phpunit/php-code-coverage": "^7.0",
+        "italystrap/event": "dev-master",
+        "lucatume/function-mocker-le": "^1.0"
     }
 }
