@@ -17,7 +17,7 @@ use function update_option;
  * @package ItalyStrap\Config
  * @credits https://github.com/TypistTech/wp-option-store/blob/master/src/FilteredOptionStore.php
  */
-class ConfigThemeMod implements ConfigInterface
+class ConfigThemeMods implements ConfigInterface
 {
 	use ArrayObjectTrait;
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace ItalyStrap\Tests;
 
 use ItalyStrap\Config\ConfigInterface;
-use ItalyStrap\Config\ConfigThemeMod;
+use ItalyStrap\Config\ConfigThemeMods;
 use ItalyStrap\Event\EventDispatcherInterface;
 use Prophecy\Argument;
 
@@ -61,7 +61,7 @@ class ConfigThemeModTest extends BaseConfig
 	 * @inheritDoc
 	 */
 	protected function getInstance( $val = [], $default = [] ): ConfigInterface {
-		$sut = new ConfigThemeMod( $this->getConfig(...\func_get_args()), $this->getDispatcher() );
+		$sut = new ConfigThemeMods( $this->getConfig(...\func_get_args()), $this->getDispatcher() );
 		$this->assertInstanceOf( ConfigInterface::class, $sut, '' );
 		return $sut;
 	}
