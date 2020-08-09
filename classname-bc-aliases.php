@@ -1,5 +1,9 @@
 <?php
 
+if ( \interface_exists(\ItalyStrap\Config\Config_Interface::class) ) {
+	return;
+}
+
 \class_alias(
 	\ItalyStrap\Config\ConfigFactory::class,
 	\ItalyStrap\Config\Config_Factory::class
