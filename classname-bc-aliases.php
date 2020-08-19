@@ -1,15 +1,11 @@
 <?php
 
-if ( \interface_exists(\ItalyStrap\Config\Config_Interface::class) ) {
-	return;
-}
-
 \class_alias(
-	\ItalyStrap\Config\ConfigFactory::class,
-	\ItalyStrap\Config\Config_Factory::class
+	'\ItalyStrap\Config\ConfigFactory',
+	'\ItalyStrap\Config\Config_Factory'
 );
 
 \class_alias(
-	\ItalyStrap\Config\ConfigInterface::class,
-	\ItalyStrap\Config\Config_Interface::class
+	'\ItalyStrap\Config\ConfigInterface',
+	'\ItalyStrap\Config\Config_Interface'
 );
