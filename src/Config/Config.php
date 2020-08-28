@@ -124,7 +124,7 @@ class Config extends ArrayObject implements ConfigInterface {
 		}
 
 		// We don't need to foreach here, \array_replace_recursive() do the job for us.
-		$this->storage = \array_replace_recursive( $this->storage, ...$array_to_merge );
+		$this->storage = (array) \array_replace_recursive( $this->storage, ...$array_to_merge );
 		parent::exchangeArray( $this->storage );
 		return $this;
 	}
@@ -140,7 +140,7 @@ class Config extends ArrayObject implements ConfigInterface {
 	 * @inheritDoc
 	 */
 	public function toJson(): string {
-		return \json_encode( $this->toArray() );
+		return \strval( \json_encode( $this->toArray() ) );
 	}
 
 	/**
@@ -180,20 +180,20 @@ class Config extends ArrayObject implements ConfigInterface {
 	 *
 	 * @link https://github.com/balambasik/input/blob/master/src/Input.php
 	 *
-	 * @param $array
-	 * @param $key
-	 * @param null $default
-	 * @return |null
+	 * @param array $array
+	 * @param string|int $key
+	 * @param mixed $default
+	 * @return mixed
 	 */
-	private static function search( $array, $key, $default = null ) {
+	private static function search( array $array, $key, $default = null ) {
 
 		if ( \is_int($key) || \strripos( $key, self::$delimiter ) === false ) {
 			return \array_key_exists( $key, $array ) ? $array[ $key ] : $default;
 		}
 
-		$levels = \explode( self::$delimiter, $key );
+		$levels = (array) \explode( self::$delimiter, $key );
 		foreach ( $levels as $level ) {
-			if ( ! \array_key_exists( $level, $array ) ) {
+			if ( ! \array_key_exists( \strval( $level ), $array ) ) {
 				return $default;
 			}
 
