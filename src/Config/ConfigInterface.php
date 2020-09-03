@@ -2,16 +2,13 @@
 /**
  * Config Class that handle the classes configuration
  *
- * @version 3.0
- *
  * @package ItalyStrap\Config
  */
 declare(strict_types=1);
 
 namespace ItalyStrap\Config;
 
-interface ConfigInterface extends \ArrayAccess, \IteratorAggregate, \Countable, ConfigInterfaceLegacy {
-
+interface ConfigInterface extends Config_Interface, \ArrayAccess, \IteratorAggregate, \Countable {
 
 	/**
 	 * Retrieves all of the runtime configuration parameters

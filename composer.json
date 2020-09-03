@@ -47,10 +47,7 @@
     "autoload": {
         "psr-4": {
             "ItalyStrap\\": "src/"
-        },
-        "files": [
-            "classname-bc-aliases.php"
-        ]
+        }
     },
     "suggest": {
         "italystrap/event": "EventDispatcher for WordPress"
