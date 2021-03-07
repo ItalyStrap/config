@@ -74,7 +74,7 @@ class ConfigTest extends BaseConfig {
 	 * @test
 	 * it should have key
 	 */
-	public function it_should_have_key() {
+	public function itShouldHaveKey() {
 
 		$config = $this->getInstance( $this->config_arr );
 
@@ -84,6 +84,7 @@ class ConfigTest extends BaseConfig {
 
 		$this->assertTrue( $config->has( 'object' ) );
 		$this->assertTrue( $config->has( 'object.key' ) );
+		$this->assertTrue( $config->has( 'object.sub-object.sub-key' ) );
 
 		$this->assertFalse( $config->has( 'cesare' ) );
 		$this->assertFalse( $config->has( 'cesarergserg' ) );
@@ -178,6 +179,23 @@ class ConfigTest extends BaseConfig {
 
 		$this->assertEquals( [], $config->get( 'tizio' ) );
 		$this->assertEquals( [], $config->tizio );
+
+
+
+		$this->assertEquals(
+			$this->config_arr['object'],
+			$config->get( 'object' )
+		);
+
+		$this->assertEquals(
+			$this->config_arr['object']['key'],
+			$config->get( 'object.key' )
+		);
+
+		$this->assertEquals(
+			$this->config_arr['object']['sub-object']['sub-key'],
+			$config->get( 'object.sub-object.sub-key' )
+		);
 	}
 
 	/**

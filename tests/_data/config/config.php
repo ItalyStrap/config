@@ -12,5 +12,14 @@ return [
 	'recursive' => [
 		'subKey'	=> 'newSubValue',
 	],
-	'object' => new Config(['key' => 'val']),
+	'object' => new Config(
+		[
+			'key'	=> 'val',
+			'sub-object'	=> new Config(
+				[
+					'sub-key'	=> 'sub-value',
+				]
+			),
+		]
+	),
 ];

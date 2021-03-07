@@ -193,6 +193,10 @@ class Config extends ArrayObject implements ConfigInterface {
 
 		$levels = (array) \explode( self::$delimiter, $key );
 		foreach ( $levels as $level ) {
+			if ( $array instanceof \Traversable ) {
+				$array = \iterator_to_array( $array );
+			}
+
 			if ( ! \array_key_exists( \strval( $level ), $array ) ) {
 				return $default;
 			}
