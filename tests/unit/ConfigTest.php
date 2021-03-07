@@ -82,6 +82,9 @@ class ConfigTest extends BaseConfig {
 		$this->assertTrue( $config->has( 'caio' ) );
 		$this->assertTrue( $config->has( 'sempronio' ) );
 
+		$this->assertTrue( $config->has( 'object' ) );
+		$this->assertTrue( $config->has( 'object.key' ) );
+
 		$this->assertFalse( $config->has( 'cesare' ) );
 		$this->assertFalse( $config->has( 'cesarergserg' ) );
 	}

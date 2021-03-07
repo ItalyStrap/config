@@ -32,7 +32,7 @@ abstract class BaseConfig extends Unit {
 	protected function _before() {
 		$this->config_file_name = __DIR__ . '/../_data/config/config.php';
 		$this->default_file_name = __DIR__ . '/../_data/config/default.php';
-		$this->empty_file_name = __DIR__ . '/../_data/config/config.php';
+		$this->empty_file_name = __DIR__ . '/../_data/config/empty.php';
 
 		$this->config_arr = require( $this->config_file_name );
 		$this->default_arr = require( $this->default_file_name );
