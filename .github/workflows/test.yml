@@ -28,7 +28,7 @@ jobs:
       with:
         php-version: ${{ matrix.php-versions }}
         # extensions: gd, zip
-        tools: composer
+        tools: composer:v1
 
     - name: Cache Composer packages
       id: composer-cache
@@ -46,4 +46,4 @@ jobs:
     # Docs: https://getcomposer.org/doc/articles/scripts.md
 
     - name: Run test suite
-      run: composer run-script unit
+      run: vendor/bin/codecept run unit
