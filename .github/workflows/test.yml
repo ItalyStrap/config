@@ -10,40 +10,40 @@ jobs:
   tests:
     name: Test on PHP ${{ matrix.php-versions }}
 
-      runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
-      strategy:
-        matrix:
-          php-versions: [ '7.2', '7.3', '7.4', '8.0' ]
+    strategy:
+      matrix:
+        php-versions: [ '7.2', '7.3', '7.4', '8.0' ]
 
-      steps:
-      - name: Checkout
-      - uses: actions/checkout@v2
+    steps:
+    - name: Checkout
+    - uses: actions/checkout@v2
 
-      - name: Validate composer.json and composer.lock
-        run: composer validate --strict
+    - name: Validate composer.json and composer.lock
+      run: composer validate --strict
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v1
-        with:
-          php-version: ${{ matrix.php-versions }}
-          # extensions: gd, zip
-          tools: composer
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v1
+      with:
+        php-version: ${{ matrix.php-versions }}
+        # extensions: gd, zip
+        tools: composer
 
-      - name: Cache Composer packages
-        id: composer-cache
-        uses: actions/cache@v2
-        with:
-          path: vendor
-          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-php-
+    - name: Cache Composer packages
+      id: composer-cache
+      uses: actions/cache@v2
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-
 
-      - name: Install dependencies
-        run: composer install --prefer-dist --ignore-platform-reqs
+    - name: Install dependencies
+      run: composer install --prefer-dist --ignore-platform-reqs
 
-      # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
-      # Docs: https://getcomposer.org/doc/articles/scripts.md
+    # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
+    # Docs: https://getcomposer.org/doc/articles/scripts.md
 
-      - name: Run test suite
-        run: composer run-script unit
+    - name: Run test suite
+      run: composer run-script unit
