@@ -27,6 +27,7 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php-versions }}
+        coverage: xdebug2
         # extensions: gd, zip
         tools: composer:v1
 
