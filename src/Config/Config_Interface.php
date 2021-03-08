@@ -8,7 +8,7 @@ namespace ItalyStrap\Config;
  * @package ItalyStrap\Config
  * @deprecated
  */
-interface Config_Interface
-{
+interface Config_Interface {
+
 
 }
