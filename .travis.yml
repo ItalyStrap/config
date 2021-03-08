@@ -52,7 +52,7 @@ env:
     - WP_VERSION=nightly
 
 before_install:
-  - echo $PWD
+  - echo $(pwd)
   # create the databases that will be used in the tests
   - mysql -e "create database IF NOT EXISTS $DB_NAME;" -uroot
   - mysql -e "create database IF NOT EXISTS $TEST_DB_NAME;" -uroot
@@ -68,7 +68,7 @@ before_install:
   - export PATH=vendor/bin:$PATH
 
 install:
-  - echo $PWD
+  - echo $(pwd)
   - composer install --prefer-dist --ignore-platform-reqs
   # install WordPress
   - cd $WP_FOLDER
