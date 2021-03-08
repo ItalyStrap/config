@@ -69,7 +69,7 @@ before_install:
 
 install:
   - echo $(pwd)
-  - composer install --prefer-dist --ignore-platform-reqs
+  #- composer install --prefer-dist --ignore-platform-reqs
   # install WordPress
   - cd $WP_FOLDER
   - echo $(pwd)
