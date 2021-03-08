@@ -1,6 +1,6 @@
 # ItalyStrap Config API
 
-[![Build status](https://github.com/ItalyStrap/config/actions/workflows/test.yml/badge.svg)](https://github.com/ItalyStrap/config/actions?query=workflow%3Atest)
+[![Build status](https://github.com/ItalyStrap/config/actions/workflows/test.yml/badge.svg)](https://github.com/ItalyStrap/config/actions/workflows/test.yml?query=workflow%3Atest)
 [![Build Status](https://travis-ci.org/italystrap/config.svg?branch=master)](https://travis-ci.org/ItalyStrap/config)
 [![Latest Stable Version](https://img.shields.io/packagist/v/italystrap/config.svg)](https://packagist.org/packages/italystrap/config)
 [![Total Downloads](https://img.shields.io/packagist/dt/italystrap/config.svg)](https://packagist.org/packages/italystrap/config)
