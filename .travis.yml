@@ -84,6 +84,7 @@ install:
   - echo $TRAVIS_BUILD_DIR
   # show the plugins folder contents to make sure the plugin folder is there
   - ls $WP_FOLDER/wp-content/plugins
+  - ls $WP_FOLDER/wp-content/plugins/config
   # activate the plugin
   - wp plugin activate config
   # make sure the plugin is active on the site
