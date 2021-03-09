@@ -29,17 +29,21 @@ jobs:
         # extensions: gd, zip
         tools: composer:v1
 
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v2
-      with:
-        path: vendor
-        key: composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.json') }}
-        restore-keys: |
-          composer-${{ matrix.php-version }}-
+#    - name: Cache Composer packages
+#      id: composer-cache
+#      uses: actions/cache@v2
+#      with:
+#        path: vendor
+#        key: composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.json') }}
+#        restore-keys: |
+#          composer-${{ matrix.php-version }}-
+#
+#    - name: Install dependencies
+#      run: composer install --prefer-dist --ignore-platform-reqs
 
-    - name: Install dependencies
-      run: composer install --prefer-dist --ignore-platform-reqs
+    - uses: ramsey/composer-install@v1
+      with:
+        composer-options: "--prefer-dist --ignore-platform-reqs"
 
     - name: Run test suite
       run: vendor/bin/codecept run unit
