@@ -25,8 +25,8 @@ jobs:
       - name: Validate php files
         run: find ./src/ ./tests/ -type f -name '*.php' -print0 | xargs -0 -L 1 -P 4 -- php -l
 
-      - name: Install dependencies
-        run: composer install --prefer-dist --ignore-platform-reqs
+#      - name: Install dependencies
+#        run: composer install --prefer-dist --ignore-platform-reqs
 
 #      - name: Coding standard
 #        run: vendor/bin/phpcs --ignore=./tests/_support/* ./src/ ./tests/
