@@ -1,4 +1,4 @@
-name: Lint
+name: Lint and CS
 
 on:
   push:
@@ -15,9 +15,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
-      - name: PHP Version
-        run: php -v
 
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
