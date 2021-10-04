@@ -428,30 +428,14 @@ class ConfigTest extends BaseConfig {
 
 		$stdobj = new stdClass();
 		$stdobj->var = 'Value';
+		$stdobj->obj = $stdobj;
 
 		$anotherConfig = new Config( $stdobj );
 		$this->assertArrayHasKey( 'var', $anotherConfig );
 		$this->assertEquals( $stdobj->var, $anotherConfig->var );
-
-		$node = new class {
-			public $property;
-
-			public function myMethod($arg = '') {
-				return 'Tizio';
-			}
-		};
-
-		$anotherConfig->merge( $node );
-
-		/**
-		 * @todo https://www.php.net/manual/en/class.arrayobject.php#118872
-		 * Add callable method with injecting other instances
-		 */
-//		codecept_debug( $node->myMethod() );
-////		codecept_debug( $anotherConfig->myMethod() );
-//		codecept_debug( $method = $anotherConfig->myMethod );
-//		codecept_debug( $method() );
-//		codecept_debug( $anotherConfig->property );
+		$this->assertEquals( $stdobj->var, $anotherConfig->get( 'var' ) );
+		$this->assertTrue($anotherConfig->has( 'obj.var' ), '');
+		$this->assertEquals( $stdobj->obj->var, $anotherConfig->get( 'obj.var' ) );
 
 		/**
 		 * @todo https://www.php.net/manual/en/class.arrayobject.php#123572

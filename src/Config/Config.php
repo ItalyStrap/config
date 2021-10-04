@@ -201,6 +201,10 @@ class Config extends ArrayObject implements ConfigInterface {
 				return $default;
 			}
 
+			if ( $array instanceof \stdClass ) {
+				$array = (array) $array;
+			}
+
 			$array = $array[ $level ];
 		}
 
