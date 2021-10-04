@@ -188,7 +188,7 @@ class Config extends ArrayObject implements ConfigInterface {
 	private static function search( array $array, $key, $default = null ) {
 
 		if ( \is_int($key) || \strripos( $key, self::$delimiter ) === false ) {
-			return \array_key_exists( $key, $array ) ? $array[ $key ] : $default;
+			return \array_key_exists( $key, (array) $array ) ? $array[ $key ] : $default;
 		}
 
 		$levels = (array) \explode( self::$delimiter, $key );
@@ -197,7 +197,7 @@ class Config extends ArrayObject implements ConfigInterface {
 				$array = \iterator_to_array( $array );
 			}
 
-			if ( ! \array_key_exists( \strval( $level ), $array ) ) {
+			if ( ! \array_key_exists( \strval( $level ), (array) $array ) ) {
 				return $default;
 			}
 
