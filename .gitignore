@@ -10,3 +10,4 @@ codeception.yml
 *.phar
 infection.json.dist
 c3.php
+rector.php

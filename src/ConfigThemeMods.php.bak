@@ -21,10 +21,7 @@ class ConfigThemeMods implements ConfigInterface {
 
 	use ArrayObjectTrait;
 
-	/**
-	 * @var ConfigInterface
-	 */
-	private $config;
+	private \ItalyStrap\Config\ConfigInterface $config;
 
 	/**
 	 * @var EventDispatcherInterface

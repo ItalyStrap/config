@@ -14,39 +14,26 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php" : ">=7.2"
+        "php" : ">=7.4"
     },
     "require-dev": {
-        "lucatume/wp-browser": "~2.0",
-        "lucatume/function-mocker-le": "^1.0",
-        "codeception/c3": "2.*",
-        "codeception/module-asserts": "^1.0",
-        "codeception/module-phpbrowser": "^1.0",
-        "codeception/module-webdriver": "^1.0",
-        "codeception/module-db": "^1.0",
-        "codeception/module-filesystem": "^1.0",
-        "codeception/module-cli": "^1.0",
-        "codeception/util-universalframework": "^1.0",
-        "brianium/paratest": "^4.0",
-        "squizlabs/php_codesniffer": "*",
-        "phpcompatibility/php-compatibility": "*",
-        "dealerdirect/phpcodesniffer-composer-installer": "^v0.7.1",
-        "phpstan/phpstan": "^0.11.16",
-        "szepeviktor/phpstan-wordpress": "^0.3.0",
-        "vimeo/psalm": "^3.9",
-        "phpbench/phpbench": "@dev",
-        "infection/infection": "^0.15.3",
-        "phpmetrics/phpmetrics": "^2.5",
-        "nunomaduro/phpinsights": "^1.14.0",
-        "phpunit/php-code-coverage": "^7.0",
-        "brightnucleus/config": "0.4.*",
-        "wpfulcrum/config": "3.0.*",
-        "italystrap/debug": "^2.0",
-        "italystrap/event": "dev-master"
+        "rector/rector": "^0.14.0",
+        "vimeo/psalm": "^4.26"
     },
     "autoload": {
         "psr-4": {
-            "ItalyStrap\\": "src/"
+            "ItalyStrap\\Config\\": "src/"
+        },
+        "classmap": [
+            "legacy/"
+        ]
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests/"
+        ],
+        "psr-4": {
+            "ItalyStrap\\Tests\\": "tests/"
         }
     },
     "suggest": {
@@ -65,11 +52,17 @@
         "psalm": [
             "vendor\\bin\\psalm --no-cache"
         ],
-        "analyze": [
+        "static:all": [
             "vendor\\bin\\phpstan analyze --level=max && vendor\\bin\\psalm"
         ],
         "unit": [
-            "vendor\\bin\\codecept run unit && vendor\\bin\\infection --threads=4"
+            "vendor\\bin\\codecept run unit"
+        ],
+        "unit:debug": [
+            "vendor\\bin\\codecept run unit --debug"
+        ],
+        "infection": [
+            "vendor\\bin\\infection --threads=4"
         ],
         "bench": [
             "vendor\\bin\\phpbench run --report=performance"

@@ -20,7 +20,7 @@ class Config extends ArrayObject implements ConfigInterface {
 	/**
 	 * @var array[]
 	 */
-	private $storage = [];
+	private array $storage = [];
 
 	/**
 	 * @var array
@@ -33,10 +33,9 @@ class Config extends ArrayObject implements ConfigInterface {
 	private $default;
 
 	/**
-	 * Array key level delimiter
-	 * @var string
-	 */
-	private static $delimiter = ".";
+  * Array key level delimiter
+  */
+ private static string $delimiter = ".";
 
 	/**
 	 * Config constructor
@@ -74,7 +73,7 @@ class Config extends ArrayObject implements ConfigInterface {
 	 * @inheritDoc
 	 */
 	public function has( $key ): bool {
-		$this->temp = $this->search( $this->storage, $key, $this->default );
+		$this->temp = self::search($this->storage, $key, $this->default);
 		$this->default = null;
 		return isset( $this->temp );
 	}
@@ -140,7 +139,7 @@ class Config extends ArrayObject implements ConfigInterface {
 	 * @inheritDoc
 	 */
 	public function toJson(): string {
-		return \strval( \json_encode( $this->toArray() ) );
+		return \strval( \json_encode( $this->toArray(), JSON_THROW_ON_ERROR ) );
 	}
 
 	/**
