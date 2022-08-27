@@ -6,42 +6,49 @@ namespace ItalyStrap\Config;
 use ArrayObject;
 
 /**
- * Config Class
- *
  * @todo Immutable: https://github.com/jkoudys/immutable.php
  * @todo Maybe some ideas iterator: https://github.com/clean/data/blob/master/src/Collection.php
  * @todo Maybe some ideas json to array: https://github.com/Radiergummi/libconfig/blob/master/src/Libconfig/Config.php
  * @todo Maybe some ideas: https://www.simonholywell.com/post/2017/04/php-and-immutability-part-two/
+ *
+ * @template TKey as array-key
+ * @template TValue
+ *
+ * @template-implements \ItalyStrap\Config\ConfigInterface<TKey,TValue>
+ * @template-extends \ArrayObject<TKey,TValue>
+ * @psalm-suppress DeprecatedInterface
  */
 class Config extends ArrayObject implements ConfigInterface {
 
+	/**
+	 * @use \ItalyStrap\Config\ArrayObjectTrait<TKey,TValue>
+	 */
 	use ArrayObjectTrait;
 
 	/**
-	 * @var array[]
+	 * @var array<TKey, TValue>
 	 */
 	private array $storage = [];
 
 	/**
-	 * @var array
+	 * @var TValue
+	 * @psalm-suppress PropertyNotSetInConstructor
 	 */
-	private $temp = [];
+	private $temp;
 
 	/**
-	 * @var mixed
+	 * @var TValue|null
+	 * @psalm-suppress PropertyNotSetInConstructor
 	 */
 	private $default;
 
-	/**
-  * Array key level delimiter
-  */
- private static string $delimiter = ".";
+	private string $delimiter = '.';
 
 	/**
 	 * Config constructor
 	 *
-	 * @param array $config
-	 * @param array $default
+	 * @param array<TKey, TValue> $config
+	 * @param array<TKey, TValue> $default
 	 */
 	public function __construct( $config = [], $default = [] ) {
 		$this->merge( $default, $config );
@@ -49,19 +56,14 @@ class Config extends ArrayObject implements ConfigInterface {
 	}
 
 	/**
-	 * @inheritDoc
+	 * @param TKey $index
+	 * @param TValue $default
+	 * @return TValue
 	 */
-	public function all(): array {
-		return $this->getArrayCopy();
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function get( $key, $default = null ) {
+	public function get( $index, $default = null ) {
 		$this->default = $default;
 
-		if ( ! $this->has( $key ) ) {
+		if ( ! $this->has( $index ) ) {
 			return $default;
 		}
 
@@ -70,62 +72,98 @@ class Config extends ArrayObject implements ConfigInterface {
 	}
 
 	/**
-	 * @inheritDoc
+	 * @param TKey $index
 	 */
-	public function has( $key ): bool {
-		$this->temp = self::search($this->storage, $key, $this->default);
+	public function has( $index ): bool {
+		/**
+		 * @psalm-suppress MixedAssignment
+		 */
+		$this->temp = $this->search($this->storage, $index, $this->default);
 		$this->default = null;
 		return isset( $this->temp );
 	}
 
 	/**
-	 * @inheritDoc
+	 * @param TKey $index
+	 * @param TValue $value
 	 */
-	public function add( $key, $value ) {
-		$this->storage[ $key ] = $value;
+	public function add( $index, $value ): Config {
+		$this->storage[ $index ] = $value;
 		parent::exchangeArray( $this->storage );
 		return $this;
 	}
 
 	/**
 	 * @deprecated
+	 * @param TKey $index
+	 * @param TValue $value
 	 */
-	public function push( $key, $value ) {
-		return $this->add( $key, $value );
+	public function push( $index, $value ): Config {
+		return $this->add( $index, $value );
 	}
 
 	/**
-	 * @inheritDoc
+	 * @param TKey ...$with_indexes
 	 */
-	public function remove( ...$with_keys ): ConfigInterface {
-
-		foreach ( $with_keys as $keys ) {
-			foreach ( (array) $keys as $k ) {
-				unset( $this->storage[ $k ] );
-			}
-		}
+	public function remove( ...$with_indexes ): Config {
+		\array_walk(
+			$with_indexes,
+			/**
+			 * @param mixed $indexes
+			 * @psalm-suppress MixedArgumentTypeCoercion
+			 */
+			fn($indexes) => $this->removeIndexesFromStorage((array)$indexes)
+		);
 
 		parent::exchangeArray( $this->storage );
 		return $this;
 	}
 
 	/**
-	 * @inheritDoc
+	 * @param array<array-key, TKey> $indexes
 	 */
-	public function merge( ...$array_to_merge ): ConfigInterface {
+	private function removeIndexesFromStorage(array $indexes): void {
+		foreach ( $indexes as $k ) {
+			unset( $this->storage[ $k ] );
+		}
+	}
 
-		foreach ( $array_to_merge as $key => $arr ) {
-			if ( $arr instanceof \Traversable ) {
-				$arr = \iterator_to_array( $arr );
+	/**
+	 * @param array<TKey, TValue>|\stdClass|string ...$array_to_merge
+	 */
+	public function merge( ...$array_to_merge ): Config {
+
+		foreach ( $array_to_merge as $index => $array ) {
+			if ( $array instanceof \Traversable ) {
+				$array = \iterator_to_array( $array );
 			}
+
+			if ($array instanceof \stdClass) {
+				$array = (array)$array;
+			}
+
+			if ( ! \is_array( $array ) ) {
+				$array = (array) $array;
+			}
+
 			// Make sure any value given is casting to array
-			$array_to_merge[ $key ] = (array) $arr;
+			$array_to_merge[ $index ] = $array;
 		}
 
 		// We don't need to foreach here, \array_replace_recursive() do the job for us.
-		$this->storage = (array) \array_replace_recursive( $this->storage, ...$array_to_merge );
+		/**
+		 * @psalm-suppress PossiblyInvalidArgument
+		 */
+		$this->storage = \array_replace_recursive( $this->storage, ...$array_to_merge );
 		parent::exchangeArray( $this->storage );
 		return $this;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function all(): array {
+		return $this->getArrayCopy();
 	}
 
 	/**
@@ -143,77 +181,71 @@ class Config extends ArrayObject implements ConfigInterface {
 	}
 
 	/**
-	 *
+	 * @inheritDoc
 	 */
+	public function count(): int {
+		return parent::count();
+	}
+
 	public function __clone() {
 		$this->storage = [];
 		parent::exchangeArray( $this->storage );
 	}
 
 	/**
-	 * @link https://www.php.net/manual/en/class.arrayobject.php#107079
-	 *
-	 * @param $func
-	 * @param $argv
-	 * @return mixed
-	 */
-//	public function __call( $func, $argv ) {
-//
-//		if ( \array_key_exists( $func, $this->storage ) && \is_callable( $this->storage[ $func ] ) ) {
-//			codecept_debug( $argv );
-//			$new_func = function ( ...$argv ) use ( $func ) {
-//				return $func( $argv );
-//			};
-//			return \call_user_func_array( $new_func, $argv );
-//		}
-//
-//		if ( ! \is_callable( $func ) || \substr( $func, 0, 6 ) !== 'array_' ) {
-//			throw new BadMethodCallException(__CLASS__ . '->' . $func );
-//		}
-//
-//		return \call_user_func_array( $func, \array_merge( [ $this->getArrayCopy() ], $argv ) );
-//	}
-
-	/**
 	 * @todo In future move this method to its own class
-	 *
 	 * @link https://github.com/balambasik/input/blob/master/src/Input.php
 	 *
-	 * @param array $array
-	 * @param string|int $key
+	 * @param iterable<array-key, mixed> $array
+	 * @param string|int $index
 	 * @param mixed $default
-	 * @return mixed
+	 *
+	 * @return mixed|null
 	 */
-	private static function search( array $array, $key, $default = null ) {
+	private function search( iterable $array, $index, $default = null ) {
 
-		if ( \is_int($key) || \strripos( $key, self::$delimiter ) === false ) {
-			return \array_key_exists( $key, (array) $array ) ? $array[ $key ] : $default;
+		if ( \is_int($index) || \strripos( $index, $this->delimiter ) === false ) {
+			/**
+			 * @psalm-suppress InvalidArrayAccess
+			 */
+			return $array[ $index ] ?? $default;
 		}
 
-		$levels = (array) \explode( self::$delimiter, $key );
-		foreach ( $levels as $level ) {
-			if ( $array instanceof \Traversable ) {
-				$array = \iterator_to_array( $array );
-			}
-
-			if ( ! \array_key_exists( \strval( $level ), (array) $array ) ) {
-				return $default;
-			}
-
-			if ( $array instanceof \stdClass ) {
-				$array = (array) $array;
-			}
-
-			$array = $array[ $level ];
+		if ( ! $levels = \explode( $this->delimiter, $index ) ) {
+			return $default;
 		}
 
-		return $array ?? $default;
+		return $this->findInsideArray($levels, $array, $default);
 	}
 
 	/**
-	 * @inheritDoc
+	 * @param array<string> $levels
+	 * @param iterable<array-key, mixed> $array
+	 * @param mixed $default
+	 *
+	 * @return mixed|null
 	 */
-	public function count() {
-		return parent::count();
+	private function findInsideArray( array $levels, iterable $array, $default = null ) {
+		foreach ($levels as $level) {
+			if ($array instanceof \Traversable) {
+				$array = \iterator_to_array($array);
+			}
+
+			if ($array instanceof \stdClass) {
+				$array = (array)$array;
+			}
+
+			if (!\array_key_exists($level, (array)$array)) {
+				return $default;
+			}
+
+			/**
+			 * @psalm-suppress MixedAssignment
+			 * @psalm-suppress MixedArrayAccess
+			 */
+			$array = $array[$level];
+		}
+
+		return $array ?? $default;
 	}
 }

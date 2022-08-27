@@ -95,7 +95,7 @@ abstract class BaseConfig extends Unit {
 	 * @dataProvider valueProvider()
 	 */
 	public function itShouldBeInstantiatableWith( $value, $default ) {
-		$sut = $this->getInstance( $value, $default );
+		$sut = $this->getInstance( (array) $value, (array) $default );
 	}
 
 	/**

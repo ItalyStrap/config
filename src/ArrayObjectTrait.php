@@ -3,33 +3,43 @@ declare(strict_types=1);
 
 namespace ItalyStrap\Config;
 
+/**
+ * @template TKey as array-key
+ * @template TValue
+ */
 trait ArrayObjectTrait {
 
 	/**
-	 * @inheritDoc
+	 * @param TKey $index
+	 * @psalm-suppress InvalidArgument
 	 */
-	public function offsetExists( $index ) {
+	public function offsetExists( $index ): bool {
 		return $this->has( $index );
 	}
 
 	/**
-	 * @inheritDoc
+	 * @param TKey $index
+	 * @return TValue
+	 * @psalm-suppress InvalidArgument
 	 */
 	public function offsetGet( $index ) {
 		return $this->get( $index );
 	}
 
 	/**
-	 * @inheritDoc
+	 * @param TKey $index
+	 * @param TValue $newval
+	 * @psalm-suppress InvalidArgument
 	 */
 	public function offsetSet( $index, $newval ) {
 		$this->add( $index, $newval );
 	}
 
 	/**
-	 * @inheritDoc
+	 * @param TKey $index
+	 * @psalm-suppress InvalidArgument
 	 */
-	public function offsetUnset($index) {
+	public function offsetUnset( $index ) {
 		$this->remove( $index );
 	}
 }

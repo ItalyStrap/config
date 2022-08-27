@@ -1,78 +1,65 @@
 <?php
-/**
- * Config Class that handle the classes configuration
- *
- * @package ItalyStrap\Config
- */
 declare(strict_types=1);
 
 namespace ItalyStrap\Config;
 
+/**
+ * @template TKey as array-key
+ * @template TValue
+ * @template-implements \ArrayAccess<TKey, TValue>
+ * @template-implements \IteratorAggregate<TKey, TValue>
+ */
 interface ConfigInterface extends Config_Interface, \ArrayAccess, \IteratorAggregate, \Countable {
-
-	/**
-	 * Retrieves all of the runtime configuration parameters
-	 *
-	 * @return array
-	 */
-	public function all(): array;
 
 	/**
 	 * Get the specified configuration value.
 	 *
-	 * @param  string  $parameter_key
-	 * @param  mixed   $default
-	 * @return mixed
+	 * @param  TKey  $index
+	 * @param  TValue $default
+	 * @return TValue
 	 */
-	public function get( $parameter_key, $default = null );
+	public function get( $index, $default = null );
 
 	/**
 	 * Determine if the given configuration value exists.
 	 *
-	 * @param  string  $parameter_key
+	 * @param TKey  $index
 	 * @return bool
 	 */
-	public function has( $parameter_key ): bool;
+	public function has( $index ): bool;
 
 	/**
 	 * Add a configuration in via the key
 	 *
-	 * @param string|int $parameter_key Key to be assigned, which also becomes the property
-	 * @param mixed $value Value to be assigned to the parameter key
+	 * @param TKey $index Key to be assigned, which also becomes the property
+	 * @param TValue $value Value to be assigned to the parameter key
 	 * @return ConfigInterface
 	 */
-	public function add( $parameter_key, $value );
+	public function add( $index, $value );
 
 	/**
-	 * Removes an item or multiple items.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param  mixed ...$with_keys
+	 * @param  TKey ...$with_indexes
 	 * @return ConfigInterface
 	 */
-	public function remove( ...$with_keys );
+	public function remove( ...$with_indexes );
 
 	/**
-	 * Merge a new array into this config
-	 *
-	 * @since 1.1.0
-	 *
-	 * @param array ...$array_to_merge
+	 * @param array<TKey, TValue> ...$array_to_merge
 	 * @return ConfigInterface
 	 */
-	public function merge( ...$array_to_merge );
+	public function merge( ...$array_to_merge ): ConfigInterface;
 
 	/**
-	 * Return an array of items
-	 *
-	 * @return array
+	 * @return array<TKey, TValue>
+	 */
+	public function all(): array;
+
+	/**
+	 * @return array<TKey, TValue>
 	 */
 	public function toArray(): array;
 
 	/**
-	 * Return a Json object of items
-	 *
 	 * @return string
 	 */
 	public function toJson(): string;

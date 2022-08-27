@@ -12,18 +12,8 @@ use stdClass;
 use function array_replace_recursive;
 use function is_array;
 use function json_encode;
-// phpcs:ignoreFile
-require_once 'BaseConfig.php';
 
 class ConfigTest extends BaseConfig {
-
-	protected function _before() {
-		parent::_before();
-	}
-
-	protected function _after() {
-		parent::_after();
-	}
 
 	/**
 	 * @inheritDoc
@@ -303,7 +293,7 @@ class ConfigTest extends BaseConfig {
 		$config->merge( $new_array, [ 'new_key'   => 'Value changed' ], [ 'new_key'   => 'Value changed2' ] );
 		$this->assertEquals( 'Value changed2', $config->get( 'new_key' ) );
 
-		$config->merge( 'Ciao' );
+		$config->merge( (array) 'Ciao' );
 		$this->assertEquals( 'Ciao', $config->get( '0' ) );
 	}
 
@@ -430,7 +420,7 @@ class ConfigTest extends BaseConfig {
 		$stdobj->var = 'Value';
 		$stdobj->obj = $stdobj;
 
-		$anotherConfig = new Config( $stdobj );
+		$anotherConfig = new Config( (array) $stdobj );
 		$this->assertArrayHasKey( 'var', $anotherConfig );
 		$this->assertEquals( $stdobj->var, $anotherConfig->var );
 		$this->assertEquals( $stdobj->var, $anotherConfig->get( 'var' ) );
@@ -465,16 +455,6 @@ class ConfigTest extends BaseConfig {
 		}
 		$this->assertEquals( json_encode( $this->config_arr ), $config->toJson() );
 	}
-
-	/**
-	 * @test
-	 */
-//	public function it_shoud_call_builtin_array_functions() {
-//		$keys = \array_keys( $this->config_arr );
-//
-//		$config = new Config( $this->config_arr );
-//		$this->assertEquals( $keys, $config->array_keys() );
-//    }
 
 	/**
 	 * @test
@@ -558,4 +538,24 @@ class ConfigTest extends BaseConfig {
 ////		$callable = $config->get( 'key' );
 ////		$this->assertStringContainsString( 'Ciao', $callable() );
 //	}
+
+
+	/**
+	 * @test
+	 */
+	public function itShouldReceiveIterableAsArgument() {
+		$iterator = new \ArrayIterator(['test' => 'val1', 'test2' => 'val2']);
+		$sut = $this->getInstance($iterator);
+
+//		codecept_debug($sut);
+
+		$array = [
+			'test' => 'val1',
+			'test2' => [
+				'test3' => 'val3',
+				'test4' => 'val4',
+				'test5' => ['ciao'],
+			],
+		];
+	}
 }
