@@ -59,6 +59,12 @@
         "cs": [
             "vendor\\bin\\phpcbf -p --ignore=./tests/_support/* ./src/ ./tests/ && vendor\\bin\\phpcs -p --ignore=./tests/_support/* ./src/ ./tests/"
         ],
+        "phpstan": [
+            "vendor\\bin\\phpstan analyze --level=max"
+        ],
+        "psalm": [
+            "vendor\\bin\\psalm --no-cache"
+        ],
         "analyze": [
             "vendor\\bin\\phpstan analyze --level=max && vendor\\bin\\psalm"
         ],
