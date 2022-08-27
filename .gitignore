@@ -9,3 +9,4 @@ codeception.yml
 *.lock
 *.phar
 infection.json.dist
+c3.php
