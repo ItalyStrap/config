@@ -65,28 +65,51 @@ abstract class BaseConfig extends Unit {
 		$sut = $this->getInstance();
 	}
 
-	public function valueProvider() {
-		return [
-			'empty values'	=> [
-				false,
-				false
-			],
-			'one value'	=> [
-				[],
-				false
-			],
-			'two values'	=> [
-				[],
-				[]
-			],
-			'one array'	=> [
-				$this->config_arr,
-				false
-			],
-			'two array the second is the default'	=> [
-				$this->config_arr,
-				$this->default_arr
-			],
+	public function valueProvider(): iterable {
+
+		yield 'empty values'	=> [
+			false,
+			false
+		];
+
+		yield 'one value'	=> [
+			[],
+			false
+		];
+
+		yield 'two values'	=> [
+			[],
+			[]
+		];
+
+		yield 'one array'	=> [
+			$this->config_arr,
+			false
+		];
+
+		yield 'two array the second is the default'	=> [
+			$this->config_arr,
+			$this->default_arr
+		];
+
+		yield 'with stdClass'	=> [
+			new \stdClass(),
+			new \stdClass(),
+		];
+
+		yield 'with Iterator'	=> [
+			new \ArrayIterator(),
+			new \ArrayIterator(),
+		];
+
+		yield 'with ArrayObject'	=> [
+			new \ArrayObject(),
+			new \ArrayObject(),
+		];
+
+		yield 'with IteratorIterator'	=> [
+			new \IteratorIterator(new \ArrayObject()),
+			new \IteratorIterator(new \ArrayObject()),
 		];
 	}
 

@@ -11,3 +11,4 @@ codeception.yml
 infection.json.dist
 c3.php
 rector.php
+**/*.bak

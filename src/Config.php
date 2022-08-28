@@ -89,7 +89,6 @@ class Config extends ArrayObject implements ConfigInterface {
 	 */
 	public function add( $index, $value ): Config {
 		$this->storage[ $index ] = $value;
-		parent::exchangeArray( $this->storage );
 		return $this;
 	}
 
@@ -115,7 +114,6 @@ class Config extends ArrayObject implements ConfigInterface {
 			fn($indexes) => $this->removeIndexesFromStorage((array)$indexes)
 		);
 
-		parent::exchangeArray( $this->storage );
 		return $this;
 	}
 
@@ -134,14 +132,6 @@ class Config extends ArrayObject implements ConfigInterface {
 	public function merge( ...$array_to_merge ): Config {
 
 		foreach ( $array_to_merge as $index => $array ) {
-			if ( $array instanceof \Traversable ) {
-				$array = \iterator_to_array( $array );
-			}
-
-			if ($array instanceof \stdClass) {
-				$array = (array)$array;
-			}
-
 			if ( ! \is_array( $array ) ) {
 				$array = (array) $array;
 			}
@@ -150,12 +140,11 @@ class Config extends ArrayObject implements ConfigInterface {
 			$array_to_merge[ $index ] = $array;
 		}
 
-		// We don't need to foreach here, \array_replace_recursive() do the job for us.
 		/**
+		 * We don't need to foreach here, \array_replace_recursive() do the job for us.
 		 * @psalm-suppress PossiblyInvalidArgument
 		 */
 		$this->storage = \array_replace_recursive( $this->storage, ...$array_to_merge );
-		parent::exchangeArray( $this->storage );
 		return $this;
 	}
 
@@ -170,30 +159,18 @@ class Config extends ArrayObject implements ConfigInterface {
 	 * @inheritDoc
 	 */
 	public function toArray(): array {
-		return \iterator_to_array( $this );
+		return $this->getArrayCopy();
 	}
 
 	/**
 	 * @inheritDoc
+	 * @throws \JsonException
 	 */
 	public function toJson(): string {
 		return \strval( \json_encode( $this->toArray(), JSON_THROW_ON_ERROR ) );
 	}
 
 	/**
-	 * @inheritDoc
-	 */
-	public function count(): int {
-		return parent::count();
-	}
-
-	public function __clone() {
-		$this->storage = [];
-		parent::exchangeArray( $this->storage );
-	}
-
-	/**
-	 * @todo In future move this method to its own class
 	 * @link https://github.com/balambasik/input/blob/master/src/Input.php
 	 *
 	 * @param iterable<array-key, mixed> $array
@@ -204,15 +181,11 @@ class Config extends ArrayObject implements ConfigInterface {
 	 */
 	private function search( iterable $array, $index, $default = null ) {
 
-		if ( \is_int($index) || \strripos( $index, $this->delimiter ) === false ) {
+		if ( \is_int($index) || ! $levels = \explode( $this->delimiter, $index ) ) {
 			/**
 			 * @psalm-suppress InvalidArrayAccess
 			 */
 			return $array[ $index ] ?? $default;
-		}
-
-		if ( ! $levels = \explode( $this->delimiter, $index ) ) {
-			return $default;
 		}
 
 		return $this->findInsideArray($levels, $array, $default);
@@ -227,15 +200,11 @@ class Config extends ArrayObject implements ConfigInterface {
 	 */
 	private function findInsideArray( array $levels, iterable $array, $default = null ) {
 		foreach ($levels as $level) {
-			if ($array instanceof \Traversable) {
-				$array = \iterator_to_array($array);
+			if ( ! \is_array( $array ) ) {
+				$array = (array) $array;
 			}
 
-			if ($array instanceof \stdClass) {
-				$array = (array)$array;
-			}
-
-			if (!\array_key_exists($level, (array)$array)) {
+			if (!\array_key_exists($level, $array)) {
 				return $default;
 			}
 
@@ -246,6 +215,6 @@ class Config extends ArrayObject implements ConfigInterface {
 			$array = $array[$level];
 		}
 
-		return $array ?? $default;
+		return $array;
 	}
 }

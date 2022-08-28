@@ -21,7 +21,9 @@
         "vimeo/psalm": "^4.26",
         "lucatume/wp-browser": "^2.0",
         "codeception/module-asserts": "^2.0",
-        "phpspec/prophecy": "^1.15"
+        "phpspec/prophecy": "^1.15",
+        "infection/infection": "^0.26.6",
+        "infection/codeception-adapter": "^0.4.1"
     },
     "autoload": {
         "psr-4": {
@@ -90,7 +92,8 @@
         "allow-plugins": {
             "codeception/c3": true,
             "composer/package-versions-deprecated": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "infection/extension-installer": true
         }
     }
 }

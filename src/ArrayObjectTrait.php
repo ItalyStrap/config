@@ -42,4 +42,19 @@ trait ArrayObjectTrait {
 	public function offsetUnset( $index ) {
 		$this->remove( $index );
 	}
+
+	public function count(): int {
+		parent::exchangeArray( $this->storage );
+		return parent::count();
+	}
+
+	public function getArrayCopy(): array {
+		parent::exchangeArray( $this->storage );
+		return parent::getArrayCopy();
+	}
+
+	public function __clone() {
+		$this->storage = [];
+		parent::exchangeArray( $this->storage );
+	}
 }

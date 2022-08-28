@@ -136,7 +136,12 @@ class ConfigTest extends BaseConfig {
 		$this->assertFalse( $config->has( 'some-key' ) );
 		$this->assertFalse( $config->has( 'some-key' ) );
 		$this->assertStringContainsString(
-			strval( $config->get( 'some-key', 'default value' ) ),
+			$config->get( 'some-key', 'default value' ),
+			'default value',
+			''
+		);
+		$this->assertStringContainsString(
+			$config->get( 'some-key.with-subkey', 'default value' ),
 			'default value',
 			''
 		);
@@ -293,7 +298,7 @@ class ConfigTest extends BaseConfig {
 		$config->merge( $new_array, [ 'new_key'   => 'Value changed' ], [ 'new_key'   => 'Value changed2' ] );
 		$this->assertEquals( 'Value changed2', $config->get( 'new_key' ) );
 
-		$config->merge( (array) 'Ciao' );
+		$config->merge( 'Ciao' );
 		$this->assertEquals( 'Ciao', $config->get( '0' ) );
 	}
 
@@ -420,7 +425,7 @@ class ConfigTest extends BaseConfig {
 		$stdobj->var = 'Value';
 		$stdobj->obj = $stdobj;
 
-		$anotherConfig = new Config( (array) $stdobj );
+		$anotherConfig = new Config( $stdobj );
 		$this->assertArrayHasKey( 'var', $anotherConfig );
 		$this->assertEquals( $stdobj->var, $anotherConfig->var );
 		$this->assertEquals( $stdobj->var, $anotherConfig->get( 'var' ) );
@@ -539,23 +544,154 @@ class ConfigTest extends BaseConfig {
 ////		$this->assertStringContainsString( 'Ciao', $callable() );
 //	}
 
-
 	/**
 	 * @test
 	 */
 	public function itShouldReceiveIterableAsArgument() {
 		$iterator = new \ArrayIterator(['test' => 'val1', 'test2' => 'val2']);
 		$sut = $this->getInstance($iterator);
-
-//		codecept_debug($sut);
+		$this->assertSame('val1', $sut->get('test'), '');
 
 		$array = [
 			'test' => 'val1',
 			'test2' => [
 				'test3' => 'val3',
 				'test4' => 'val4',
-				'test5' => ['ciao'],
+				'test5' => ['expected'],
 			],
 		];
+
+		$iterator = new \ArrayIterator($array);
+		$sut = $this->getInstance(['iterator' => $iterator]);
+		$this->assertSame(['expected'], $sut->get('iterator.test2.test5'), '');
+	}
+
+	/**
+	 * @test
+	 */
+	public function itShouldExchangeArrayWorksAsExpected() {
+		$array = ['test' => 'val1', 'test2' => 'val2'];
+		$sut = $this->getInstance($array);
+
+		$this->assertCount(2, $sut, '');
+
+		$sut->add('new-key', 'new-value');
+		$this->assertCount(3, $sut, '');
+
+		$sut->remove('test', 'test2');
+		$this->assertCount(1, $sut, '');
+
+		$sut->merge(['add-key' => 'add-value']);
+		$this->assertCount(2, $sut, '');
+	}
+
+	/**
+	 * @test
+	 */
+	public function itShouldReturnDefaultIfValFetchedIsNull(): void {
+		$array = [
+			'test' => null,
+			'test2' => [
+				'test' => 'val1',
+				'test2' => null
+			],
+		];
+		$sut = $this->getInstance($array);
+
+		$this->assertSame('default-value', $sut->get('', 'default-value'), '');
+		$this->assertSame('default-value', $sut->get('test', 'default-value'), '');
+		$this->assertSame('default-value', $sut->get('test2.test2', 'default-value'), '');
+		$this->assertSame('default-value', $sut->get('test2.test1.sub', 'default-value'), '');
+	}
+
+	/**
+	 * @test
+	 */
+	public function itShouldCheckForStdClass(): void {
+		$stdclass = new \stdClass();
+		$stdclass->test = 'value';
+		$array = [
+			'test' => null,
+		];
+
+		$sut = $this->getInstance($array);
+		$sut->add('test2', $stdclass);
+
+		$this->assertSame('value', $sut->get('test2.test'), '');
+	}
+
+	/**
+	 * @test
+	 */
+	public function itShouldBeDelimiterOk(): void {
+		$array = [
+			1 => 'Numeric Index',
+			'test' => [
+				'sub-test' => 'Sub string index',
+			],
+		];
+
+		$sut = $this->getInstance($array);
+		$this->assertSame('Numeric Index', $sut->get(1, 'default-value'), '');
+		$this->assertSame('Sub string index', $sut->get('test.sub-test', 'default-value'), '');
+		$this->assertSame('default-value', $sut->get('testsub-test', 'default-value'), '');
+	}
+
+	/**
+	 * @test
+	 */
+	public function itShouldExchangeStorageWhenCloned(): void {
+		$array = [
+			1 => 'Numeric Index',
+			'test' => [
+				'sub-test' => 'Sub string index',
+			],
+		];
+
+		$sut = $this->getInstance($array);
+
+		$new_sut = clone $sut;
+
+		$this->assertEmpty($new_sut->__serialize()[1], '');
+	}
+
+	/**
+	 * @test
+	 */
+	public function itShouldExchangeStorageForGetIterator(): void {
+		$array = [
+			1 => 'Numeric Index',
+			'test' => [
+				'sub-test' => 'Sub string index',
+			],
+		];
+
+		$sut = $this->getInstance($array);
+
+		foreach ($sut as $k => $v) {
+			$this->assertTrue(true);
+		}
+
+		/** @var \ArrayIterator $iterator */
+		$iterator = $sut->getIterator();
+
+		while ($iterator->valid()) {
+			$iterator->key();
+			$iterator->current();
+			$iterator->next();
+		}
+
+		$new_sut = clone $sut;
+
+		foreach ($new_sut as $k => $v) {
+			$this->fail();
+		}
+
+		/** @var \ArrayIterator $new_iterator */
+		$new_iterator = $new_sut->getIterator();
+
+		while ($new_iterator->valid()) {
+			$this->fail();
+		}
 	}
 }
