@@ -15,12 +15,8 @@ use function json_encode;
 
 class ConfigTest extends BaseConfig {
 
-	/**
-	 * @inheritDoc
-	 */
-	protected function getInstance( $val = [], $default = [] ): ConfigInterface {
+	protected function getInstance( $val = [], $default = [] ): Config {
 		$sut = new Config($val, $default);
-		$this->assertInstanceOf( Config::class, $sut );
 		$this->assertInstanceOf( Config_Interface::class, $sut );
 		$this->assertInstanceOf( ConfigInterface::class, $sut );
 		return $sut;
@@ -29,7 +25,7 @@ class ConfigTest extends BaseConfig {
 	/**
 	 * @test
 	 */
-	public function factory() {
+	public function factory(): void {
 		$sut = ConfigFactory::make([]);
 		$this->assertInstanceOf( Config::class, $sut );
 		$this->assertInstanceOf( Config_Interface::class, $sut );
@@ -39,7 +35,7 @@ class ConfigTest extends BaseConfig {
 	/**
 	 * @test
 	 */
-	public function offSetMethods() {
+	public function offSetMethods(): void {
 		$sut = $this->getInstance();
 		$sut->offsetSet('key', 42);
 		$this->assertTrue($sut->offsetExists('key'), '');
@@ -51,7 +47,7 @@ class ConfigTest extends BaseConfig {
 	/**
 	 * @test
 	 */
-	public function deprecatedPush() {
+	public function deprecatedPush(): void {
 		$sut = $this->getInstance();
 		$sut->push('key', 42);
 		$this->assertTrue($sut->has('key'), '');
@@ -64,8 +60,7 @@ class ConfigTest extends BaseConfig {
 	 * @test
 	 * it should have key
 	 */
-	public function itShouldHaveKey() {
-
+	public function itShouldHaveKey(): void {
 		$config = $this->getInstance( $this->config_arr );
 
 		$this->assertTrue( $config->has( 'tizio' ) );
@@ -80,7 +75,7 @@ class ConfigTest extends BaseConfig {
 		$this->assertFalse( $config->has( 'cesarergserg' ) );
 	}
 
-	public function keyTypeProvider() {
+	public function keyTypeProvider(): array {
 		return [
 			'int'	=> [
 				1, "a"
@@ -101,8 +96,7 @@ class ConfigTest extends BaseConfig {
 	 * @test
 	 * @dataProvider keyTypeProvider()
 	 */
-	public function it_should_have_key_with( $key, $value ) {
-
+	public function itShouldHaveKeyWith( $key, $value ) {
 		$config = $this->getInstance([
 			$key	=> $value
 		]);
@@ -118,9 +112,8 @@ class ConfigTest extends BaseConfig {
 
 	/**
 	 * @test
-	 * it should have key
 	 */
-	public function it_should_have_and_get_key() {
+	public function itShouldHaveAndGetKey(): void {
 		$config = $this->getInstance( $this->config_arr );
 		$this->assertTrue( $config->has( 'sempronio' ) );
 		$this->assertIsArray( $config->get( 'recursive' ) );
@@ -129,9 +122,8 @@ class ConfigTest extends BaseConfig {
 
 	/**
 	 * @test
-	 * it should have key
 	 */
-	public function it_should_reset_default_member_on_every_call_and_only_return_value_if_exist() {
+	public function itShouldResetDefaultMemberOnEveryCallAndOnlyReturnValueIfExist(): void {
 		$config = $this->getInstance( [ 'key' => 'value' ] );
 		$this->assertFalse( $config->has( 'some-key' ) );
 		$this->assertFalse( $config->has( 'some-key' ) );
@@ -166,10 +158,8 @@ class ConfigTest extends BaseConfig {
 
 	/**
 	 * @test
-	 * it should get_key
 	 */
-	public function it_should_get_key() {
-
+	public function itShouldGetKey(): void {
 		$config = $this->getInstance( $this->config_arr );
 
 		$this->assertEquals( [], $config->get( 'tizio' ) );
@@ -195,9 +185,8 @@ class ConfigTest extends BaseConfig {
 
 	/**
 	 * @test
-	 * it should get_key
 	 */
-	public function it_should_set_key() {
+	public function itShouldSetKey(): void {
 		$config = $this->getInstance();
 		$config->var = 'Value';
 
@@ -207,10 +196,8 @@ class ConfigTest extends BaseConfig {
 
 	/**
 	 * @test
-	 * it should return_null_if_key_does_not_exists
 	 */
-	public function it_should_return_null_if_key_does_not_exists() {
-
+	public function itShouldReturnNullIfKeyDoesNotExists(): void {
 		$config = $this->getInstance( $this->config_arr );
 
 		$this->assertEquals( null, $config->get( 'noKey' ) );
@@ -218,10 +205,8 @@ class ConfigTest extends BaseConfig {
 
 	/**
 	 * @test
-	 * it should return_the_given_value_if_key_does_not_exists
 	 */
-	public function it_should_return_the_given_value_if_key_does_not_exists() {
-
+	public function itShouldReturnTheGivenValueIfKeyDoesNotExists(): void {
 		$config = $this->getInstance( $this->config_arr );
 
 		$this->assertEquals( true, $config->get( 'noKey', true ) );
@@ -229,10 +214,8 @@ class ConfigTest extends BaseConfig {
 
 	/**
 	 * @test
-	 * it should return_an_array
 	 */
-	public function it_should_return_an_array() {
-
+	public function itShouldReturnAnArray(): void {
 		$config = $this->getInstance( $this->config_arr );
 
 		$this->assertTrue( is_array( $config->all() ) );
@@ -242,10 +225,8 @@ class ConfigTest extends BaseConfig {
 
 	/**
 	 * @test
-	 * it should add_new_item
 	 */
-	public function it_should_add_new_item() {
-
+	public function itShouldAddNewItem(): void {
 		$config = $this->getInstance( $this->config_arr, $this->default_arr );
 		$config->add( 'new_item', true );
 
@@ -254,10 +235,8 @@ class ConfigTest extends BaseConfig {
 
 	/**
 	 * @test
-	 * it should replace_recursively
 	 */
-	public function it_should_replace_recursively() {
-
+	public function itShouldReplaceRecursively(): void {
 		$config = $this->getInstance( $this->default_arr );
 		$this->assertEquals( $this->default_arr['recursive'], $config->get( 'recursive' ) );
 
@@ -273,10 +252,8 @@ class ConfigTest extends BaseConfig {
 
 	/**
 	 * @test
-	 * it should merge_given_array
 	 */
-	public function it_should_merge_given_array() {
-
+	public function itShouldMergeGivenArray(): void {
 		$config = $this->getInstance( $this->config_arr, $this->default_arr );
 
 		$new_array = [
@@ -304,10 +281,8 @@ class ConfigTest extends BaseConfig {
 
 	/**
 	 * @test
-	 * it_should_be_removed
 	 */
-	public function it_should_be_removed() {
-
+	public function itShouldBeRemoved(): void {
 		$config = $this->getInstance( $this->config_arr, $this->default_arr );
 		$config->remove( 'recursive' );
 		$this->assertFalse( $config->has( 'recursive' ) );
@@ -334,9 +309,8 @@ class ConfigTest extends BaseConfig {
 
 	/**
 	 * @test
-	 * it_should_be
 	 */
-	public function it_should_set_public_members() {
+	public function itShouldSePublicMembers(): void {
 		$expected = 42;
 
 		$config = $this->getInstance();
@@ -358,7 +332,7 @@ class ConfigTest extends BaseConfig {
 	/**
 	 * @test
 	 */
-	public function it_should_has_correct_items_on_get_Array_Copy() {
+	public function itShouldHasCorrectItemsOnGetArrayCopy(): void {
 		$arr1 = [ 'key' => 'Ciao' ];
 		$arr2 = [ 'otherKey'	=> 'Ariciao' ];
 
@@ -374,7 +348,7 @@ class ConfigTest extends BaseConfig {
 	/**
 	 * @test
 	 */
-	public function it_should_be_iterable() {
+	public function itShouldBeIterable(): void {
 		$arr = [ 'key' => 'val' ];
 		$config = $this->getInstance( $arr );
 
@@ -390,8 +364,7 @@ class ConfigTest extends BaseConfig {
 	/**
 	 * @test
 	 */
-	public function it_should_be_countable() {
-
+	public function itShouldBeCountable(): void {
 		$config = $this->getInstance( $this->config_arr );
 
 		$this->assertCount( count( $this->config_arr ), $config );
@@ -400,8 +373,7 @@ class ConfigTest extends BaseConfig {
 	/**
 	 * @test
 	 */
-	public function it_should_merge_config_object_in_array() {
-
+	public function itShouldMergeConfigObjectInArray(): void {
 		$default = $this->getInstance( [ 'er' => 'sdf' ]);
 		$config = $this->getInstance( $this->config_arr );
 
@@ -431,17 +403,12 @@ class ConfigTest extends BaseConfig {
 		$this->assertEquals( $stdobj->var, $anotherConfig->get( 'var' ) );
 		$this->assertTrue($anotherConfig->has( 'obj.var' ), '');
 		$this->assertEquals( $stdobj->obj->var, $anotherConfig->get( 'obj.var' ) );
-
-		/**
-		 * @todo https://www.php.net/manual/en/class.arrayobject.php#123572
-		 * Maybe add recursion?
-		 */
 	}
 
 	/**
 	 * @test
 	 */
-	public function it_shoud_return_array() {
+	public function itShouldReturnArray(): void {
 		$config = $this->getInstance( $this->config_arr );
 		$this->assertIsArray( $config->toArray() );
 		foreach ( $this->config_arr as $key => $value ) {
@@ -452,7 +419,7 @@ class ConfigTest extends BaseConfig {
 	/**
 	 * @test
 	 */
-	public function it_shoud_return_valid_json() {
+	public function itShouldReturnValidJson(): void {
 		$config = $this->getInstance( $this->config_arr );
 		$this->assertJson( $config->toJson() );
 		foreach ( $this->config_arr as $key => $value ) {
@@ -464,8 +431,7 @@ class ConfigTest extends BaseConfig {
 	/**
 	 * @test
 	 */
-	public function it_shoud_search_subkeys() {
-
+	public function itShouldSearchSubkeys(): void {
 		$arr = [
 			'key'	=> [
 				'subKey'	=> 'subvalue',
@@ -483,14 +449,18 @@ class ConfigTest extends BaseConfig {
 
 		$this->assertEquals( $arr['key']['subKey'], $config->get( 'key.subKey' ), '' );
 		$this->assertEquals( $arr['key']['subSubKey'], $config->get( 'key.subSubKey' ), '' );
-		$this->assertEquals( $arr['key']['subSubKey']['subSubKeyKey'], $config->get( 'key.subSubKey.subSubKeyKey' ), '' );
+		$this->assertEquals(
+			$arr['key']['subSubKey']['subSubKeyKey'],
+			$config->get( 'key.subSubKey.subSubKeyKey' ),
+			''
+		);
 		$this->assertEquals( 'subSubValue', $config->get( 'key.subSubKey.subSubKeyKey' ), '' );
 	}
 
 	/**
 	 * @test
 	 */
-	public function it_should_clone_have_empty_value() {
+	public function itShouldCloneHaveEmptyValue(): void {
 		$arr = [ 'key'	=> 'value' ];
 		$config = $this->getInstance( $arr );
 
@@ -509,10 +479,9 @@ class ConfigTest extends BaseConfig {
 	/**
 	 * @test
 	 */
-	public function it_shoud_have_callable_in_collection() {
-
+	public function itShouldHaveCallableInCollection(): void {
 		$arr = [
-			'key'	=> function () {
+			'key'	=> function (): string {
 				return 'Ciao';
 			},
 		];
@@ -526,28 +495,7 @@ class ConfigTest extends BaseConfig {
 	/**
 	 * @test
 	 */
-//	public function it_shoud_execute_callable_from_collection() {
-//
-//		$arr = [
-//			'key'	=> function ( $arg ) {
-//				return $arg;
-//			},
-//		];
-//
-//		$config = new Config( $arr );
-//		$this->assertIsCallable( $config->get( 'key' ) );
-//
-//		codecept_debug( $config->key( 'ciao' ) );
-//
-//
-////		$callable = $config->get( 'key' );
-////		$this->assertStringContainsString( 'Ciao', $callable() );
-//	}
-
-	/**
-	 * @test
-	 */
-	public function itShouldReceiveIterableAsArgument() {
+	public function itShouldReceiveIterableAsArgument(): void {
 		$iterator = new \ArrayIterator(['test' => 'val1', 'test2' => 'val2']);
 		$sut = $this->getInstance($iterator);
 		$this->assertSame('val1', $sut->get('test'), '');
@@ -569,7 +517,7 @@ class ConfigTest extends BaseConfig {
 	/**
 	 * @test
 	 */
-	public function itShouldExchangeArrayWorksAsExpected() {
+	public function itShouldExchangeArrayWorksAsExpected(): void {
 		$array = ['test' => 'val1', 'test2' => 'val2'];
 		$sut = $this->getInstance($array);
 

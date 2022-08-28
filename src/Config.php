@@ -10,6 +10,7 @@ use ArrayObject;
  * @todo Maybe some ideas iterator: https://github.com/clean/data/blob/master/src/Collection.php
  * @todo Maybe some ideas json to array: https://github.com/Radiergummi/libconfig/blob/master/src/Libconfig/Config.php
  * @todo Maybe some ideas: https://www.simonholywell.com/post/2017/04/php-and-immutability-part-two/
+ * @todo Maybe add recursion? https://www.php.net/manual/en/class.arrayobject.php#123572
  *
  * @template TKey as array-key
  * @template TValue
