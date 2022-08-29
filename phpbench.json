@@ -1,0 +1,16 @@
+{
+  "$schema": "./vendor/phpbench/phpbench/phpbench.schema.json",
+  "runner.bootstrap":       "vendor/autoload.php",
+  "runner.path":            "tests/Benchmark",
+  "runner.retry_threshold": 5,
+  "runner.iterations": 5,
+  "runner.revs": 10000,
+  "runner.warmup":          2,
+  "report.generators": {
+    "all": {
+      "generator": "composite",
+      "reports": [ "aggregate" ]
+    }
+  },
+  "runner.time_unit": "milliseconds"
+}
