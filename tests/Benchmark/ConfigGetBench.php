@@ -11,29 +11,28 @@ use ItalyStrap\Config\Config;
 final class ConfigGetBench {
 
 	private Config $config;
-	private array $config_arr;
-	private array $default_arr;
 
 	public function setUp(): void {
-		$this->config_arr = require __DIR__ . '/../_data/config/config.php';
-		$this->default_arr = require __DIR__ . '/../_data/config/default.php';
-
-		$this->config = new Config($this->config_arr);
+		$this->config = new Config(require __DIR__ . '/../_data/config/config.php');
 	}
 
-	public function getEmptyIndex(): void {
+	public function benchGetEmptyIndex(): void {
 		$this->config->get('');
 	}
 
-	public function getEmptyIndexWithDefault(): void {
+	public function benchGetEmptyIndexWithDefault(): void {
 		$this->config->get('', 'default-value');
 	}
 
-	public function getSingleIndex(): void {
+	public function benchGetSingleIndex(): void {
 		$this->config->get('tizio');
 	}
 
-	public function getSingleIndexWithDefault(): void {
+	public function benchGetSingleIndexWithDefault(): void {
 		$this->config->get('tizio', 'default-value');
+	}
+
+	public function benchGetFilledConfig(): void {
+		$this->config->get('filled-config.first.iterator-aggregate.property3');
 	}
 }

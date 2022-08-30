@@ -28,15 +28,15 @@ final class ConfigMergeBench {
 		];
 	}
 
-	public function benchMergeSingle(): void {
+	public function benchMergeSingleParam(): void {
 		$this->config->merge(['index' => 'value']);
 	}
 
-	public function benchMergeDouble(): void {
+	public function benchMergeDoubleParams(): void {
 		$this->config->merge($this->config_arr, $this->default_arr);
 	}
 
-	public function benchMergeMultiple(): void {
+	public function benchMergeMultipleParams(): void {
 		$this->config->merge(
 			$this->config_arr,
 			$this->config_arr,
@@ -51,11 +51,11 @@ final class ConfigMergeBench {
 		);
 	}
 
-	public function benchMergeStdClass(): void {
+	public function benchMergeStdClassAsSecondParams(): void {
 		$this->config->merge(['index' => 'value'], $this->stdClass);
 	}
 
-	public function benchMergeMultipleStdClass(): void {
+	public function benchMergeMultipleStdClassParams(): void {
 		$this->config->merge(
 			$this->stdClass,
 			$this->stdClass,

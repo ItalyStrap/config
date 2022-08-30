@@ -26,6 +26,20 @@ $iterator_aggregate_test = new class implements \IteratorAggregate {
 	}
 };
 
+$array1 = [
+	"first",
+	"second",
+	"something",
+	"another",
+];
+
+$array2 = [
+	"first-key" => "first-value",
+	"second-key" => "something-value",
+	"stdclass" => $anonymous_class,
+	'iterator-aggregate' => $iterator_aggregate_test
+];
+
 return [
 	'tizio'     => [],
 	'caio'      => '',
@@ -48,4 +62,12 @@ return [
 	'iterator-with-default-file' => new \ArrayIterator(require 'default.php'),
 	'iterator-iterator' => new \IteratorIterator(new \ArrayIterator(require 'default.php')),
 	'iterator-iterator-config' => new \IteratorIterator(new \ArrayIterator(new Config(require 'default.php'))),
+
+	'filled-array' => \array_fill_keys($array1, $array2),
+	'filled-config' => new Config(\array_fill_keys($array1, $array2), \array_fill_keys($array1, $array2)),
+	'iterator-config' => new Config(new \ArrayIterator(require 'default.php')),
+	'iterator-iterator-config-config' => new Config(new \IteratorIterator(new \ArrayIterator(require 'default.php'))),
+	'iterator-iterator-config-config-config' => new Config(
+		new \IteratorIterator(new \ArrayIterator(new Config(require 'default.php')))
+	),
 ];

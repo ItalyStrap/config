@@ -12,5 +12,5 @@
       "reports": [ "aggregate" ]
     }
   },
-  "runner.time_unit": "milliseconds"
+  "runner.time_unit": "microseconds"
 }
