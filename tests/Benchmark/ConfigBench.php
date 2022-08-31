@@ -20,18 +20,6 @@ final class ConfigBench {
 		$this->config->add('index', 'value');
 	}
 
-	public function benchHas() {
-		$this->config->has('index');
-	}
-
-	public function benchGet() {
-		$this->config->get('index', 'default');
-	}
-
-	public function benchMerge() {
-		$this->config->merge(['index']);
-	}
-
 	public function benchRemove() {
 		$this->config->remove(['index']);
 	}

@@ -5,20 +5,23 @@ namespace ItalyStrap\Tests;
 
 use ItalyStrap\Config\Config;
 
+$std = new \stdClass();
+$std->some_std_key = 'some-std-value';
+
 $anonymous_class = new class() {
 	public string $var1 = 'value 1';
 	public string $var2 = 'value 2';
 	public string $var3 = 'value 3';
 };
 
-$iterator_aggregate_test = new class implements \IteratorAggregate {
+$iterator_aggregate_test = new class($anonymous_class) implements \IteratorAggregate {
 	public string $property1 = "Public property one";
 	public string $property2 = "Public property two";
 	public string $property3 = "Public property three";
-	private string $property4;
+	public object $property4;
 
-	public function __construct() {
-		$this->property4 = "last property";
+	public function __construct(object $object) {
+		$this->property4 = $object;
 	}
 
 	public function getIterator() {
@@ -36,7 +39,8 @@ $array1 = [
 $array2 = [
 	"first-key" => "first-value",
 	"second-key" => "something-value",
-	"stdclass" => $anonymous_class,
+	"srd-class" => $std,
+	"anonymous-class" => $anonymous_class,
 	'iterator-aggregate' => $iterator_aggregate_test
 ];
 

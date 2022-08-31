@@ -2,6 +2,7 @@
 /vendor/
 /_others/
 src/Collections/
+.phpbench/
 
 # File
 *.local
@@ -11,3 +12,5 @@ codeception.yml
 infection.json.dist
 phpbench.json
 c3.php
+rector.php
+/**/*.bak
