@@ -1,4 +1,5 @@
 # Directory
+.idea/
 /vendor/
 /_others/
 src/Collections/
