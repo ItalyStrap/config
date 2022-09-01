@@ -14,6 +14,7 @@ namespace ItalyStrap\Config;
  * ConfigFactory Class
  * @deprecated
  */
+// phpcs:ignore
 class Config_Factory {
 
 	/**

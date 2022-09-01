@@ -8,7 +8,7 @@ namespace ItalyStrap\Config;
  * @package ItalyStrap\Config
  * @deprecated
  */
+// phpcs:ignore
 interface Config_Interface {
-
 
 }
