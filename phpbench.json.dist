@@ -10,7 +10,13 @@
     "all": {
       "generator": "composite",
       "reports": [ "aggregate" ]
-    }
+    },
+     "stats": {
+       "extends": "default",
+       "title": "Useful stats",
+       "description": "Benchmark how long it takes use the API's",
+       "cols": [ "subject", "mode", "rstdev" ]
+     }
   },
   "runner.time_unit": "microseconds"
 }

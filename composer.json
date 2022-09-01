@@ -78,7 +78,13 @@
             "vendor\\bin\\codecept run unit && vendor\\bin\\infection --threads=4"
         ],
         "bench": [
-            "vendor\\bin\\phpbench run"
+            "vendor\\bin\\phpbench run --report=stats"
+        ],
+        "bench:prev": [
+            "vendor\\bin\\phpbench run --report=stats --tag=original"
+        ],
+        "bench:compare:prev": [
+            "vendor\\bin\\phpbench run --report=stats --ref=original"
         ],
         "metrics": [
             "vendor\\bin\\phpmetrics --report-html='./tests/_output/report' ./src"
