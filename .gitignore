@@ -4,6 +4,7 @@
 /_others/
 src/Collections/
 .phpbench/
+tests/_stats
 
 # File
 *.local
