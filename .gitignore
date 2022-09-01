@@ -1,7 +1,10 @@
 # Directory
+.idea/
 /vendor/
 /_others/
 src/Collections/
+.phpbench/
+tests/_stats
 
 # File
 *.local
@@ -9,4 +12,7 @@ codeception.yml
 *.lock
 *.phar
 infection.json.dist
+phpbench.json
 c3.php
+rector.php
+/**/*.bak
