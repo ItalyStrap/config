@@ -1,4 +1,4 @@
-name: Unit Test
+name: Benchmark
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   tests:
-    name: 🐘 Test on PHP ${{ matrix.php_versions }}
+    name: 🐘 Bench under PHP ${{ matrix.php_versions }}
 
     runs-on: ubuntu-latest
     continue-on-error: ${{ matrix.php_versions == '8.1' }}
