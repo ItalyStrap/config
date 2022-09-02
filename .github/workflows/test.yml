@@ -9,11 +9,14 @@ jobs:
     name: 🐘 Test on PHP ${{ matrix.php_versions }}
 
     runs-on: ubuntu-latest
-    continue-on-error: ${{ matrix.php_versions == '8.1' }}
+    continue-on-error: ${{ matrix.php_versions == '8.2' }}
 
     strategy:
       matrix:
         php_versions: [ '7.4', '8.0', '8.1' ]
+        dependencies:
+         - "lowest"
+         - "highest"
         include:
           - php-version: "8.2"
             composer-options: "--prefer-dist --ignore-platform-reqs"
@@ -31,6 +34,7 @@ jobs:
 
     - uses: ramsey/composer-install@v1
       with:
+        dependency-versions: "${{ matrix.dependencies }}"
         composer-options: "${{ matrix.composer-options }}"
 
     - name: Run test suite
