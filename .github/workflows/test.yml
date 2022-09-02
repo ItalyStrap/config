@@ -27,9 +27,17 @@ jobs:
         # extensions: gd, zip
         tools: composer:v2
 
-    - uses: ramsey/composer-install@v1
-      with:
-        composer-options: "--prefer-dist --ignore-platform-reqs"
+    - name: "Install dependencies for '8.1'"
+        if: ${{ matrix.php_versions == '8.1' }}
+        uses: ramsey/composer-install@v1
+        with:
+          composer-options: "--prefer-dist --ignore-platform-reqs"
+
+    - name: "Install dependencies for others versions"
+        if: ${{ matrix.php_versions != '8.1' }}
+        uses: ramsey/composer-install@v1
+        with:
+          composer-options: "--prefer-dist"
 
     - name: Run test suite
       run: vendor/bin/codecept run unit --coverage-text

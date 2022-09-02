@@ -25,8 +25,8 @@ jobs:
         with:
           composer-options: "--prefer-dist --ignore-platform-reqs"
 
+      - name: Psalm
+        run: vendor/bin/psalm
+
       - name: PHPStan
         run: vendor/bin/phpstan analyze
-
-#      - name: Psalm
-#        run: vendor/bin/psalm
