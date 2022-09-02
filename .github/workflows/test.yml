@@ -14,7 +14,9 @@ jobs:
     strategy:
       matrix:
         php_versions: [ '7.4', '8.0', '8.1' ]
-
+        include:
+          - php-version: "8.2"
+            composer-options: "--prefer-dist --ignore-platform-reqs"
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -27,17 +29,9 @@ jobs:
         # extensions: gd, zip
         tools: composer:v2
 
-    - name: "Install dependencies for '8.1'"
-        if: ${{ matrix.php_versions == '8.1' }}
-        uses: ramsey/composer-install@v1
-        with:
-          composer-options: "--prefer-dist --ignore-platform-reqs"
-
-    - name: "Install dependencies for others versions"
-        if: ${{ matrix.php_versions != '8.1' }}
-        uses: ramsey/composer-install@v1
-        with:
-          composer-options: "--prefer-dist"
+    - uses: ramsey/composer-install@v1
+      with:
+        composer-options: "${{ matrix.composer-options }}"
 
     - name: Run test suite
       run: vendor/bin/codecept run unit --coverage-text
