@@ -1,0 +1,36 @@
+name: Benchmark
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  bench:
+    name: 🐘 Bench under PHP ${{ matrix.php_versions }}
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php_versions: [ '7.4', '8.0', '8.1' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php_versions }}
+          coverage: "pcov"
+          # extensions: gd, zip
+          tools: composer:v2
+
+      - uses: ramsey/composer-install@v1
+
+      - name: Run PHPBench suite
+        run: vendor/bin/phpbench run --report=stats
