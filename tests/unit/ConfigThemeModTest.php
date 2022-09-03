@@ -6,35 +6,16 @@ namespace ItalyStrap\Tests;
 use ItalyStrap\Config\ConfigInterface;
 use ItalyStrap\Config\ConfigThemeMods;
 use ItalyStrap\Event\EventDispatcherInterface;
-use Prophecy\Argument;
-// phpcs:ignoreFile
-require_once 'BaseConfig.php';
 
 class ConfigThemeModTest extends BaseConfig {
 
-	/**
-	 * @var \UnitTester
-	 */
-	protected $tester;
-	/**
-	 * @var \Prophecy\Prophecy\ObjectProphecy
-	 */
-	private $config;
-	/**
-	 * @var \Prophecy\Prophecy\ObjectProphecy
-	 */
-	private $dispatcher;
+	protected \Prophecy\Prophecy\ObjectProphecy $config;
+	protected \Prophecy\Prophecy\ObjectProphecy $dispatcher;
 
-	/**
-	 * @return EventDispatcherInterface
-	 */
 	public function getDispatcher(): EventDispatcherInterface {
 		return $this->dispatcher->reveal();
 	}
 
-	/**
-	 * @return ConfigInterface
-	 */
 	public function getConfig( $val = [], $default = [] ): ConfigInterface {
 		$this->config->willBeConstructedWith(
 			[
@@ -42,22 +23,22 @@ class ConfigThemeModTest extends BaseConfig {
 				$default
 			]
 		);
+
 		return $this->config->reveal();
 	}
 
+	// phpcs:ignore
 	protected function _before() {
 		$this->config = $this->prophesize( ConfigInterface::class );
 		$this->dispatcher = $this->prophesize( EventDispatcherInterface::class );
 		parent::_before();
 	}
 
+	// phpcs:ignore
 	protected function _after() {
 		parent::_after();
 	}
 
-	/**
-	 * @inheritDoc
-	 */
 	protected function getInstance( $val = [], $default = [] ): ConfigInterface {
 		$sut = new ConfigThemeMods( $this->getConfig(...\func_get_args()), $this->getDispatcher() );
 		$this->assertInstanceOf( ConfigInterface::class, $sut, '' );
@@ -70,6 +51,7 @@ class ConfigThemeModTest extends BaseConfig {
 	public function getAndAddOk() {
 		$this->dispatcher->filter('theme_mod_key', null )->willReturn('value');
 
+		// phpcs:ignore
 		\tad\FunctionMockerLe\define('set_theme_mod', function ( string $parameter_key, string $value ) {
 			$this->assertStringContainsString('key', $parameter_key, '');
 			$this->assertStringContainsString('value', $value, '');
@@ -90,6 +72,7 @@ class ConfigThemeModTest extends BaseConfig {
 			'key2'	=> 'val2',
 		];
 
+		// phpcs:ignore
 		\tad\FunctionMockerLe\define('remove_theme_mod', function ( $key ) use ( &$collection ) {
 			unset( $collection[ $key ] );
 		});
@@ -113,10 +96,12 @@ class ConfigThemeModTest extends BaseConfig {
 		$this->config->merge($collection)->shouldbeCalled(1);
 		$this->config->all()->willReturn($collection);
 
+		// phpcs:ignore
 		\tad\FunctionMockerLe\define('get_option', function ( string $key ) : string {
 			return 'theme_name';
 		});
 
+		// phpcs:ignore
 		\tad\FunctionMockerLe\define('update_option', function ( string $key, array $value ) use ( $collection ) {
 			$this->assertStringContainsString('theme_mods_theme_name', $key, '');
 			$this->assertSame($collection, $value, '');

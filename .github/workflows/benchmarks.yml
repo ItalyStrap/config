@@ -2,14 +2,18 @@ name: Benchmark
 
 on:
   push:
+    branches:
+      - master
   pull_request:
+    branches:
+      - master
 
 jobs:
-  tests:
+  bench:
     name: 🐘 Bench under PHP ${{ matrix.php_versions }}
 
     runs-on: ubuntu-latest
-    continue-on-error: ${{ matrix.php_versions == '8.1' }}
+    if: "!contains(github.event.head_commit.message, '--skip ci') && !github.event.pull_request.draft"
 
     strategy:
       matrix:
@@ -23,13 +27,11 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php_versions }}
-          coverage: xdebug2
+          coverage: "pcov"
           # extensions: gd, zip
           tools: composer:v2
 
-      - uses: ramsey/composer-install@v1
-        with:
-          composer-options: "--prefer-dist --ignore-platform-reqs"
+      - uses: ramsey/composer-install@v2
 
       - name: Run PHPBench suite
         run: vendor/bin/phpbench run --report=stats
