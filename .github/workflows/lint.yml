@@ -10,7 +10,7 @@ on:
 
 jobs:
   lint:
-    name: ✔️ Linting files
+    name: ✔️ CS check al files
 
     runs-on: ubuntu-latest
 
@@ -30,11 +30,6 @@ jobs:
         run: find ./src/ ./tests/ -type f -name '*.php' -print0 | xargs -0 -L 1 -P 4 -- php -l
 
       - uses: ramsey/composer-install@v2
-#      - name: Install dependencies
-#        run: composer install --prefer-dist --ignore-platform-reqs
-
-#      - name: Coding standard
-#        run: vendor/bin/phpcs --ignore=./tests/_support/* ./src/ ./tests/
 
       - name: Coding standard
         run: composer run cs
