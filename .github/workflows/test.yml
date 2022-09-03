@@ -40,7 +40,7 @@ jobs:
       with:
         ignore-cache: "yes"
 #        dependency-versions: "${{ matrix.dependencies }}"
-        composer-options: "--prefer-dist ${{ matrix.composer-options }}"
+        composer-options: "--prefer-dist"
 
     - name: Run test suite
       run: vendor/bin/codecept run unit --coverage-text
