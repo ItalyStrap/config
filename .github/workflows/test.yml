@@ -19,7 +19,7 @@ jobs:
          - "highest"
         include:
           - php-version: "8.2"
-            composer-options: "--prefer-dist --ignore-platform-reqs"
+          - composer-options: "--ignore-platform-reqs"
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -32,8 +32,9 @@ jobs:
         # extensions: gd, zip
         tools: composer:v2
 
-    - uses: ramsey/composer-install@v1
+    - uses: ramsey/composer-install@v2
       with:
+        ignore-cache: "yes"
         dependency-versions: "${{ matrix.dependencies }}"
         composer-options: "${{ matrix.composer-options }}"
 
