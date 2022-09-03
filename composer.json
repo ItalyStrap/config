@@ -61,7 +61,7 @@
             "@infection"
         ],
         "cs": [
-            "vendor\\bin\\phpcs -p --ignore=./tests/_support/* ./src/ ./tests/"
+            "@php vendor/bin/phpcs -p --ignore=./tests/_support/* ./src/ ./tests/"
         ],
         "cs:fix": [
             "vendor\\bin\\phpcbf -p --ignore=./tests/_support/* ./src/ ./tests/ && vendor\\bin\\phpcs -p --ignore=./tests/_support/* ./src/ ./tests/"
