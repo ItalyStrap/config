@@ -12,7 +12,7 @@ codeception.yml
 *.lock
 *.phar
 infection.json.dist
-phpbench.json
 c3.php
+phpbench.json
 rector.php
-/**/*.bak
+**/*.bak

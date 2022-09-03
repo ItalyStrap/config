@@ -14,43 +14,38 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php" : ">=7.2"
+        "php" : ">=7.4"
     },
     "require-dev": {
-        "lucatume/wp-browser": "~2.0",
+        "lucatume/wp-browser": "^2.0",
         "lucatume/function-mocker-le": "^1.0",
-        "codeception/c3": "2.*",
-        "codeception/module-asserts": "^1.0",
-        "codeception/module-phpbrowser": "^1.0",
-        "codeception/module-webdriver": "^1.0",
-        "codeception/module-db": "^1.0",
-        "codeception/module-filesystem": "^1.0",
-        "codeception/module-cli": "^1.0",
-        "codeception/util-universalframework": "^1.0",
-        "brianium/paratest": "^4.0",
-        "squizlabs/php_codesniffer": "*",
-        "phpcompatibility/php-compatibility": "*",
-        "dealerdirect/phpcodesniffer-composer-installer": "^v0.7.1",
-        "phpstan/phpstan": "^0.11.16",
-        "szepeviktor/phpstan-wordpress": "^0.3.0",
-        "vimeo/psalm": "^3.9",
-        "phpbench/phpbench": "@dev",
-        "infection/infection": "^0.15.3",
-        "phpmetrics/phpmetrics": "^2.5",
-        "nunomaduro/phpinsights": "^1.14.0",
-        "phpunit/php-code-coverage": "^7.0",
-        "brightnucleus/config": "0.4.*",
-        "wpfulcrum/config": "3.0.*",
-        "italystrap/debug": "^2.0",
+        "codeception/module-asserts": "^2.0",
+        "phpspec/prophecy-phpunit": "^2.0",
+        "infection/infection": "^0.26.6",
+        "rector/rector": "^0.14.0",
+        "vimeo/psalm": "^4.26",
+        "infection/codeception-adapter": "^0.4.1",
+        "squizlabs/php_codesniffer": "^3.7",
+        "phpcompatibility/php-compatibility": "^9.3",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
+        "phpbench/phpbench": "^1.2",
         "italystrap/event": "dev-master",
-        "phpspec/prophecy": "*"
+        "humanmade/psalm-plugin-wordpress": "^2.0",
+        "phpstan/phpstan": "^1.8",
+        "phpmetrics/phpmetrics": "^2.8"
     },
     "autoload": {
         "psr-4": {
-            "ItalyStrap\\": "src/"
-        }
+            "ItalyStrap\\Config\\": "src/"
+        },
+        "classmap": [
+            "legacy/"
+        ]
     },
     "autoload-dev": {
+        "classmap": [
+            "tests/"
+        ],
         "psr-4": {
             "ItalyStrap\\Tests\\": "tests/"
         },
@@ -63,37 +58,54 @@
     },
     "scripts": {
         "test": [
-            "test"
+            "@cs",
+            "@psalm",
+            "@unit",
+            "@infection"
         ],
         "cs": [
-            "vendor\\bin\\phpcbf -p --ignore=./tests/_support/* ./src/ ./tests/ && vendor\\bin\\phpcs -p --ignore=./tests/_support/* ./src/ ./tests/"
+            "@php vendor/bin/phpcs -p --ignore=./tests/_support/* ./src/ ./tests/"
         ],
-        "analyze": [
-            "vendor\\bin\\phpstan analyze --level=max && vendor\\bin\\psalm"
+        "cs:fix": [
+            "@php vendor/bin/phpcbf -p --ignore=./tests/_support/* ./src/ ./tests/"
         ],
-        "unit:debug": [
-            "vendor\\bin\\codecept run unit --debug"
+        "phpstan": [
+            "@php vendor/bin/phpstan analyze --level=max"
+        ],
+        "psalm": [
+            "@php vendor/bin/psalm --no-cache"
+        ],
+        "static:all": [
+            "@php vendor/bin/phpstan analyze --level=max && @php vendor/bin/psalm"
         ],
         "unit": [
-            "vendor\\bin\\codecept run unit && vendor\\bin\\infection --threads=4"
+            "@php vendor/bin/codecept run unit",
+            "@clean"
+        ],
+        "unit:debug": [
+            "@php vendor/bin/codecept run unit --debug",
+            "@clean"
+        ],
+        "infection": [
+            "@php vendor/bin/infection --threads=4"
         ],
         "bench": [
-            "vendor\\bin\\phpbench run --report=stats"
+            "@php vendor/bin/phpbench run --report=stats"
         ],
         "bench:prev": [
-            "vendor\\bin\\phpbench run --report=stats --tag=original"
+            "@php vendor/bin/phpbench run --report=stats --tag=original"
         ],
         "bench:compare:prev": [
-            "vendor\\bin\\phpbench run --report=stats --ref=original"
+            "@php vendor/bin/phpbench run --report=stats --ref=original"
         ],
         "metrics": [
-            "vendor\\bin\\phpmetrics --report-html='./tests/_output/report' ./src"
+            "@php vendor/bin/phpmetrics --report-html='./tests/_output/report' ./src"
         ],
         "insights": [
-            "vendor\\bin\\phpinsights"
+            "@php vendor/bin/phpinsights"
         ],
         "clean": [
-            "vendor\\bin\\codecept clean"
+            "@php vendor/bin/codecept clean"
         ]
     },
     "support"    : {
