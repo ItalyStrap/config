@@ -1,4 +1,4 @@
-name: File lint and file validation
+name: CS - File lint and file validation
 
 on:
   push:
