@@ -35,7 +35,7 @@ jobs:
 
     - uses: ramsey/composer-install@v2
       with:
-        ignore-cache: "yes"
+#        ignore-cache: "yes"
         composer-options: "--prefer-dist"
 
     - name: Run test suite
