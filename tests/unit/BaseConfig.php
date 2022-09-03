@@ -3,18 +3,14 @@ declare(strict_types=1);
 
 namespace ItalyStrap\Tests;
 
-use ArrayIterator;
 use Codeception\Test\Unit;
-use \ItalyStrap\Config\Config;
-use ItalyStrap\Config\Config_Interface;
 use ItalyStrap\Config\ConfigInterface;
-use stdClass;
+use Prophecy\PhpUnit\ProphecyTrait;
 use UnitTester;
-use function array_replace_recursive;
-use function is_array;
-use function json_encode;
-// phpcs:ignoreFile
+
 abstract class BaseConfig extends Unit {
+
+	use ProphecyTrait;
 
 	/**
 	 * @var UnitTester
@@ -28,7 +24,7 @@ abstract class BaseConfig extends Unit {
 	protected $default_arr;
 	protected $empty_arr;
 
-	// phpcs: ignore
+	// phpcs:ignore
 	protected function _before() {
 		$this->config_file_name = __DIR__ . '/../_data/config/config.php';
 		$this->default_file_name = __DIR__ . '/../_data/config/default.php';
@@ -39,6 +35,7 @@ abstract class BaseConfig extends Unit {
 		$this->empty_arr = require( $this->empty_file_name );
 	}
 
+	// phpcs:ignore
 	protected function _after() {
 	}
 
