@@ -11,7 +11,7 @@ tests/_stats
 codeception.yml
 *.lock
 *.phar
-infection.json.dist
+infection.json
 phpbench.json
 c3.php
 rector.php

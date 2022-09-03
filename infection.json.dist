@@ -2,12 +2,15 @@
   "source": {
     "directories": [
       "src"
+    ],
+    "excludes": [
+      "ConfigThemeMods.php"
     ]
   },
   "logs": {
     "text": "php://stdout",
-    "badge": {
-      "branch": "master"
+    "stryker": {
+      "badge": "/^master.*$/"
     }
   },
   "timeout": 10,
