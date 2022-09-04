@@ -32,7 +32,8 @@
         "italystrap/event": "dev-master",
         "humanmade/psalm-plugin-wordpress": "^2.0",
         "phpstan/phpstan": "^1.8",
-        "phpmetrics/phpmetrics": "^2.8"
+        "phpmetrics/phpmetrics": "^2.8",
+        "italystrap/debug": "^2.1"
     },
     "autoload": {
         "psr-4": {
@@ -61,7 +62,8 @@
             "@cs",
             "@psalm",
             "@unit",
-            "@infection"
+            "@infection",
+            "@examples"
         ],
         "cs": [
             "@php vendor/bin/phpcs -p --ignore=./tests/_support/* ./src/ ./tests/"
@@ -106,6 +108,9 @@
         ],
         "clean": [
             "@php vendor/bin/codecept clean"
+        ],
+        "examples": [
+            "@php index.php"
         ]
     },
     "support"    : {

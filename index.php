@@ -13,44 +13,47 @@ Domain Path: Domain Path
 
 /*
 
-    Copyright (C) Year  Author  Email
+	Copyright (C) Year  Author  Email
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License, version 2, as
-    published by the Free Software Foundation.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License, version 2, as
+	published by the Free Software Foundation.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 declare(strict_types=1);
 
 require( __DIR__ . '/vendor/autoload.php' );
 
-use ItalyStrap\Config\{Config, ConfigFactory};
+use ItalyStrap\Config\Config;
+use ItalyStrap\Config\ConfigFactory;
 
-// $config = Config_Factory::make( [ 'test' => 'value' ], [ 'test' => null ] );
-//
-// d( $config->test_null );
-// ddd( $config->test );
+if (!function_exists('add_action')) {
+	function add_action($vent_name, $callable, $priority = 10, $num_args = 3) {
+		$callable();
+	}
+}
 
-add_action( 'wp_footer', function () {
+add_action( 'wp_footer', static function () {
 	$config = ConfigFactory::make( [ 'test' => 'value', 'test2' => 'value2' ], [ 'test' => null ] );
+	var_dump('VAR_DUMP');
+	var_dump($config->all());
 
-//	d( $config->all() );
-//
-//	d( $config->get( 'prova' ) );
-//	d( $config->get( 'test' ) );
-//
-//	d( $config->has( 'prova' ) );
-//	d( $config->has( 'test' ) );
-//
+	var_dump( $config->get( 'key-does-not-exists' ) );
+	var_dump( $config->get( 'test' ) );
+
+	var_dump( $config->has( 'key-does-not-exists' ) );
+	var_dump( $config->has( 'test' ) );
+
+
 	$default = [
 		'key'	=> 'value',
 		'key1'	=> [
@@ -66,29 +69,24 @@ add_action( 'wp_footer', function () {
 					'subSubKey'	=> 'nestedValue'
 				]
 			]
-		] );
+		]
+	);
 
-//	d( $config->get( 'key1.subKey' ) );
-//	d( $config->search( 'key1' ) );
-//	d( $config->search( 'key2' ) );
-//	d( $config->search( 'key1.subKey' ) );
-//	d( $config->search( 'key1.nested.subSubKey' ) );
-//	d( $config->search( 'key1.nested.subSubKeyfdgd' ) );
+	var_dump( $config->get( 'key1.subKey' ) );
+	var_dump( $config->get( 'key1' ) );
+	var_dump( $config->get( 'key2' ) );
+	var_dump( $config->get( 'key1.subKey' ) );
+	var_dump( $config->get( 'key1.nested.subSubKey' ) );
+	var_dump( $config->get( 'key1.nested.subSubKeyfdgd' ) );
 
-//	d( $config->merge( [ 'key1' => [ 1 ] ] ) );
+	var_dump( $config->merge( [ 'key1' => [ 1 ] ] ) );
 
-//	d( $config['key1']['subKe'] ?? '' );
-//	d( $config->key1['subKey'] ?? '' );
-//	d( $config->key1->subKey ?? '' );
-//	d( $config->getArrayCopy() );
+	var_dump( $config['key1']['subKe'] ?? '' );
+	var_dump( $config->key1['subKey'] ?? '' );
+	var_dump( $config->key1->subKey ?? '' );
+	var_dump( $config->getArrayCopy() );
 
-//	d( $config->test_null );
-// ddd( $config->test );
-//	d( $config->undefined );
-
-//	function bridge( &$check ){
-//		return $check ?? null;
-//	}
-//
-//	d( bridge( $config->undefined ) );
+	var_dump( $config->get('test_null') );
+	var_dump( $config->get('test') );
+	var_dump( $config->get('undefined') );
 } );
