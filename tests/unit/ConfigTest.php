@@ -282,6 +282,19 @@ class ConfigTest extends BaseConfig {
 	/**
 	 * @test
 	 */
+	public function itShouldMergeGivenGenerator(): void {
+		$sut = $this->getInstance();
+		$generator = function (): \Traversable {
+			yield 'key' => 'val';
+		};
+
+		$sut->merge($generator());
+		$this->assertSame('val', $sut->get('key'), '');
+	}
+
+	/**
+	 * @test
+	 */
 	public function itShouldBeRemoved(): void {
 		$config = $this->getInstance( $this->config_arr, $this->default_arr );
 		$config->remove( 'recursive' );

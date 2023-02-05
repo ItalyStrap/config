@@ -89,4 +89,13 @@ add_action( 'wp_footer', static function () {
 	var_dump( $config->get('test_null') );
 	var_dump( $config->get('test') );
 	var_dump( $config->get('undefined') );
+
+	var_dump( PHP_EOL );
+	var_dump( PHP_EOL );
+	$config = ConfigFactory::make();
+	$generator = function (): \Traversable {
+		yield 'key' => 'val';
+	};
+	$config->merge($generator());
+	var_dump($config->get('key'));
 } );
