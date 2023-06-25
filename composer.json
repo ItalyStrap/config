@@ -21,18 +21,23 @@
         "lucatume/function-mocker-le": "^1.0",
         "codeception/module-asserts": "^2.0",
         "phpspec/prophecy-phpunit": "^2.0",
-        "infection/infection": "^0.26.6",
-        "rector/rector": "^0.14.0",
-        "vimeo/psalm": "^4.26",
-        "infection/codeception-adapter": "^0.4.1",
+
         "squizlabs/php_codesniffer": "^3.7",
         "phpcompatibility/php-compatibility": "^9.3",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
+
+        "infection/infection": "^0.26.6",
+        "infection/codeception-adapter": "^0.4.1",
+
+        "vimeo/psalm": "^4.26",
+        "humanmade/psalm-plugin-wordpress": "^2.0.3",
+
         "phpbench/phpbench": "^1.2",
-        "italystrap/event": "dev-master",
-        "humanmade/psalm-plugin-wordpress": "^2.0",
-        "phpstan/phpstan": "^1.8",
         "phpmetrics/phpmetrics": "^2.8",
+
+        "rector/rector": "^0.14.0",
+        "phpstan/phpstan": "^1.8",
+        "italystrap/event": "dev-master",
         "italystrap/debug": "^2.1"
     },
     "autoload": {
