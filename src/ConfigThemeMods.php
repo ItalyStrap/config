@@ -107,7 +107,11 @@ class ConfigThemeMods implements ConfigInterface {
 		return $this->config->toJson();
 	}
 
-	public function getIterator(): iterable {
+	/**
+	 * @psalm-suppress InvalidReturnType
+	 * @psalm-suppress InvalidReturnStatement
+	 */
+	public function getIterator(): \Traversable {
 		return $this->config->getIterator();
 	}
 
