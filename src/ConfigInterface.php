@@ -6,8 +6,8 @@ namespace ItalyStrap\Config;
 /**
  * @template TKey as array-key
  * @template TValue
- * @template-implements \ArrayAccess<TKey, TValue>
- * @template-implements \IteratorAggregate<TKey, TValue>
+ * @template-extends \ArrayAccess<TKey, TValue>
+ * @template-extends \IteratorAggregate<TKey, TValue>
  */
 interface ConfigInterface extends Config_Interface, \ArrayAccess, \IteratorAggregate, \Countable {
 
