@@ -11,20 +11,11 @@
         <ignoreFiles>
             <directory name="legacy" />
             <directory name="vendor" />
+            <file name="src/DeprecatedTrait.php" />
         </ignoreFiles>
     </projectFiles>
 
     <stubs>
         <file name="vendor/php-stubs/wordpress-stubs/wordpress-stubs.php" />
     </stubs>
-
-    <issueHandlers>
-        <UndefinedFunction>
-            <errorLevel type="suppress">
-<!--                <referencedFunction name="get_transient"/>-->
-<!--                <referencedFunction name="set_transient"/>-->
-<!--                <referencedFunction name="delete_transient"/>-->
-            </errorLevel>
-        </UndefinedFunction>
-    </issueHandlers>
 </psalm>
