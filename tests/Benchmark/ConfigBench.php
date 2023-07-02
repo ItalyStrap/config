@@ -8,27 +8,33 @@ use ItalyStrap\Config\Config;
 /**
  * @BeforeMethods({"setUp"})
  */
-final class ConfigBench {
+final class ConfigBench
+{
 
-	private Config $config;
+    private Config $config;
 
-	public function setUp(): void {
-		$this->config = new Config();
-	}
+    public function setUp(): void
+    {
+        $this->config = new Config();
+    }
 
-	public function benchAdd() {
-		$this->config->add('index', 'value');
-	}
+    public function benchAdd()
+    {
+        $this->config->add('index', 'value');
+    }
 
-	public function benchRemove() {
-		$this->config->remove(['index']);
-	}
+    public function benchRemove()
+    {
+        $this->config->remove(['index']);
+    }
 
-	public function benchToArray() {
-		$this->config->toArray();
-	}
+    public function benchToArray()
+    {
+        $this->config->toArray();
+    }
 
-	public function benchToJson() {
-		$this->config->toJson();
-	}
+    public function benchToJson()
+    {
+        $this->config->toJson();
+    }
 }

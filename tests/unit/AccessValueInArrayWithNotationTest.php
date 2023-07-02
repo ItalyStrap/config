@@ -7,12 +7,13 @@ namespace ItalyStrap\Config\Tests\Unit;
 use ItalyStrap\Config\AccessValueInArrayWithNotationTrait;
 use ItalyStrap\Tests\TestCase;
 
-class AccessValueInArrayWithNotationTest extends  TestCase
+class AccessValueInArrayWithNotationTest extends TestCase
 {
+
     private array $values = [];
 
     protected function makeInstance($val = [], $default = [])
-	{
+    {
         return new class($this->values) {
             use AccessValueInArrayWithNotationTrait;
 

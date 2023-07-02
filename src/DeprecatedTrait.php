@@ -6,7 +6,9 @@ namespace ItalyStrap\Config;
 
 trait DeprecatedTrait
 {
-	public function push( $index, $value ): Config {
-		return $this->add( $index, $value );
-	}
+
+    public function push($index, $value): Config
+    {
+        return $this->add($index, $value);
+    }
 }

@@ -6,6 +6,7 @@ namespace ItalyStrap\Config;
 
 trait AccessValueInArrayWithNotationTrait
 {
+
     private function findValue(array $array, array $levels, $default = null)
     {
         foreach ($levels as $level) {
@@ -23,7 +24,8 @@ trait AccessValueInArrayWithNotationTrait
         return $array;
     }
 
-    private function appendValue(array &$array, array $levels, $value): bool {
+    private function appendValue(array &$array, array $levels, $value): bool
+    {
         $key = \array_shift($levels);
         if (!empty($levels)) {
             if (!isset($array[$key]) || !\is_array($array[$key])) {
@@ -37,7 +39,8 @@ trait AccessValueInArrayWithNotationTrait
         return true;
     }
 
-    private function deleteValue(array &$array, array $levels): bool {
+    private function deleteValue(array &$array, array $levels): bool
+    {
         $key = \array_shift($levels);
 
         if (!isset($array[$key])) {
