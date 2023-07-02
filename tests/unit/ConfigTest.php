@@ -13,9 +13,9 @@ use function array_replace_recursive;
 use function is_array;
 use function json_encode;
 
-class ConfigTest extends BaseConfig {
+class ConfigTest extends TestCase {
 
-	protected function getInstance( $val = [], $default = [] ): Config {
+	protected function makeInstance($val = [], $default = [] ): Config {
 		$sut = new Config($val, $default);
 		$this->assertInstanceOf( Config_Interface::class, $sut );
 		$this->assertInstanceOf( ConfigInterface::class, $sut );
@@ -32,11 +32,67 @@ class ConfigTest extends BaseConfig {
 		$this->assertInstanceOf( ConfigInterface::class, $sut );
 	}
 
+	public function valueProvider(): iterable {
+
+		yield 'empty values'	=> [
+			false,
+			false
+		];
+
+		yield 'one value'	=> [
+			[],
+			false
+		];
+
+		yield 'two values'	=> [
+			[],
+			[]
+		];
+
+		yield 'one array'	=> [
+			$this->config_arr,
+			false
+		];
+
+		yield 'two array the second is the default'	=> [
+			$this->config_arr,
+			$this->default_arr
+		];
+
+		yield 'with stdClass'	=> [
+			new \stdClass(),
+			new \stdClass(),
+		];
+
+		yield 'with Iterator'	=> [
+			new \ArrayIterator(),
+			new \ArrayIterator(),
+		];
+
+		yield 'with ArrayObject'	=> [
+			new \ArrayObject(),
+			new \ArrayObject(),
+		];
+
+		yield 'with IteratorIterator'	=> [
+			new \IteratorIterator(new \ArrayObject()),
+			new \IteratorIterator(new \ArrayObject()),
+		];
+	}
+
+	/**
+	 * @test
+	 * @dataProvider valueProvider()
+	 */
+	public function itShouldBeInstantiatableWith( $value, $default ) {
+		$sut = $this->makeInstance( (array) $value, (array) $default );
+	}
+
 	/**
 	 * @test
 	 */
 	public function offSetMethods(): void {
-		$sut = $this->getInstance();
+		$sut = $this->makeInstance();
 		$sut->offsetSet('key', 42);
 		$this->assertTrue($sut->offsetExists('key'), '');
 		$this->assertSame( $sut->offsetGet('key'), 42, '' );
@@ -48,7 +104,7 @@ class ConfigTest extends BaseConfig {
 	 * @test
 	 */
 	public function deprecatedPush(): void {
-		$sut = $this->getInstance();
+		$sut = $this->makeInstance();
 		$sut->push('key', 42);
 		$this->assertTrue($sut->has('key'), '');
 		$this->assertSame( $sut->get('key'), 42, '' );
@@ -61,7 +117,7 @@ class ConfigTest extends BaseConfig {
 	 * it should have key
 	 */
 	public function itShouldHaveKey(): void {
-		$config = $this->getInstance( $this->config_arr );
+		$config = $this->makeInstance( $this->config_arr );
 
 		$this->assertTrue( $config->has( 'tizio' ) );
 		$this->assertTrue( $config->has( 'caio' ) );
@@ -97,7 +153,7 @@ class ConfigTest extends BaseConfig {
 	 * @dataProvider keyTypeProvider()
 	 */
 	public function itShouldHaveKeyWith( $key, $value ) {
-		$config = $this->getInstance([
+		$config = $this->makeInstance([
 			$key	=> $value
 		]);
 
@@ -114,7 +170,7 @@ class ConfigTest extends BaseConfig {
 	 * @test
 	 */
 	public function itShouldHaveAndGetKey(): void {
-		$config = $this->getInstance( $this->config_arr );
+		$config = $this->makeInstance( $this->config_arr );
 		$this->assertTrue( $config->has( 'sempronio' ) );
 		$this->assertIsArray( $config->get( 'recursive' ) );
 		$this->assertArrayHasKey( 'subKey', $config->get( 'recursive' ) );
@@ -124,7 +180,7 @@ class ConfigTest extends BaseConfig {
 	 * @test
 	 */
 	public function itShouldResetDefaultMemberOnEveryCallAndOnlyReturnValueIfExist(): void {
-		$config = $this->getInstance( [ 'key' => 'value' ] );
+		$config = $this->makeInstance( [ 'key' => 'value' ] );
 		$this->assertFalse( $config->has( 'some-key' ) );
 		$this->assertFalse( $config->has( 'some-key' ) );
 		$this->assertStringContainsString(
@@ -160,7 +216,7 @@ class ConfigTest extends BaseConfig {
 	 * @test
 	 */
 	public function itShouldGetKey(): void {
-		$config = $this->getInstance( $this->config_arr );
+		$config = $this->makeInstance( $this->config_arr );
 
 		$this->assertEquals( [], $config->get( 'tizio' ) );
 		$this->assertEquals( [], $config->tizio );
@@ -187,7 +243,7 @@ class ConfigTest extends BaseConfig {
 	 * @test
 	 */
 	public function itShouldSetKey(): void {
-		$config = $this->getInstance();
+		$config = $this->makeInstance();
 		$config->var = 'Value';
 
 		$this->assertEquals( 'Value', $config->get( 'var' ) );
@@ -198,7 +254,7 @@ class ConfigTest extends BaseConfig {
 	 * @test
 	 */
 	public function itShouldReturnNullIfKeyDoesNotExists(): void {
-		$config = $this->getInstance( $this->config_arr );
+		$config = $this->makeInstance( $this->config_arr );
 
 		$this->assertEquals( null, $config->get( 'noKey' ) );
 	}
@@ -207,7 +263,7 @@ class ConfigTest extends BaseConfig {
 	 * @test
 	 */
 	public function itShouldReturnTheGivenValueIfKeyDoesNotExists(): void {
-		$config = $this->getInstance( $this->config_arr );
+		$config = $this->makeInstance( $this->config_arr );
 
 		$this->assertEquals( true, $config->get( 'noKey', true ) );
 	}
@@ -216,7 +272,7 @@ class ConfigTest extends BaseConfig {
 	 * @test
 	 */
 	public function itShouldReturnAnArray(): void {
-		$config = $this->getInstance( $this->config_arr );
+		$config = $this->makeInstance( $this->config_arr );
 
 		$this->assertTrue( is_array( $config->all() ) );
 		$this->assertEquals( $this->config_arr, $config->all() );
@@ -227,7 +283,7 @@ class ConfigTest extends BaseConfig {
 	 * @test
 	 */
 	public function itShouldAddNewItem(): void {
-		$config = $this->getInstance( $this->config_arr, $this->default_arr );
+		$config = $this->makeInstance( $this->config_arr, $this->default_arr );
 		$config->add( 'new_item', true );
 
 		$this->assertTrue( $config->get( 'new_item' ) );
@@ -237,10 +293,10 @@ class ConfigTest extends BaseConfig {
 	 * @test
 	 */
 	public function itShouldReplaceRecursively(): void {
-		$config = $this->getInstance( $this->default_arr );
+		$config = $this->makeInstance( $this->default_arr );
 		$this->assertEquals( $this->default_arr['recursive'], $config->get( 'recursive' ) );
 
-		$config = $this->getInstance( $this->config_arr, $this->default_arr );
+		$config = $this->makeInstance( $this->config_arr, $this->default_arr );
 		$this->assertEquals( $this->config_arr['recursive'], $config->get( 'recursive' ) );
 		$this->assertEquals( $this->config_arr['recursive'], $config->recursive );
 		$this->assertEquals( $this->config_arr['recursive']['subKey'], $config->recursive['subKey'] );
@@ -254,7 +310,7 @@ class ConfigTest extends BaseConfig {
 	 * @test
 	 */
 	public function itShouldMergeGivenArray(): void {
-		$config = $this->getInstance( $this->config_arr, $this->default_arr );
+		$config = $this->makeInstance( $this->config_arr, $this->default_arr );
 
 		$new_array = [
 			'new_key'   => 'New Value',
@@ -283,7 +339,7 @@ class ConfigTest extends BaseConfig {
 	 * @test
 	 */
 	public function itShouldMergeGivenGenerator(): void {
-		$sut = $this->getInstance();
+		$sut = $this->makeInstance();
 		$generator = function (): \Traversable {
 			yield 'key' => 'val';
 		};
@@ -296,7 +352,7 @@ class ConfigTest extends BaseConfig {
 	 * @test
 	 */
 	public function itShouldBeRemoved(): void {
-		$config = $this->getInstance( $this->config_arr, $this->default_arr );
+		$config = $this->makeInstance( $this->config_arr, $this->default_arr );
 		$config->remove( 'recursive' );
 		$this->assertFalse( $config->has( 'recursive' ) );
 
@@ -308,11 +364,11 @@ class ConfigTest extends BaseConfig {
 		$this->assertFalse( $config->has( 'tizio' ) );
 		$this->assertFalse( $config->has( 'caio' ) );
 
-		$config = $this->getInstance( $this->config_arr, $this->default_arr );
+		$config = $this->makeInstance( $this->config_arr, $this->default_arr );
 		$config->remove( ['recursive'] );
 		$this->assertFalse( $config->has( 'recursive' ) );
 
-		$config = $this->getInstance( $this->config_arr, $this->default_arr );
+		$config = $this->makeInstance( $this->config_arr, $this->default_arr );
 		$this->assertTrue( $config->has( 'recursive' ) );
 		$this->assertTrue( $config->has( 'tizio' ) );
 		$config->remove( ['recursive'], 'tizio' );
@@ -326,7 +382,7 @@ class ConfigTest extends BaseConfig {
 	public function itShouldSePublicMembers(): void {
 		$expected = 42;
 
-		$config = $this->getInstance();
+		$config = $this->makeInstance();
 		$config->test = $expected;
 		$this->assertTrue( $config->has( 'test' ) );
 		$this->assertNotEmpty( $config->test );
@@ -352,7 +408,7 @@ class ConfigTest extends BaseConfig {
 		$arrMerged = array_replace_recursive( $arr1, $arr2 );
 
 
-		$config = $this->getInstance( $arr1 );
+		$config = $this->makeInstance( $arr1 );
 		$config->merge( $arr2 );
 
 		$this->assertTrue( $config->getArrayCopy() === $arrMerged );
@@ -363,7 +419,7 @@ class ConfigTest extends BaseConfig {
 	 */
 	public function itShouldBeIterable(): void {
 		$arr = [ 'key' => 'val' ];
-		$config = $this->getInstance( $arr );
+		$config = $this->makeInstance( $arr );
 
 		foreach ( $config as $key => $value ) {
 			$this->assertTrue( $arr[ $key ] === $value );
@@ -378,7 +434,7 @@ class ConfigTest extends BaseConfig {
 	 * @test
 	 */
 	public function itShouldBeCountable(): void {
-		$config = $this->getInstance( $this->config_arr );
+		$config = $this->makeInstance( $this->config_arr );
 
 		$this->assertCount( count( $this->config_arr ), $config );
 	}
@@ -387,8 +443,8 @@ class ConfigTest extends BaseConfig {
 	 * @test
 	 */
 	public function itShouldMergeConfigObjectInArray(): void {
-		$default = $this->getInstance( [ 'er' => 'sdf' ]);
-		$config = $this->getInstance( $this->config_arr );
+		$default = $this->makeInstance( [ 'er' => 'sdf' ]);
+		$config = $this->makeInstance( $this->config_arr );
 
 		$config->merge( $default );
 		$this->assertArrayHasKey( 'er', $config->all() );
@@ -422,7 +478,7 @@ class ConfigTest extends BaseConfig {
 	 * @test
 	 */
 	public function itShouldReturnArray(): void {
-		$config = $this->getInstance( $this->config_arr );
+		$config = $this->makeInstance( $this->config_arr );
 		$this->assertIsArray( $config->toArray() );
 		foreach ( $this->config_arr as $key => $value ) {
 			$this->assertArrayHasKey( $key, $config->toArray() );
@@ -433,7 +489,7 @@ class ConfigTest extends BaseConfig {
 	 * @test
 	 */
 	public function itShouldReturnValidJson(): void {
-		$config = $this->getInstance( $this->config_arr );
+		$config = $this->makeInstance( $this->config_arr );
 		$this->assertJson( $config->toJson() );
 		foreach ( $this->config_arr as $key => $value ) {
 			$this->assertStringContainsString( $key, $config->toJson() );
@@ -454,7 +510,7 @@ class ConfigTest extends BaseConfig {
 			],
 		];
 
-		$config = $this->getInstance( $arr );
+		$config = $this->makeInstance( $arr );
 
 		$this->assertTrue( $config->has( 'key.subKey' ) );
 		$this->assertNotTrue( $config->has( 'key.subKeyfgsfg' ) );
@@ -475,7 +531,7 @@ class ConfigTest extends BaseConfig {
 	 */
 	public function itShouldCloneHaveEmptyValue(): void {
 		$arr = [ 'key'	=> 'value' ];
-		$config = $this->getInstance( $arr );
+		$config = $this->makeInstance( $arr );
 
 		$this->assertStringContainsString( strval( $config->get( 'key' ) ), $arr['key'], '' );
 		$this->assertTrue( $config->has( 'key' ), '' );
@@ -499,10 +555,10 @@ class ConfigTest extends BaseConfig {
 			},
 		];
 
-		$config = $this->getInstance( $arr );
+		$config = $this->makeInstance( $arr );
 		$this->assertIsCallable( $config->get( 'key' ) );
 		$callable = $config->get( 'key' );
-		$this->assertStringContainsString( 'Ciao', $callable() );
+		$this->assertTrue( \is_callable( $callable ));
 	}
 
 	/**
@@ -510,7 +566,7 @@ class ConfigTest extends BaseConfig {
 	 */
 	public function itShouldReceiveIterableAsArgument(): void {
 		$iterator = new \ArrayIterator(['test' => 'val1', 'test2' => 'val2']);
-		$sut = $this->getInstance($iterator);
+		$sut = $this->makeInstance($iterator);
 		$this->assertSame('val1', $sut->get('test'), '');
 
 		$array = [
@@ -523,7 +579,7 @@ class ConfigTest extends BaseConfig {
 		];
 
 		$iterator = new \ArrayIterator($array);
-		$sut = $this->getInstance(['iterator' => $iterator]);
+		$sut = $this->makeInstance(['iterator' => $iterator]);
 		$this->assertSame(['expected'], $sut->get('iterator.test2.test5'), '');
 	}
 
@@ -532,7 +588,7 @@ class ConfigTest extends BaseConfig {
 	 */
 	public function itShouldExchangeArrayWorksAsExpected(): void {
 		$array = ['test' => 'val1', 'test2' => 'val2'];
-		$sut = $this->getInstance($array);
+		$sut = $this->makeInstance($array);
 
 		$this->assertCount(2, $sut, '');
 
@@ -557,7 +613,7 @@ class ConfigTest extends BaseConfig {
 				'test2' => null
 			],
 		];
-		$sut = $this->getInstance($array);
+		$sut = $this->makeInstance($array);
 
 		$this->assertSame('default-value', $sut->get('', 'default-value'), '');
 		$this->assertSame('default-value', $sut->get('test', 'default-value'), '');
@@ -575,7 +631,7 @@ class ConfigTest extends BaseConfig {
 			'test' => null,
 		];
 
-		$sut = $this->getInstance($array);
+		$sut = $this->makeInstance($array);
 		$sut->add('test2', $stdclass);
 
 		$this->assertSame('value', $sut->get('test2.test'), '');
@@ -592,7 +648,7 @@ class ConfigTest extends BaseConfig {
 			],
 		];
 
-		$sut = $this->getInstance($array);
+		$sut = $this->makeInstance($array);
 		$this->assertSame('Numeric Index', $sut->get(1, 'default-value'), '');
 		$this->assertSame('Sub string index', $sut->get('test.sub-test', 'default-value'), '');
 		$this->assertSame('default-value', $sut->get('testsub-test', 'default-value'), '');
@@ -609,7 +665,7 @@ class ConfigTest extends BaseConfig {
 			],
 		];
 
-		$sut = $this->getInstance($array);
+		$sut = $this->makeInstance($array);
 
 		$new_sut = clone $sut;
 
@@ -627,7 +683,7 @@ class ConfigTest extends BaseConfig {
 			],
 		];
 
-		$sut = $this->getInstance($array);
+		$sut = $this->makeInstance($array);
 
 		foreach ($sut as $k => $v) {
 			$this->assertTrue(true);

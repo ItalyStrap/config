@@ -24,7 +24,7 @@ class Config extends ArrayObject implements ConfigInterface {
 	/**
 	 * @use \ItalyStrap\Config\ArrayObjectTrait<TKey,TValue>
 	 */
-	use ArrayObjectTrait;
+	use ArrayObjectTrait, AccessValueInArrayWithNotationTrait, DeprecatedTrait;
 
 	/**
 	 * @var array<TKey, TValue>
@@ -89,17 +89,16 @@ class Config extends ArrayObject implements ConfigInterface {
 	 * @param TValue $value
 	 */
 	public function add( $index, $value ): Config {
-		$this->storage[ $index ] = $value;
-		return $this;
-	}
+		$levels = \explode( $this->delimiter, (string)$index );
+		if ( \is_int($index) || ! $levels ) {
+			/**
+			 * @psalm-suppress InvalidArrayAccess
+			 */
+			$this->storage[ $index ] = $value;
+		}
 
-	/**
-	 * @deprecated
-	 * @param TKey $index
-	 * @param TValue $value
-	 */
-	public function push( $index, $value ): Config {
-		return $this->add( $index, $value );
+		$this->appendValue($this->storage, $levels, $value);
+		return $this;
 	}
 
 	/**
@@ -112,18 +111,24 @@ class Config extends ArrayObject implements ConfigInterface {
 			 * @param mixed $indexes
 			 * @psalm-suppress MixedArgumentTypeCoercion
 			 */
-			fn($indexes) => $this->removeIndexesFromStorage((array)$indexes)
+			[$this, 'removeIndexesFromStorage']
 		);
 
 		return $this;
 	}
 
 	/**
-	 * @param array<array-key, TKey> $indexes
+	 * @param array<array-key, TKey>|string $indexes
 	 */
-	private function removeIndexesFromStorage(array $indexes): void {
-		foreach ( $indexes as $k ) {
-			unset( $this->storage[ $k ] );
+	private function removeIndexesFromStorage($indexes): void {
+		foreach ((array)$indexes as $k) {
+			$levels = \explode($this->delimiter, $k);
+			if (! $levels) {
+				unset( $this->storage[ $k ] );
+				continue;
+			}
+
+			$this->deleteValue($this->storage, $levels);
 		}
 	}
 
@@ -193,33 +198,6 @@ class Config extends ArrayObject implements ConfigInterface {
 			return $array[ $index ] ?? $default;
 		}
 
-		return $this->findInsideArray($levels, $array, $default);
-	}
-
-	/**
-	 * @param array<string> $levels
-	 * @param iterable<array-key, mixed> $array
-	 * @param mixed $default
-	 *
-	 * @return mixed|null
-	 */
-	private function findInsideArray( array $levels, iterable $array, $default = null ) {
-		foreach ($levels as $level) {
-			if ( ! \is_array( $array ) ) {
-				$array = (array) $array;
-			}
-
-			if (!\array_key_exists($level, $array)) {
-				return $default;
-			}
-
-			/**
-			 * @psalm-suppress MixedAssignment
-			 * @psalm-suppress MixedArrayAccess
-			 */
-			$array = $array[$level];
-		}
-
-		return $array;
+		return $this->findValue($array, $levels, $default);
 	}
 }

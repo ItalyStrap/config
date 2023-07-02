@@ -7,7 +7,7 @@ use ItalyStrap\Config\ConfigInterface;
 use ItalyStrap\Config\ConfigThemeMods;
 use ItalyStrap\Event\EventDispatcherInterface;
 
-class ConfigThemeModTest extends BaseConfig {
+class ConfigThemeModTest extends TestCase {
 
 	protected \Prophecy\Prophecy\ObjectProphecy $config;
 	protected \Prophecy\Prophecy\ObjectProphecy $dispatcher;
@@ -39,7 +39,7 @@ class ConfigThemeModTest extends BaseConfig {
 		parent::_after();
 	}
 
-	protected function getInstance( $val = [], $default = [] ): ConfigInterface {
+	protected function makeInstance($val = [], $default = [] ): ConfigInterface {
 		$sut = new ConfigThemeMods( $this->getConfig(...\func_get_args()), $this->getDispatcher() );
 		$this->assertInstanceOf( ConfigInterface::class, $sut, '' );
 		return $sut;
@@ -57,7 +57,7 @@ class ConfigThemeModTest extends BaseConfig {
 			$this->assertStringContainsString('value', $value, '');
 		});
 
-		$sut = $this->getInstance();
+		$sut = $this->makeInstance();
 		$sut->add( 'key', 'value' );
 
 		$this->assertSame('value', $sut->get('key'), '');
@@ -77,7 +77,7 @@ class ConfigThemeModTest extends BaseConfig {
 			unset( $collection[ $key ] );
 		});
 
-		$sut = $this->getInstance();
+		$sut = $this->makeInstance();
 		$sut->remove( 'key', 'key2' );
 
 		$this->assertEmpty( $collection, '' );
@@ -107,7 +107,7 @@ class ConfigThemeModTest extends BaseConfig {
 			$this->assertSame($collection, $value, '');
 		});
 
-		$sut = $this->getInstance();
+		$sut = $this->makeInstance();
 		$sut->merge( $collection );
 	}
 }
