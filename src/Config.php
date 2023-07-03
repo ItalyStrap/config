@@ -124,14 +124,14 @@ class Config extends ArrayObject implements ConfigInterface
     }
 
     /**
-     * @param array<array-key, TKey>|string $indexes
+     * @param array<array-key>|string $indexes
      */
     private function removeIndexesFromStorage($indexes): void
     {
         foreach ((array)$indexes as $k) {
-            $levels = \explode($this->delimiter, $k);
+            $levels = \explode($this->delimiter, (string)$k);
             if (! $levels) {
-                unset($this->storage[ $k ]);
+                unset($this->storage[$k]);
                 continue;
             }
 
@@ -194,13 +194,13 @@ class Config extends ArrayObject implements ConfigInterface
     /**
      * @link https://github.com/balambasik/input/blob/master/src/Input.php
      *
-     * @param iterable<array-key, mixed> $array
+     * @param array<array-key, mixed> $array
      * @param string|int $index
      * @param mixed $default
      *
      * @return mixed|null
      */
-    private function search(iterable $array, $index, $default = null)
+    private function search(array $array, $index, $default = null)
     {
 
         if (\is_int($index) || ! $levels = \explode($this->delimiter, $index)) {
