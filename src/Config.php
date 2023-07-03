@@ -33,16 +33,14 @@ class Config extends ArrayObject implements ConfigInterface
     private array $storage = [];
 
     /**
-     * @var TValue
-     * @psalm-suppress PropertyNotSetInConstructor
+     * @var ?TValue
      */
-    private $temp;
+    private $temp = null;
 
     /**
-     * @var TValue|null
-     * @psalm-suppress PropertyNotSetInConstructor
+     * @var ?TValue
      */
-    private $default;
+    private $default = null;
 
     private string $delimiter = '.';
 
@@ -155,7 +153,7 @@ class Config extends ArrayObject implements ConfigInterface
             }
 
             // Make sure any value given is casting to array
-            $array_to_merge[ $index ] = $array;
+            $array_to_merge[$index] = $array;
         }
 
         /**
@@ -207,7 +205,7 @@ class Config extends ArrayObject implements ConfigInterface
             /**
              * @psalm-suppress InvalidArrayAccess
              */
-            return $array[ $index ] ?? $default;
+            return $array[$index] ?? $default;
         }
 
         return $this->findValue($array, $levels, $default);
