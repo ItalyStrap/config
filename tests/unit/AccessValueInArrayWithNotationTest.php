@@ -54,7 +54,7 @@ class AccessValueInArrayWithNotationTest extends TestCase
         $this->assertSame('default', $result);
     }
 
-    public function testAppendValueCoverNullKeyReturnFromArrayShift()
+    public function testInsertValueCoverNullKeyReturnFromArrayShift()
     {
         $array = [];
         $levels = [];
@@ -62,14 +62,14 @@ class AccessValueInArrayWithNotationTest extends TestCase
 
         $sut = $this->makeInstance();
 
-        $result = $sut->appendValue($array, $levels, $value);
+        $result = $sut->insertValue($array, $levels, $value);
 
         $this->assertFalse($result);
         $this->assertNotContains('new value', $array);
         $this->assertSame([], $array);
     }
 
-    public function testAppendValueCoverEmptyLevels()
+    public function testInsertValueCoverEmptyLevels()
     {
         $array = [];
         $levels = ['key1', 'key2', 'key3'];
@@ -77,13 +77,13 @@ class AccessValueInArrayWithNotationTest extends TestCase
 
         $sut = $this->makeInstance();
 
-        $result = $sut->appendValue($array, $levels, $value);
+        $result = $sut->insertValue($array, $levels, $value);
 
         $this->assertTrue($result);
         $this->assertSame(['key1' => ['key2' => ['key3' => 'new value']]], $array);
     }
 
-    public function testAppendValueCoverArrayKeyExists()
+    public function testInsertValueCoverArrayKeyExists()
     {
         $array = [
             'key1' => [
@@ -98,7 +98,7 @@ class AccessValueInArrayWithNotationTest extends TestCase
 
         $sut = $this->makeInstance();
 
-        $result = $sut->appendValue($array, $levels, $value);
+        $result = $sut->insertValue($array, $levels, $value);
 
         $this->assertTrue($result);
         $this->assertSame([

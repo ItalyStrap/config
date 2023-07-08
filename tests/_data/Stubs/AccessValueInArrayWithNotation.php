@@ -10,7 +10,7 @@ class AccessValueInArrayWithNotation
 {
     use AccessValueInArrayWithNotationTrait {
         findValue as public;
-        appendValue as public;
+        insertValue as public;
         deleteValue as public;
     }
 }

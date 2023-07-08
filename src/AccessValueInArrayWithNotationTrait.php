@@ -39,7 +39,7 @@ trait AccessValueInArrayWithNotationTrait
      * @param mixed $value
      * @return bool
      */
-    private function appendValue(array &$array, array $levels, $value): bool
+    private function insertValue(array &$array, array $levels, $value): bool
     {
         $key = \array_shift($levels);
         if (\is_null($key)) {
@@ -56,7 +56,7 @@ trait AccessValueInArrayWithNotationTrait
             $array[$key] = [];
         }
 
-        return $this->appendValue($array[$key], $levels, $value);
+        return $this->insertValue($array[$key], $levels, $value);
     }
 
     /**

@@ -96,7 +96,7 @@ class Config extends ArrayObject implements ConfigInterface
      */
     public function add($index, $value): Config
     {
-        $this->appendValue($this->storage, $this->buildLevels((string)$index), $value);
+        $this->insertValue($this->storage, $this->buildLevels((string)$index), $value);
         return $this;
     }
 
