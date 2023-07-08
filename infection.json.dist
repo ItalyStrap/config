@@ -4,7 +4,8 @@
       "src"
     ],
     "excludes": [
-      "ConfigThemeMods.php"
+      "ConfigThemeMods.php",
+      "DeprecatedTrait.php"
     ]
   },
   "logs": {

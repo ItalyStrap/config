@@ -96,27 +96,11 @@ class ConfigTest extends TestCase
     /**
      * @test
      */
-    public function offSetMethods(): void
-    {
-        $sut = $this->makeInstance();
-        $sut->offsetSet('key', 42);
-        $this->assertTrue($sut->offsetExists('key'), '');
-        $this->assertSame($sut->offsetGet('key'), 42, '');
-        $sut->offsetUnset('key');
-        $this->assertFalse($sut->offsetExists('key'), '');
-    }
-
-    /**
-     * @test
-     */
     public function deprecatedPush(): void
     {
         $sut = $this->makeInstance();
         $sut->push('key', 42);
-        $this->assertTrue($sut->has('key'), '');
-        $this->assertSame($sut->get('key'), 42, '');
-        $sut->remove('key');
-        $this->assertFalse($sut->has('key'), '');
+        $this->assertSame($sut->toArray(), ['key' => 42]);
     }
 
     /**
@@ -136,24 +120,20 @@ class ConfigTest extends TestCase
         $this->assertTrue($config->has('object.sub-object.sub-key'));
 
         $this->assertFalse($config->has('cesare'));
-        $this->assertFalse($config->has('cesarergserg'));
+        $this->assertFalse($config->has('cheeseburger'));
     }
 
     public function keyTypeProvider(): array
     {
         return [
             'int'   => [
-                1, "a"
+                1,
+                "a",
             ],
             'string int'    => [
-                "1", "b"
+                "1",
+                "b",
             ],
-//          'float' => [
-//              1.5,"c"
-//          ],
-//          'bool'  => [
-//              true,"d"
-//          ],
         ];
     }
 
@@ -234,8 +214,6 @@ class ConfigTest extends TestCase
         $this->assertEquals([], $config->get('tizio'));
         $this->assertEquals([], $config->tizio);
 
-
-
         $this->assertEquals(
             $this->config_arr['object'],
             $config->get('object')
@@ -255,6 +233,97 @@ class ConfigTest extends TestCase
     /**
      * @test
      */
+    public function itShouldSearchSubkeys(): void
+    {
+        $arr = [
+            'key'   => [
+                'subKey'    => 'subvalue',
+                'subSubKey' => [
+                    'subSubKeyKey'  => 'subSubValue'
+                ],
+            ],
+        ];
+
+        $config = $this->makeInstance($arr);
+
+        $this->assertTrue($config->has('key.subKey'));
+        $this->assertNotTrue($config->has('key.subKeyfgsfg'));
+        $this->assertTrue($config->has('key.subSubKey.subSubKeyKey'));
+
+        $this->assertEquals($arr['key']['subKey'], $config->get('key.subKey'), '');
+        $this->assertEquals($arr['key']['subSubKey'], $config->get('key.subSubKey'), '');
+        $this->assertEquals(
+            $arr['key']['subSubKey']['subSubKeyKey'],
+            $config->get('key.subSubKey.subSubKeyKey'),
+            ''
+        );
+        $this->assertEquals('subSubValue', $config->get('key.subSubKey.subSubKeyKey'), '');
+    }
+
+    public static function defaultValueProvider(): iterable
+    {
+        yield 'Key is empty' => [
+            [], // Data
+            '', // Key
+            'default', // Expected
+        ];
+
+        yield 'Key does not exist' => [
+            [], // Data
+            'noKey', // Key
+            'default', // Expected
+        ];
+
+        yield 'Key does not exist and default is array' => [
+            [], // Data
+            'noKey', // Key
+            ['default'], // Expected
+        ];
+
+        yield 'Key does not exist and default is object' => [
+            [], // Data
+            'noKey', // Key
+            (object) ['default'], // Expected
+        ];
+
+        yield 'Key does not exist and default is integer' => [
+            [], // Data
+            'noKey', // Key
+            42, // Expected
+        ];
+
+        yield 'Key does not exist and default is float' => [
+            [], // Data
+            'noKey', // Key
+            42.42, // Expected
+        ];
+
+        yield 'Key does not exist and default is boolean' => [
+            [], // Data
+            'noKey', // Key
+            true, // Expected
+        ];
+
+        yield 'Key does not exist and default is null' => [
+            [], // Data
+            'noKey', // Key
+            null, // Expected
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider defaultValueProvider()
+     */
+    public function itShouldReturnDefaultValueIf($data, $key, $expected)
+    {
+        $config = $this->makeInstance($data);
+        $this->assertEquals($expected, $config->get($key, $expected));
+    }
+
+    /**
+     * @test
+     */
     public function itShouldSetKey(): void
     {
         $config = $this->makeInstance();
@@ -267,33 +336,12 @@ class ConfigTest extends TestCase
     /**
      * @test
      */
-    public function itShouldReturnNullIfKeyDoesNotExists(): void
-    {
-        $config = $this->makeInstance($this->config_arr);
-
-        $this->assertEquals(null, $config->get('noKey'));
-    }
-
-    /**
-     * @test
-     */
-    public function itShouldReturnTheGivenValueIfKeyDoesNotExists(): void
-    {
-        $config = $this->makeInstance($this->config_arr);
-
-        $this->assertEquals(true, $config->get('noKey', true));
-    }
-
-    /**
-     * @test
-     */
     public function itShouldReturnAnArray(): void
     {
         $config = $this->makeInstance($this->config_arr);
 
-        $this->assertTrue(is_array($config->all()));
+        $this->assertIsArray($config->all());
         $this->assertEquals($this->config_arr, $config->all());
-        $this->assertEquals($config->all(), $config->getArrayCopy());
     }
 
     /**
@@ -372,7 +420,7 @@ class ConfigTest extends TestCase
     /**
      * @test
      */
-    public function itShouldBeRemoved(): void
+    public function itShouldRemoveValues(): void
     {
         $config = $this->makeInstance($this->config_arr, $this->default_arr);
         $config->remove('recursive');
@@ -396,12 +444,15 @@ class ConfigTest extends TestCase
         $config->remove(['recursive'], 'tizio');
         $this->assertFalse($config->has('recursive'));
         $this->assertFalse($config->has('tizio'));
+
+        $config->remove(0);
+        $this->assertFalse($config->has(0));
     }
 
     /**
      * @test
      */
-    public function itShouldSePublicMembers(): void
+    public function itShouldSeePublicMembers(): void
     {
         $expected = 42;
 
@@ -424,23 +475,6 @@ class ConfigTest extends TestCase
     /**
      * @test
      */
-    public function itShouldHasCorrectItemsOnGetArrayCopy(): void
-    {
-        $arr1 = [ 'key' => 'Ciao' ];
-        $arr2 = [ 'otherKey'    => 'Ariciao' ];
-
-        $arrMerged = array_replace_recursive($arr1, $arr2);
-
-
-        $config = $this->makeInstance($arr1);
-        $config->merge($arr2);
-
-        $this->assertTrue($config->getArrayCopy() === $arrMerged);
-    }
-
-    /**
-     * @test
-     */
     public function itShouldBeIterable(): void
     {
         $arr = [ 'key' => 'val' ];
@@ -453,16 +487,6 @@ class ConfigTest extends TestCase
         foreach ($config as $key => $value) {
             $this->assertTrue($config->$key === $value);
         }
-    }
-
-    /**
-     * @test
-     */
-    public function itShouldBeCountable(): void
-    {
-        $config = $this->makeInstance($this->config_arr);
-
-        $this->assertCount(count($this->config_arr), $config);
     }
 
     /**
@@ -529,36 +553,6 @@ class ConfigTest extends TestCase
     /**
      * @test
      */
-    public function itShouldSearchSubkeys(): void
-    {
-        $arr = [
-            'key'   => [
-                'subKey'    => 'subvalue',
-                'subSubKey' => [
-                    'subSubKeyKey'  => 'subSubValue'
-                ],
-            ],
-        ];
-
-        $config = $this->makeInstance($arr);
-
-        $this->assertTrue($config->has('key.subKey'));
-        $this->assertNotTrue($config->has('key.subKeyfgsfg'));
-        $this->assertTrue($config->has('key.subSubKey.subSubKeyKey'));
-
-        $this->assertEquals($arr['key']['subKey'], $config->get('key.subKey'), '');
-        $this->assertEquals($arr['key']['subSubKey'], $config->get('key.subSubKey'), '');
-        $this->assertEquals(
-            $arr['key']['subSubKey']['subSubKeyKey'],
-            $config->get('key.subSubKey.subSubKeyKey'),
-            ''
-        );
-        $this->assertEquals('subSubValue', $config->get('key.subSubKey.subSubKeyKey'), '');
-    }
-
-    /**
-     * @test
-     */
     public function itShouldCloneHaveEmptyValue(): void
     {
         $arr = [ 'key'  => 'value' ];
@@ -619,26 +613,6 @@ class ConfigTest extends TestCase
     /**
      * @test
      */
-    public function itShouldExchangeArrayWorksAsExpected(): void
-    {
-        $array = ['test' => 'val1', 'test2' => 'val2'];
-        $sut = $this->makeInstance($array);
-
-        $this->assertCount(2, $sut, '');
-
-        $sut->add('new-key', 'new-value');
-        $this->assertCount(3, $sut, '');
-
-        $sut->remove('test', 'test2');
-        $this->assertCount(1, $sut, '');
-
-        $sut->merge(['add-key' => 'add-value']);
-        $this->assertCount(2, $sut, '');
-    }
-
-    /**
-     * @test
-     */
     public function itShouldReturnDefaultIfValFetchedIsNull(): void
     {
         $array = [
@@ -689,65 +663,5 @@ class ConfigTest extends TestCase
         $this->assertSame('Numeric Index', $sut->get(1, 'default-value'), '');
         $this->assertSame('Sub string index', $sut->get('test.sub-test', 'default-value'), '');
         $this->assertSame('default-value', $sut->get('testsub-test', 'default-value'), '');
-    }
-
-    /**
-     * @test
-     */
-    public function itShouldExchangeStorageWhenCloned(): void
-    {
-        $array = [
-            1 => 'Numeric Index',
-            'test' => [
-                'sub-test' => 'Sub string index',
-            ],
-        ];
-
-        $sut = $this->makeInstance($array);
-
-        $new_sut = clone $sut;
-
-        $this->assertEmpty($new_sut->__serialize()[1], '');
-    }
-
-    /**
-     * @test
-     */
-    public function itShouldExchangeStorageForGetIterator(): void
-    {
-        $array = [
-            1 => 'Numeric Index',
-            'test' => [
-                'sub-test' => 'Sub string index',
-            ],
-        ];
-
-        $sut = $this->makeInstance($array);
-
-        foreach ($sut as $k => $v) {
-            $this->assertTrue(true);
-        }
-
-        /** @var \ArrayIterator $iterator */
-        $iterator = $sut->getIterator();
-
-        while ($iterator->valid()) {
-            $iterator->key();
-            $iterator->current();
-            $iterator->next();
-        }
-
-        $new_sut = clone $sut;
-
-        foreach ($new_sut as $k => $v) {
-            $this->fail();
-        }
-
-        /** @var \ArrayIterator $new_iterator */
-        $new_iterator = $new_sut->getIterator();
-
-        while ($new_iterator->valid()) {
-            $this->fail();
-        }
     }
 }

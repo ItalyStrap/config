@@ -65,7 +65,7 @@ class Config extends ArrayObject implements ConfigInterface
     {
         $this->default = $default;
 
-        if (! $this->has($index)) {
+        if (!$this->has($index)) {
             return $default;
         }
 
@@ -81,7 +81,11 @@ class Config extends ArrayObject implements ConfigInterface
         /**
          * @psalm-suppress MixedAssignment
          */
-        $this->temp = $this->search($this->storage, $index, $this->default);
+        $this->temp = $this->findValue(
+            $this->storage,
+            $this->buildLevels((string)$index),
+            $this->default
+        );
         $this->default = null;
         return isset($this->temp);
     }
@@ -92,15 +96,7 @@ class Config extends ArrayObject implements ConfigInterface
      */
     public function add($index, $value): Config
     {
-        $levels = \explode($this->delimiter, (string)$index);
-        if (\is_int($index) || ! $levels) {
-            /**
-             * @psalm-suppress InvalidArrayAccess
-             */
-            $this->storage[ $index ] = $value;
-        }
-
-        $this->appendValue($this->storage, $levels, $value);
+        $this->appendValue($this->storage, $this->buildLevels((string)$index), $value);
         return $this;
     }
 
@@ -127,13 +123,7 @@ class Config extends ArrayObject implements ConfigInterface
     private function removeIndexesFromStorage($indexes): void
     {
         foreach ((array)$indexes as $k) {
-            $levels = \explode($this->delimiter, (string)$k);
-            if (! $levels) {
-                unset($this->storage[$k]);
-                continue;
-            }
-
-            $this->deleteValue($this->storage, $levels);
+            $this->deleteValue($this->storage, $this->buildLevels((string)$k));
         }
     }
 
@@ -190,24 +180,16 @@ class Config extends ArrayObject implements ConfigInterface
     }
 
     /**
-     * @link https://github.com/balambasik/input/blob/master/src/Input.php
-     *
-     * @param array<array-key, mixed> $array
-     * @param string|int $index
-     * @param mixed $default
-     *
-     * @return mixed|null
+     * @param string $index
+     * @return array<array-key>
      */
-    private function search(array $array, $index, $default = null)
+    private function buildLevels(string $index): array
     {
-
-        if (\is_int($index) || ! $levels = \explode($this->delimiter, $index)) {
-            /**
-             * @psalm-suppress InvalidArrayAccess
-             */
-            return $array[$index] ?? $default;
-        }
-
-        return $this->findValue($array, $levels, $default);
+        /**
+         * Remember that the delimiter must be never empty
+         * So if in the future we want to change the delimiter
+         * we must be sure that the delimiter is not empty.
+         */
+        return \explode($this->delimiter, $index);
     }
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ItalyStrap\Config;
 
+use function Webmozart\Assert\Tests\StaticAnalysis\string;
+
 trait AccessValueInArrayWithNotationTrait
 {
 
@@ -39,18 +41,22 @@ trait AccessValueInArrayWithNotationTrait
      */
     private function appendValue(array &$array, array $levels, $value): bool
     {
-        $key = (string)\array_shift($levels);
-        if (!empty($levels)) {
-            if (!isset($array[$key]) || !\is_array($array[$key])) {
-                $array[$key] = [];
-            }
-            return $this->appendValue($array[$key], $levels, $value);
+        $key = \array_shift($levels);
+        if (\is_null($key)) {
+            return false;
         }
 
-        /** @psalm-suppress MixedAssignment */
-        $array[$key] = $value;
+        if (empty($levels)) {
+            /** @psalm-suppress MixedAssignment */
+            $array[$key] = $value;
+            return true;
+        }
 
-        return true;
+        if (!\array_key_exists($key, $array) || !\is_array($array[$key])) {
+            $array[$key] = [];
+        }
+
+        return $this->appendValue($array[$key], $levels, $value);
     }
 
     /**
@@ -60,10 +66,13 @@ trait AccessValueInArrayWithNotationTrait
      */
     private function deleteValue(array &$array, array $levels): bool
     {
-        $key = (string)\array_shift($levels);
+        $key = \array_shift($levels);
+        if (\is_null($key)) {
+            return false;
+        }
 
         if (!\array_key_exists($key, $array)) {
-            return false;
+            return true;
         }
 
         if (!empty($levels) && \is_array($array[$key])) {
@@ -71,7 +80,6 @@ trait AccessValueInArrayWithNotationTrait
         }
 
         unset($array[$key]);
-
         return true;
     }
 }

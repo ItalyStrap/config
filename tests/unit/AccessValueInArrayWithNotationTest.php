@@ -5,138 +5,174 @@ declare(strict_types=1);
 namespace ItalyStrap\Config\Tests\Unit;
 
 use ItalyStrap\Config\AccessValueInArrayWithNotationTrait;
+use ItalyStrap\Tests\Stubs\AccessValueInArrayWithNotation;
 use ItalyStrap\Tests\TestCase;
 
 class AccessValueInArrayWithNotationTest extends TestCase
 {
-
-    private array $values = [];
-
-    protected function makeInstance($val = [], $default = [])
+    public function makeInstance(): AccessValueInArrayWithNotation
     {
-        return new class($this->values) {
-            use AccessValueInArrayWithNotationTrait;
-
-            private array $values;
-
-            public function __construct($values = [])
-            {
-                $this->values = $values;
-            }
-
-            public function get(string $key, $default = null)
-            {
-                $levels = \explode('.', $key);
-                //        $shifted = \array_shift($levels);
-
-                return $this->findValue($this->values, $levels, $default);
-            }
-
-            public function set(string $key, $value): bool
-            {
-                $levels = \explode('.', $key);
-                //        $shifted = \array_shift($levels);
-
-                return $this->appendValue($this->values, $levels, $value);
-            }
-
-            public function delete(string $key): bool
-            {
-                $levels = \explode('.', $key);
-                //        $shifted = \array_shift($levels);
-
-                return $this->deleteValue($this->values, $levels);
-            }
-        };
+        return new AccessValueInArrayWithNotation();
     }
 
-    public static function defaultDataProvider(): iterable
+    public function testFindValue()
     {
-        yield 'empty' => [
-            [],
-            'key',
-            null,
-        ];
-
-        yield 'empty array' => [
-            [],
-            'key',
-            [],
-        ];
-
-        yield 'empty string' => [
-            [],
-            'key',
-            '',
-        ];
-
-        yield 'empty int' => [
-            [],
-            'key',
-            0,
-        ];
-
-        yield 'key not exists' => [
-            [
-                'key1' => 'value',
+        $array = [
+            'key1' => [
+                'key2' => [
+                    'key3' => 'value',
+                ],
             ],
+        ];
+
+        $levels = ['key1', 'key2', 'key3'];
+
+        $sut = $this->makeInstance();
+
+        $result = $sut->findValue($array, $levels, 'default');
+
+        $this->assertSame('value', $result);
+    }
+
+    public function testFindValueReturnDefault()
+    {
+
+        $array = [
+            'key1' => [
+                'key2' => [
+                    'key3' => 'value',
+                ],
+            ],
+        ];
+
+        $levels = ['key1', 'key2', 'key4'];
+
+        $sut = $this->makeInstance();
+
+        $result = $sut->findValue($array, $levels, 'default');
+
+        $this->assertSame('default', $result);
+    }
+
+    public function testAppendValueCoverNullKeyReturnFromArrayShift()
+    {
+        $array = [];
+        $levels = [];
+        $value = 'new value';
+
+        $sut = $this->makeInstance();
+
+        $result = $sut->appendValue($array, $levels, $value);
+
+        $this->assertFalse($result);
+        $this->assertNotContains('new value', $array);
+        $this->assertSame([], $array);
+    }
+
+    public function testAppendValueCoverEmptyLevels()
+    {
+        $array = [];
+        $levels = ['key1', 'key2', 'key3'];
+        $value = 'new value';
+
+        $sut = $this->makeInstance();
+
+        $result = $sut->appendValue($array, $levels, $value);
+
+        $this->assertTrue($result);
+        $this->assertSame(['key1' => ['key2' => ['key3' => 'new value']]], $array);
+    }
+
+    public function testAppendValueCoverArrayKeyExists()
+    {
+        $array = [
+            'key1' => [
+                'key2' => [
+                    'key3' => 'value',
+                ],
+                'key4' => 'value4',
+            ],
+        ];
+        $levels = ['key1', 'key2', 'key3'];
+        $value = 'new value';
+
+        $sut = $this->makeInstance();
+
+        $result = $sut->appendValue($array, $levels, $value);
+
+        $this->assertTrue($result);
+        $this->assertSame([
+            'key1' => [
+                'key2' => [
+                    'key3' => 'new value',
+                ],
+                'key4' => 'value4',
+            ],
+        ], $array);
+    }
+
+    public function testDeleteValueCoverNullKeyReturnFromArrayShift()
+    {
+        $array = [
+            'key1' => [
+                'key2' => [
+                    'key3' => 'value',
+                ],
+                'key4' => 'value4',
+            ],
+        ];
+        $levels = [];
+
+        $sut = $this->makeInstance();
+
+        $result = $sut->deleteValue($array, $levels);
+
+        $this->assertFalse($result);
+        $this->assertSame([
+            'key1' => [
+                'key2' => [
+                    'key3' => 'value',
+                ],
+                'key4' => 'value4',
+            ],
+        ], $array);
+    }
+
+    public function testDeleteValueCoverReturnTrueIfArrayKeyDoesNotExists()
+    {
+
+        $array = [
+            'key1' => [
+                'key2' => [
+                    'key3' => 'value',
+                ],
+                'key4' => 'value4',
+            ],
+        ];
+        $levels = [
+            'key1',
             'key2',
-            null,
+            'key5',
         ];
-
-        yield 'sub key not exists' => [
-            [
-                'key1' => [
-                    'key2' => 'value',
-                ],
-            ],
-            'key1.key3',
-            null,
-        ];
-
-        yield 'sub key not exists and return default value' => [
-            [
-                'key1' => [
-                    'key2' => 'value',
-                ],
-            ],
-            'key1.key3',
-            'default value',
-        ];
-    }
-
-    /**
-     * @dataProvider defaultDataProvider
-     */
-    public function testReturnDefaultIfValueDoesNotExistsInEmptyArray(array $values, string $key, $expected)
-    {
-        $this->values = $values;
 
         $sut = $this->makeInstance();
 
-        $value = $sut->get($key, $expected);
-        $this->assertSame($expected, $value);
-    }
+        $result = $sut->deleteValue($array, $levels);
 
-    public function testGetValueFromChainKeys(): void
-    {
-        $this->values = [
+        $this->assertTrue($result);
+        $this->assertSame([
             'key1' => [
                 'key2' => [
                     'key3' => 'value',
                 ],
+                'key4' => 'value4',
             ],
-        ];
-
-        $sut = $this->makeInstance();
-
-        $value = $sut->get('key1.key2.key3', 'default');
-        $this->assertSame('value', $value);
+        ], $array);
     }
 
-    public function testSetValueFromChainKeys()
+    public function testDeleteValueCoverReturnTrueIfValueIsCorrectlyDeleted(): void
     {
-        $this->values = [
+        $array = [
             'key1' => [
                 'key2' => [
                     'key3' => 'value',
@@ -144,40 +180,13 @@ class AccessValueInArrayWithNotationTest extends TestCase
                 'key4' => 'value4',
             ],
         ];
+        $levels = ['key1', 'key2', 'key3'];
 
         $sut = $this->makeInstance();
 
-        $sut->set('key1.key2.key3', 'new value');
-        $actual = $sut->get('key1.key2.key3', 'default');
+        $result = $sut->deleteValue($array, $levels);
 
-        $this->assertSame('new value', $actual);
-        $this->assertSame('value4', $sut->get('key1.key4', 'default'));
-
-        $sut->set('key1.key4', 'new value4');
-        $this->assertSame('new value4', $sut->get('key1.key4', 'default'));
-    }
-
-    public function testDeleteValueFromChainKeys()
-    {
-        $this->values = [
-            'key1' => [
-                'key2' => [
-                    'key3' => 'value',
-                ],
-                'key4' => 'value4',
-            ],
-        ];
-
-        $sut = $this->makeInstance();
-
-        $actual = $sut->get('key1.key2.key3', 'default');
-        $this->assertSame('value', $actual);
-
-        $sut->delete('key1.key2.key3');
-        $actual = $sut->get('key1.key2.key3', 'default');
-        $this->assertSame('default', $actual);
-
-        $actual = $sut->get('key1.key2', 'default');
-        $this->assertSame([], $actual);
+        $this->assertTrue($result);
+        $this->assertSame(['key1' => ['key2' => [], 'key4' => 'value4']], $array);
     }
 }
