@@ -30,15 +30,15 @@ composer require italystrap/config
 ```php
 use ItalyStrap\Config\Config;
 
-$config = new Config( $configObjOrArrayOptional, $configDefaultOptional );
+$config = new Config($configObjOrArrayOptional, $configDefaultOptional);
 
-$value = $config->get( 'key', $optionalDefaultValue ); 
+$value = $config->get('key', $optionalDefaultValue); 
 
 ```
 
 ## Advanced Usage
 
-You can see more advanced example in the tests folder.
+You can see more advanced example in the tests' folder.
 
 ## Contributing
 
@@ -52,6 +52,12 @@ This code is licensed under the [MIT](LICENSE).
 
 ## Credits
 
-Ideas from:
+Ideas for the Config::class from:
  - [Tonya Mork](https://github.com/wpfulcrum/config)
  - [Alain Schlesser](https://github.com/brightnucleus/config)
+
+For the Notation Array Search:
+ - https://github.com/balambasik/input/blob/master/src/Input.php
+
+For some ideas:
+ - [ChatGPT](https://chat.openai.com)
