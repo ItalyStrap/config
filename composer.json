@@ -62,12 +62,17 @@
         "italystrap/event": "EventDispatcher for WordPress"
     },
     "scripts": {
-        "test": [
+        "qa": [
             "@cs",
             "@psalm",
             "@unit",
+            "@clean",
             "@infection",
             "@examples"
+        ],
+        "tests": [
+            "@unit",
+            "@infection"
         ],
         "cs": [
             "@php vendor/bin/phpcs -p --ignore=./tests/_support/* ./src/ ./tests/"
@@ -75,14 +80,8 @@
         "cs:fix": [
             "@php vendor/bin/phpcbf -p --ignore=./tests/_support/* ./src/ ./tests/"
         ],
-        "phpstan": [
-            "@php vendor/bin/phpstan analyze --level=max"
-        ],
         "psalm": [
             "@php vendor/bin/psalm --no-cache"
-        ],
-        "static:all": [
-            "@php vendor/bin/phpstan analyze --level=max && @php vendor/bin/psalm"
         ],
         "unit": [
             "@php vendor/bin/codecept run unit"
