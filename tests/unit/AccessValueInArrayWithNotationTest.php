@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ItalyStrap\Config\Tests\Unit;
 
-use ItalyStrap\Config\AccessValueInArrayWithNotationTrait;
 use ItalyStrap\Tests\Stubs\AccessValueInArrayWithNotation;
 use ItalyStrap\Tests\TestCase;
 
