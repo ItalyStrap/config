@@ -17,17 +17,14 @@
         "php" : ">=7.4"
     },
     "require-dev": {
-        "lucatume/wp-browser": "^2.0",
+        "lucatume/wp-browser": "^3.1",
         "lucatume/function-mocker-le": "^1.0",
-        "codeception/module-asserts": "^2.0",
+        "codeception/module-asserts": "^1.0",
         "phpspec/prophecy-phpunit": "^2.0",
 
         "squizlabs/php_codesniffer": "^3.7",
         "phpcompatibility/php-compatibility": "^9.3",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
-
-        "infection/infection": "^0.26.6",
-        "infection/codeception-adapter": "^0.4.1",
 
         "vimeo/psalm": "^4.26",
         "humanmade/psalm-plugin-wordpress": "^2.0.3",
@@ -35,8 +32,9 @@
         "phpbench/phpbench": "^1.2",
         "phpmetrics/phpmetrics": "^2.8",
 
-        "rector/rector": "^0.14.0",
-        "phpstan/phpstan": "^1.8",
+        "rector/rector": "^0.15.17",
+        "infection/infection": "^0.26.6",
+        "infection/codeception-adapter": "^0.4.1",
         "italystrap/event": "dev-master",
         "italystrap/debug": "^2.1"
     },
@@ -53,22 +51,28 @@
             "tests/"
         ],
         "psr-4": {
-            "ItalyStrap\\Tests\\": "tests/"
+            "ItalyStrap\\Tests\\": "tests/src",
+            "ItalyStrap\\Tests\\Unit\\": "tests/unit",
+            "ItalyStrap\\Tests\\Stubs\\": "tests/_data/Stubs"
         },
         "files": [
-            "tests/_data/Stubs/ConfigKeys.php"
         ]
     },
     "suggest": {
         "italystrap/event": "EventDispatcher for WordPress"
     },
     "scripts": {
-        "test": [
+        "qa": [
             "@cs",
             "@psalm",
             "@unit",
+            "@clean",
             "@infection",
             "@examples"
+        ],
+        "tests": [
+            "@unit",
+            "@infection"
         ],
         "cs": [
             "@php vendor/bin/phpcs -p --ignore=./tests/_support/* ./src/ ./tests/"
@@ -76,22 +80,14 @@
         "cs:fix": [
             "@php vendor/bin/phpcbf -p --ignore=./tests/_support/* ./src/ ./tests/"
         ],
-        "phpstan": [
-            "@php vendor/bin/phpstan analyze --level=max"
-        ],
         "psalm": [
             "@php vendor/bin/psalm --no-cache"
         ],
-        "static:all": [
-            "@php vendor/bin/phpstan analyze --level=max && @php vendor/bin/psalm"
-        ],
         "unit": [
-            "@php vendor/bin/codecept run unit",
-            "@clean"
+            "@php vendor/bin/codecept run unit"
         ],
         "unit:debug": [
-            "@php vendor/bin/codecept run unit --debug",
-            "@clean"
+            "@php vendor/bin/codecept run unit --debug"
         ],
         "infection": [
             "@php vendor/bin/infection --threads=4"
