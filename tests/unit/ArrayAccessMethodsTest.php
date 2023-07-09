@@ -143,4 +143,38 @@ class ArrayAccessMethodsTest extends TestCase
             $this->fail();
         }
     }
+
+	public function testCallAllArrayAccessMethods()
+	{
+		$sut = $this->makeInstance();
+
+		$sut['key'] = 'value';
+		$this->assertTrue(isset($sut['key']));
+		$this->assertSame('value', $sut['key']);
+		unset($sut['key']);
+		$this->assertFalse(isset($sut['key']));
+
+		$sut->offsetSet('key', 'value');
+		$this->assertTrue($sut->offsetExists('key'));
+		$this->assertSame('value', $sut->offsetGet('key'));
+		$sut->offsetUnset('key');
+		$this->assertFalse($sut->offsetExists('key'));
+
+		$this->assertIsArray($sut->getArrayCopy());
+		$this->assertSame([], $sut->getArrayCopy());
+		$this->assertCount(0, $sut);
+		$this->assertSame(0, $sut->count());
+
+		$sut->offsetSet('key', 'value');
+		$this->assertSame(['key' => 'value'], $sut->getArrayCopy());
+		$this->assertCount(1, $sut);
+		$this->assertSame(1, $sut->count());
+
+		// Test clone
+		$new_sut = clone $sut;
+		$this->assertNotSame($sut, $new_sut);
+		$this->assertSame([], $new_sut->getArrayCopy());
+		$this->assertCount(0, $new_sut);
+		$this->assertSame(0, $new_sut->count());
+	}
 }
