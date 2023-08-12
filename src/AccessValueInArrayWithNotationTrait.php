@@ -6,7 +6,6 @@ namespace ItalyStrap\Config;
 
 trait AccessValueInArrayWithNotationTrait
 {
-
     /**
      * @param array<array-key, mixed> $array
      * @param array<array-key> $levels

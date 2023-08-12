@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ItalyStrap\Tests;
@@ -9,7 +10,6 @@ use UnitTester;
 
 abstract class TestCase extends Unit
 {
-
     use ProphecyTrait;
 
     /**

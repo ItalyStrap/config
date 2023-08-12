@@ -1,21 +1,22 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ItalyStrap\Tests;
 
 use ArrayIterator;
-use \ItalyStrap\Config\Config;
+use ItalyStrap\Config\Config;
 use ItalyStrap\Config\Config_Interface;
 use ItalyStrap\Config\ConfigFactory;
 use ItalyStrap\Config\ConfigInterface;
 use stdClass;
+
 use function array_replace_recursive;
 use function is_array;
 use function json_encode;
 
 class ConfigTest extends TestCase
 {
-
     protected function makeInstance($val = [], $default = []): Config
     {
         $sut = new Config($val, $default);
@@ -503,12 +504,12 @@ class ConfigTest extends TestCase
         $newconfig = new Config($default);
         $this->assertArrayHasKey('er', $newconfig->all());
 
-        $iterator = new ArrayIterator(['recipe'=>'pancakes', 'egg', 'milk', 'flour']);
+        $iterator = new ArrayIterator(['recipe' => 'pancakes', 'egg', 'milk', 'flour']);
         $newconfig = new Config($iterator);
         $this->assertArrayHasKey('recipe', $newconfig->all());
         $this->assertArrayHasKey('recipe', $newconfig);
 
-        $iterator = new ArrayIterator(['recipe2'=>'pancakes', 'egg', 'milk', 'flour']);
+        $iterator = new ArrayIterator(['recipe2' => 'pancakes', 'egg', 'milk', 'flour']);
         $newconfig->merge($iterator);
         $this->assertArrayHasKey('recipe2', $newconfig->all());
         $this->assertArrayHasKey('recipe2', $newconfig);

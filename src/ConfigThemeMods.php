@@ -1,10 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ItalyStrap\Config;
 
 use ItalyStrap\Event\EventDispatcher;
 use ItalyStrap\Event\EventDispatcherInterface;
+
 use function func_get_args;
 use function get_option;
 use function remove_theme_mod;
@@ -25,7 +27,6 @@ use function update_option;
  */
 class ConfigThemeMods implements ConfigInterface
 {
-
     private ConfigInterface $config;
     private EventDispatcherInterface $dispatcher;
 

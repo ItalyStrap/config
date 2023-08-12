@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ItalyStrap\Tests;
@@ -9,7 +10,6 @@ use ItalyStrap\Event\EventDispatcherInterface;
 
 class ConfigThemeModTest extends TestCase
 {
-
     protected \Prophecy\Prophecy\ObjectProphecy $config;
     protected \Prophecy\Prophecy\ObjectProphecy $dispatcher;
 

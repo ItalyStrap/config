@@ -6,7 +6,6 @@ namespace ItalyStrap\Config;
 
 trait DeprecatedTrait
 {
-
     /**
      * @deprecated
      */

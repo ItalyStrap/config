@@ -1,10 +1,12 @@
 <?php
+
 /**
  * Config Class that handle the classes configuration
  *
  *
  * @package ItalyStrap\Config
  */
+
 declare(strict_types=1);
 
 namespace ItalyStrap\Config;
@@ -14,7 +16,6 @@ namespace ItalyStrap\Config;
  */
 class ConfigFactory
 {
-
     /**
      * Load and return the Config object.
      *

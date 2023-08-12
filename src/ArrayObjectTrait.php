@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ItalyStrap\Config;
@@ -9,7 +10,6 @@ namespace ItalyStrap\Config;
  */
 trait ArrayObjectTrait
 {
-
     /**
      * @param TKey $index
      * @psalm-suppress InvalidArgument

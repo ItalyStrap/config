@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ItalyStrap\Tests\Benchmark;
@@ -11,7 +12,6 @@ use ItalyStrap\Tests\Stubs\ConfigKeys;
  */
 final class ConfigGetBench
 {
-
     private Config $config;
 
     public function setUp(): void

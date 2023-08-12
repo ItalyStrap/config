@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ItalyStrap\Config;
@@ -21,11 +22,12 @@ use ArrayObject;
  */
 class Config extends ArrayObject implements ConfigInterface
 {
-
     /**
      * @use \ItalyStrap\Config\ArrayObjectTrait<TKey,TValue>
      */
-    use ArrayObjectTrait, AccessValueInArrayWithNotationTrait, DeprecatedTrait;
+    use ArrayObjectTrait;
+    use AccessValueInArrayWithNotationTrait;
+    use DeprecatedTrait;
 
     /**
      * @var array<TKey, TValue>
