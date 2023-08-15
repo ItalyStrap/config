@@ -14,7 +14,8 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php" : ">=7.4"
+        "php" : ">=7.4",
+        "italystrap/storage": "^1.0.0"
     },
     "require-dev": {
         "lucatume/wp-browser": "^3.1",
@@ -35,8 +36,9 @@
         "rector/rector": "^0.15.17",
         "infection/infection": "^0.26.6",
         "infection/codeception-adapter": "^0.4.1",
+        "italystrap/debug": "^2.1",
         "italystrap/event": "dev-master",
-        "italystrap/debug": "^2.1"
+        "italystrap/storage-tests": "dev-master"
     },
     "autoload": {
         "psr-4": {

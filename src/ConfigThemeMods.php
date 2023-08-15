@@ -1,10 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ItalyStrap\Config;
 
 use ItalyStrap\Event\EventDispatcher;
 use ItalyStrap\Event\EventDispatcherInterface;
+use ItalyStrap\Storage\MultipleTrait;
+use ItalyStrap\Storage\SetMultipleStoreTrait;
+
 use function func_get_args;
 use function get_option;
 use function remove_theme_mod;
@@ -25,6 +29,13 @@ use function update_option;
  */
 class ConfigThemeMods implements ConfigInterface
 {
+    /**
+     * @use \ItalyStrap\Config\ArrayObjectTrait<TKey,TValue>
+     */
+    use ArrayObjectTrait;
+    use DeprecatedTrait;
+    use MultipleTrait;
+    use SetMultipleStoreTrait;
 
     private ConfigInterface $config;
     private EventDispatcherInterface $dispatcher;
@@ -40,45 +51,49 @@ class ConfigThemeMods implements ConfigInterface
     }
 
     /**
-     * @param TKey $index
+     * @param TKey $key
      * @param TValue $default
      * @return mixed
      */
-    public function get($index, $default = null)
+    public function get($key, $default = null)
     {
         /** This filter is documented in wp-includes/theme.php */
         return $this->dispatcher->filter(
-            'theme_mod_' . strtolower((string)$index),
-            $this->config->get($index, $default)
+            'theme_mod_' . strtolower((string)$key),
+            $this->config->get($key, $default)
         );
     }
 
     /**
-     * @param TKey $index
+     * @param TKey $key
      */
-    public function has($index): bool
+    public function has($key): bool
     {
-        return $this->config->has($index);
+        return $this->config->has($key);
+    }
+
+    public function set(string $key, $value): bool
+    {
+        return $this->config->set($key, $value) && \set_theme_mod((string)$key, $value);
     }
 
     /**
-     * @param TKey $index
+     * @param TKey $key
      * @param TValue $value
      */
-    public function add($index, $value)
+    public function add($key, $value)
     {
-        $this->config->add($index, $value);
-        set_theme_mod((string)$index, $value);
+        $this->set($key, $value);
         return $this;
     }
 
     /**
-     * @param TKey ...$with_indexes
+     * @param TKey ...$with_keys
      */
-    public function remove(...$with_indexes)
+    public function remove(...$with_keys)
     {
-        $this->config->remove(...$with_indexes);
-        foreach ($with_indexes as $key) {
+        $this->config->remove(...$with_keys);
+        foreach ($with_keys as $key) {
             remove_theme_mod((string)$key);
         }
         return $this;
@@ -131,41 +146,13 @@ class ConfigThemeMods implements ConfigInterface
         return $this->config->count();
     }
 
-    /**
-     * @param TKey $index
-     * @psalm-suppress InvalidArgument
-     */
-    public function offsetExists($index)
+    public function update(string $key, $value): bool
     {
-        return $this->has($index);
+        // TODO: Implement update() method.
     }
 
-    /**
-     * @param TKey $index
-     * @return mixed
-     * @psalm-suppress InvalidArgument
-     */
-    public function offsetGet($index)
+    public function delete(string $key): bool
     {
-        return $this->get($index);
-    }
-
-    /**
-     * @param TKey $index
-     * @param TValue $newval
-     * @psalm-suppress InvalidArgument
-     */
-    public function offsetSet($index, $newval)
-    {
-        $this->add($index, $newval);
-    }
-
-    /**
-     * @param TKey $index
-     * @psalm-suppress InvalidArgument
-     */
-    public function offsetUnset($index)
-    {
-        $this->remove($index);
+        // TODO: Implement delete() method.
     }
 }

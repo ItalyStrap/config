@@ -6,7 +6,6 @@ namespace ItalyStrap\Config;
 
 trait AccessValueInArrayWithNotationTrait
 {
-
     /**
      * @param array<array-key, mixed> $array
      * @param array<array-key> $levels
@@ -40,7 +39,11 @@ trait AccessValueInArrayWithNotationTrait
     private function insertValue(array &$array, array $levels, $value): bool
     {
         $key = \array_shift($levels);
-        if (\is_null($key)) {
+        /**
+         * If the $key is empty string '' return false
+         * If the key is 0 or '0' return true because is a valid key for an array
+         */
+        if (empty($key) && !\is_numeric($key)) {
             return false;
         }
 
@@ -65,7 +68,7 @@ trait AccessValueInArrayWithNotationTrait
     private function deleteValue(array &$array, array $levels): bool
     {
         $key = \array_shift($levels);
-        if (\is_null($key)) {
+        if (empty($key) && !\is_numeric($key)) {
             return false;
         }
 

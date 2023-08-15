@@ -1,21 +1,22 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ItalyStrap\Tests;
 
 use ArrayIterator;
-use \ItalyStrap\Config\Config;
+use ItalyStrap\Config\Config;
 use ItalyStrap\Config\Config_Interface;
 use ItalyStrap\Config\ConfigFactory;
 use ItalyStrap\Config\ConfigInterface;
 use stdClass;
+
 use function array_replace_recursive;
 use function is_array;
 use function json_encode;
 
 class ArrayAccessMethodsTest extends TestCase
 {
-
     protected function makeInstance($val = [], $default = []): Config
     {
         $sut = new Config($val, $default);
@@ -144,37 +145,37 @@ class ArrayAccessMethodsTest extends TestCase
         }
     }
 
-	public function testCallAllArrayAccessMethods()
-	{
-		$sut = $this->makeInstance();
+    public function testCallAllArrayAccessMethods()
+    {
+        $sut = $this->makeInstance();
 
-		$sut['key'] = 'value';
-		$this->assertTrue(isset($sut['key']));
-		$this->assertSame('value', $sut['key']);
-		unset($sut['key']);
-		$this->assertFalse(isset($sut['key']));
+        $sut['key'] = 'value';
+        $this->assertTrue(isset($sut['key']));
+        $this->assertSame('value', $sut['key']);
+        unset($sut['key']);
+        $this->assertFalse(isset($sut['key']));
 
-		$sut->offsetSet('key', 'value');
-		$this->assertTrue($sut->offsetExists('key'));
-		$this->assertSame('value', $sut->offsetGet('key'));
-		$sut->offsetUnset('key');
-		$this->assertFalse($sut->offsetExists('key'));
+        $sut->offsetSet('key', 'value');
+        $this->assertTrue($sut->offsetExists('key'));
+        $this->assertSame('value', $sut->offsetGet('key'));
+        $sut->offsetUnset('key');
+        $this->assertFalse($sut->offsetExists('key'));
 
-		$this->assertIsArray($sut->getArrayCopy());
-		$this->assertSame([], $sut->getArrayCopy());
-		$this->assertCount(0, $sut);
-		$this->assertSame(0, $sut->count());
+        $this->assertIsArray($sut->getArrayCopy());
+        $this->assertSame([], $sut->getArrayCopy());
+        $this->assertCount(0, $sut);
+        $this->assertSame(0, $sut->count());
 
-		$sut->offsetSet('key', 'value');
-		$this->assertSame(['key' => 'value'], $sut->getArrayCopy());
-		$this->assertCount(1, $sut);
-		$this->assertSame(1, $sut->count());
+        $sut->offsetSet('key', 'value');
+        $this->assertSame(['key' => 'value'], $sut->getArrayCopy());
+        $this->assertCount(1, $sut);
+        $this->assertSame(1, $sut->count());
 
-		// Test clone
-		$new_sut = clone $sut;
-		$this->assertNotSame($sut, $new_sut);
-		$this->assertSame([], $new_sut->getArrayCopy());
-		$this->assertCount(0, $new_sut);
-		$this->assertSame(0, $new_sut->count());
-	}
+        // Test clone
+        $new_sut = clone $sut;
+        $this->assertNotSame($sut, $new_sut);
+        $this->assertSame([], $new_sut->getArrayCopy());
+        $this->assertCount(0, $new_sut);
+        $this->assertSame(0, $new_sut->count());
+    }
 }

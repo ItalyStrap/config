@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ItalyStrap\Tests;
@@ -8,13 +9,13 @@ use ItalyStrap\Config\Config;
 $std = new \stdClass();
 $std->some_std_key = 'some-std-value';
 
-$anonymous_class = new class() {
+$anonymous_class = new class () {
     public string $var1 = 'value 1';
     public string $var2 = 'value 2';
     public string $var3 = 'value 3';
 };
 
-$iterator_aggregate_test = new class($anonymous_class) implements \IteratorAggregate {
+$iterator_aggregate_test = new class ($anonymous_class) implements \IteratorAggregate {
     public string $property1 = "Public property one";
     public string $property2 = "Public property two";
     public string $property3 = "Public property three";
