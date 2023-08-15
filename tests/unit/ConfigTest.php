@@ -11,8 +11,6 @@ use ItalyStrap\Config\ConfigFactory;
 use ItalyStrap\Config\ConfigInterface;
 use stdClass;
 
-use function array_replace_recursive;
-use function is_array;
 use function json_encode;
 
 class ConfigTest extends TestCase

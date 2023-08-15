@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace ItalyStrap\Config;
 
 use ArrayObject;
+use ItalyStrap\Storage\MultipleTrait;
+use ItalyStrap\Storage\SetMultipleStoreTrait;
 
 /**
  * @todo Immutable: https://github.com/jkoudys/immutable.php
@@ -28,6 +30,8 @@ class Config extends ArrayObject implements ConfigInterface
     use ArrayObjectTrait;
     use AccessValueInArrayWithNotationTrait;
     use DeprecatedTrait;
+    use MultipleTrait;
+    use SetMultipleStoreTrait;
 
     /**
      * @var array<TKey, TValue>
@@ -59,33 +63,33 @@ class Config extends ArrayObject implements ConfigInterface
     }
 
     /**
-     * @param TKey $index
+     * @param TKey|string $key
      * @param TValue $default
      * @return TValue
      */
-    public function get($index, $default = null)
+    public function get($key, $default = null)
     {
         $this->default = $default;
 
-        if (!$this->has($index)) {
+        if (!$this->has($key)) {
             return $default;
         }
 
-        // The class::temp variable is always setted by the class::has() method
+        // The class::temp variable is always set by the class::has() method
         return $this->temp;
     }
 
     /**
-     * @param TKey $index
+     * @param TKey|string $key
      */
-    public function has($index): bool
+    public function has($key): bool
     {
         /**
          * @psalm-suppress MixedAssignment
          */
         $this->temp = $this->findValue(
             $this->storage,
-            $this->buildLevels((string)$index),
+            $this->buildLevels((string)$key),
             $this->default
         );
         $this->default = null;
@@ -93,41 +97,50 @@ class Config extends ArrayObject implements ConfigInterface
     }
 
     /**
-     * @param TKey $index
-     * @param TValue $value
+     * @param TKey|string $key
+     * @param TValue|mixed $value
      */
-    public function add($index, $value): Config
+    public function set($key, $value): bool
     {
-        $this->insertValue($this->storage, $this->buildLevels((string)$index), $value);
-        return $this;
+        return $this->insertValue($this->storage, $this->buildLevels((string)$key), $value);
+    }
+
+    public function update(string $key, $value): bool
+    {
+        return $this->set($key, $value);
+    }
+
+    public function delete(string $key): bool
+    {
+        return $this->deleteValue($this->storage, $this->buildLevels($key));
     }
 
     /**
-     * @param TKey ...$with_indexes
+     * @param TKey ...$with_keys
      */
-    public function remove(...$with_indexes): Config
-    {
-        \array_walk(
-            $with_indexes,
-            /**
-             * @param mixed $indexes
-             * @psalm-suppress MixedArgumentTypeCoercion
-             */
-            [$this, 'removeIndexesFromStorage']
-        );
-
-        return $this;
-    }
+//    public function remove(...$with_keys): Config
+//    {
+//        \array_walk(
+//            $with_keys,
+//            /**
+//             * @param mixed $keys
+//             * @psalm-suppress MixedArgumentTypeCoercion
+//             */
+//            [$this, 'removeIndexesFromStorage']
+//        );
+//
+//        return $this;
+//    }
 
     /**
-     * @param array<array-key>|string $indexes
+     * @param array<array-key>|string $keys
      */
-    private function removeIndexesFromStorage($indexes): void
-    {
-        foreach ((array)$indexes as $k) {
-            $this->deleteValue($this->storage, $this->buildLevels((string)$k));
-        }
-    }
+//    private function removeIndexesFromStorage($keys): void
+//    {
+//        foreach ((array)$keys as $k) {
+//            $this->deleteValue($this->storage, $this->buildLevels((string)$k));
+//        }
+//    }
 
     /**
      * @param array<TKey, TValue>|\stdClass|string ...$array_to_merge
@@ -135,7 +148,7 @@ class Config extends ArrayObject implements ConfigInterface
     public function merge(...$array_to_merge): Config
     {
 
-        foreach ($array_to_merge as $index => $array) {
+        foreach ($array_to_merge as $key => $array) {
             if ($array instanceof \Traversable) {
                 $array = \iterator_to_array($array);
             }
@@ -145,7 +158,7 @@ class Config extends ArrayObject implements ConfigInterface
             }
 
             // Make sure any value given is casting to array
-            $array_to_merge[$index] = $array;
+            $array_to_merge[$key] = $array;
         }
 
         /**
@@ -182,16 +195,16 @@ class Config extends ArrayObject implements ConfigInterface
     }
 
     /**
-     * @param string $index
+     * @param string $key
      * @return array<array-key>
      */
-    private function buildLevels(string $index): array
+    private function buildLevels(string $key): array
     {
         /**
          * Remember that the delimiter must be never empty
          * So if in the future we want to change the delimiter
          * we must be sure that the delimiter is not empty.
          */
-        return \explode($this->delimiter, $index);
+        return \explode($this->delimiter, $key);
     }
 }

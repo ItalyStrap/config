@@ -13,6 +13,7 @@ trait ArrayObjectTrait
     /**
      * @param TKey $index
      * @psalm-suppress InvalidArgument
+     * @psalm-suppress MixedArgumentTypeCoercion
      */
     public function offsetExists($index): bool
     {
@@ -23,6 +24,7 @@ trait ArrayObjectTrait
      * @param TKey $index
      * @return TValue
      * @psalm-suppress InvalidArgument
+     * @psalm-suppress MixedArgumentTypeCoercion
      */
     public function offsetGet($index)
     {
@@ -33,19 +35,21 @@ trait ArrayObjectTrait
      * @param TKey $index
      * @param TValue $newval
      * @psalm-suppress InvalidArgument
+     * @psalm-suppress MixedArgumentTypeCoercion
      */
     public function offsetSet($index, $newval)
     {
-        $this->add($index, $newval);
+        $this->set($index, $newval);
     }
 
     /**
      * @param TKey $index
      * @psalm-suppress InvalidArgument
+     * @psalm-suppress MixedArgumentTypeCoercion
      */
     public function offsetUnset($index)
     {
-        $this->remove($index);
+        $this->delete($index);
     }
 
     public function count(): int

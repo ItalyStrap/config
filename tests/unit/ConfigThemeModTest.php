@@ -10,67 +10,29 @@ use ItalyStrap\Event\EventDispatcherInterface;
 
 class ConfigThemeModTest extends TestCase
 {
-    protected \Prophecy\Prophecy\ObjectProphecy $config;
-    protected \Prophecy\Prophecy\ObjectProphecy $dispatcher;
-
-    public function getDispatcher(): EventDispatcherInterface
+    protected function makeInstance($val = [], $default = []): ConfigThemeMods
     {
-        return $this->dispatcher->reveal();
+        return new ConfigThemeMods($this->makeConfig(), $this->makeDispatcher());
     }
 
-    public function getConfig($val = [], $default = []): ConfigInterface
-    {
-        $this->config->willBeConstructedWith(
-            [
-                $val,
-                $default
-            ]
-        );
-
-        return $this->config->reveal();
-    }
-
-	// phpcs:ignore
-	protected function _before() {
-        $this->config = $this->prophesize(ConfigInterface::class);
-        $this->dispatcher = $this->prophesize(EventDispatcherInterface::class);
-        parent::_before();
-    }
-
-	// phpcs:ignore
-	protected function _after() {
-        parent::_after();
-    }
-
-    protected function makeInstance($val = [], $default = []): ConfigInterface
-    {
-        $sut = new ConfigThemeMods($this->getConfig(...\func_get_args()), $this->getDispatcher());
-        $this->assertInstanceOf(ConfigInterface::class, $sut, '');
-        return $sut;
-    }
-
-    /**
-     * @test
-     */
     public function getAndAddOk()
     {
+        $this->config->set('key')->willReturn(true);
         $this->dispatcher->filter('theme_mod_key', null)->willReturn('value');
 
 		// phpcs:ignore
 		\tad\FunctionMockerLe\define('set_theme_mod', function ( string $parameter_key, string $value ) {
             $this->assertStringContainsString('key', $parameter_key, '');
             $this->assertStringContainsString('value', $value, '');
+            return true;
         });
 
         $sut = $this->makeInstance();
-        $sut->add('key', 'value');
+        $sut->set('key', 'value');
 
         $this->assertSame('value', $sut->get('key'), '');
     }
 
-    /**
-     * @test
-     */
     public function removeOk()
     {
         $collection = [
