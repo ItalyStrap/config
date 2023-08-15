@@ -10,9 +10,9 @@ trait DeprecatedTrait
      * @deprecated
      */
     #[\Deprecated]
-    public function push($index, $value): Config
+    public function push($key, $value): Config
     {
-        return $this->add($index, $value);
+        return $this->add($key, $value);
     }
 
     /**
@@ -52,5 +52,14 @@ trait DeprecatedTrait
         foreach ((array)$keys as $k) {
             $this->deleteValue($this->storage, $this->buildLevels((string)$k));
         }
+    }
+
+    /**
+     * @deprecated
+     */
+    #[\Deprecated]
+    public function all(): array
+    {
+        return $this->getArrayCopy();
     }
 }

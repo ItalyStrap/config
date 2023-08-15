@@ -116,33 +116,6 @@ class Config extends ArrayObject implements ConfigInterface
     }
 
     /**
-     * @param TKey ...$with_keys
-     */
-//    public function remove(...$with_keys): Config
-//    {
-//        \array_walk(
-//            $with_keys,
-//            /**
-//             * @param mixed $keys
-//             * @psalm-suppress MixedArgumentTypeCoercion
-//             */
-//            [$this, 'removeIndexesFromStorage']
-//        );
-//
-//        return $this;
-//    }
-
-    /**
-     * @param array<array-key>|string $keys
-     */
-//    private function removeIndexesFromStorage($keys): void
-//    {
-//        foreach ((array)$keys as $k) {
-//            $this->deleteValue($this->storage, $this->buildLevels((string)$k));
-//        }
-//    }
-
-    /**
      * @param array<TKey, TValue>|\stdClass|string ...$array_to_merge
      */
     public function merge(...$array_to_merge): Config
@@ -172,14 +145,6 @@ class Config extends ArrayObject implements ConfigInterface
     /**
      * @inheritDoc
      */
-    public function all(): array
-    {
-        return $this->getArrayCopy();
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function toArray(): array
     {
         return $this->getArrayCopy();
@@ -200,11 +165,6 @@ class Config extends ArrayObject implements ConfigInterface
      */
     private function buildLevels(string $key): array
     {
-        /**
-         * Remember that the delimiter must be never empty
-         * So if in the future we want to change the delimiter
-         * we must be sure that the delimiter is not empty.
-         */
-        return \explode($this->delimiter, $key);
+        return \explode($this->delimiter ?: '.', $key);
     }
 }

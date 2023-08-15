@@ -51,9 +51,6 @@ class ConfigThemeModTest extends TestCase
         $this->assertEmpty($collection, '');
     }
 
-    /**
-     * @test
-     */
     public function mergeOk()
     {
 

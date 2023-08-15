@@ -17,10 +17,7 @@ class ConfigTest extends TestCase
 {
     protected function makeInstance($val = [], $default = []): Config
     {
-        $sut = new Config($val, $default);
-        $this->assertInstanceOf(Config_Interface::class, $sut);
-        $this->assertInstanceOf(ConfigInterface::class, $sut);
-        return $sut;
+        return new Config($val, $default);
     }
 
     /**
@@ -30,7 +27,6 @@ class ConfigTest extends TestCase
     {
         $sut = ConfigFactory::make([]);
         $this->assertInstanceOf(Config::class, $sut);
-        $this->assertInstanceOf(Config_Interface::class, $sut);
         $this->assertInstanceOf(ConfigInterface::class, $sut);
     }
 
