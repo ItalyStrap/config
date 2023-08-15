@@ -17,7 +17,7 @@ trait ArrayObjectTrait
      */
     public function offsetExists($index): bool
     {
-        return $this->has($index);
+        return $this->has((string)$index);
     }
 
     /**
@@ -28,7 +28,7 @@ trait ArrayObjectTrait
      */
     public function offsetGet($index)
     {
-        return $this->get($index);
+        return $this->get((string)$index);
     }
 
     /**
@@ -39,7 +39,7 @@ trait ArrayObjectTrait
      */
     public function offsetSet($index, $newval)
     {
-        $this->set($index, $newval);
+        $this->set((string)$index, $newval);
     }
 
     /**
@@ -49,7 +49,7 @@ trait ArrayObjectTrait
      */
     public function offsetUnset($index)
     {
-        $this->delete($index);
+        $this->delete((string)$index);
     }
 
     public function count(): int

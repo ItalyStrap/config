@@ -6,15 +6,17 @@ namespace ItalyStrap\Tests;
 
 use ArrayIterator;
 use ItalyStrap\Config\Config;
-use ItalyStrap\Config\Config_Interface;
 use ItalyStrap\Config\ConfigFactory;
 use ItalyStrap\Config\ConfigInterface;
+use ItalyStrap\StorageTests\CommonStoreMultipleTestsTrait;
 use stdClass;
 
 use function json_encode;
 
 class ConfigTest extends TestCase
 {
+    use CommonStoreMultipleTestsTrait;
+
     protected function makeInstance($val = [], $default = []): Config
     {
         return new Config($val, $default);
@@ -463,7 +465,7 @@ class ConfigTest extends TestCase
         $config[2] = 'value';
         $this->assertTrue($config->has('2'));
 
-        $config->add('0', $expected);
+        $config->set('0', $expected);
         $this->assertEquals($expected, $config->get('0'));
     }
 

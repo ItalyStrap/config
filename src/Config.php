@@ -71,7 +71,7 @@ class Config extends ArrayObject implements ConfigInterface
     {
         $this->default = $default;
 
-        if (!$this->has($key)) {
+        if (!$this->has((string)$key)) {
             return $default;
         }
 
@@ -100,7 +100,7 @@ class Config extends ArrayObject implements ConfigInterface
      * @param TKey|string $key
      * @param TValue|mixed $value
      */
-    public function set($key, $value): bool
+    public function set(string $key, $value): bool
     {
         return $this->insertValue($this->storage, $this->buildLevels((string)$key), $value);
     }

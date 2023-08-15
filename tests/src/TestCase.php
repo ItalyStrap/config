@@ -69,4 +69,8 @@ abstract class TestCase extends Unit
     {
         $sut = $this->makeInstance();
     }
+
+    protected function prepareSetMultipleReturnFalse(): void
+    {
+    }
 }
