@@ -40,6 +40,16 @@ $value = $config->get('key', $optionalDefaultValue);
 
 You can see more advanced example in the tests' folder.
 
+## Deprecation
+
+List of all deprecated method that will  be removed in the next major release.
+
+* `Config::push()` => `Config::set()`
+* `Config::add()` => `Config::set()`
+* `Config::remove()` => `Config::delete()`
+* `Config::all()` => `Config::toArray()`
+* `ConfigThemeMods::class`
+
 ## Contributing
 
 All feedback / bug reports / pull requests are welcome.
