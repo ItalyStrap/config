@@ -22,7 +22,7 @@ use ItalyStrap\Storage\SetMultipleStoreTrait;
  * @template-extends \ArrayObject<TKey,TValue>
  * @psalm-suppress DeprecatedInterface
  */
-class Config extends ArrayObject implements ConfigInterface
+class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
 {
     /**
      * @use \ItalyStrap\Config\ArrayObjectTrait<TKey,TValue>
@@ -142,21 +142,25 @@ class Config extends ArrayObject implements ConfigInterface
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function toArray(): array
     {
         return $this->getArrayCopy();
     }
 
     /**
-     * @inheritDoc
-     * @throws \JsonException
+     * @deprecated This is a soft deprecation, I'm working on a different solution to dump a Json format,
+     * in the meantime you can use:
+     * (string)\json_encode(mew Config(), JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+     * @psalm-suppress RedundantCastGivenDocblockType
      */
     public function toJson(): string
     {
-        return \strval(\json_encode($this->toArray(), JSON_THROW_ON_ERROR));
+        return (string)\json_encode($this->toArray(), JSON_THROW_ON_ERROR);
+    }
+
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
     }
 
     /**
