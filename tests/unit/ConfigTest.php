@@ -662,22 +662,38 @@ class ConfigTest extends TestCase
         $this->assertSame('default-value', $sut->get('testsub-test', 'default-value'), '');
     }
 
-	public function testSubArrayAccess(): void
-	{
-		$sut = $this->makeInstance(
-			[
-				'key'	=> [
-					'sub-key'	=> 'value',
-				],
-			]
-		);
+    public function testSubArrayAccess(): void
+    {
+        $sut = $this->makeInstance(
+            [
+                'key'   => [
+                    'sub-key'   => 'value',
+                ],
+            ]
+        );
 
-		$this->assertTrue($sut->has('key.sub-key'));
-		$this->assertSame('value', $sut->get('key.sub-key'));
-		$this->assertSame('value', $sut['key.sub-key']);
-		$this->assertSame('value', $sut['key']['sub-key']);
-//		$this->assertSame(null, $sut['key']['not-exists']);
-		$this->assertSame(null, $sut['key.not-exists']);
-		$this->assertSame(null, $sut['key.not-exists.not-exists']);
-	}
+        $this->assertTrue($sut->has('key.sub-key'));
+        $this->assertSame('value', $sut->get('key.sub-key'));
+        $this->assertSame('value', $sut['key.sub-key']);
+        $this->assertSame('value', $sut['key']['sub-key']);
+//      $this->assertSame(null, $sut['key']['not-exists']);
+        $this->assertSame(null, $sut['key.not-exists']);
+        $this->assertSame(null, $sut['key.not-exists.not-exists']);
+    }
+
+    public function testJsonSerialize(): void
+    {
+        $sut = $this->makeInstance(
+            [
+                'key'   => [
+                    'sub-key'   => 'value',
+                ],
+            ]
+        );
+
+        $this->assertJsonStringEqualsJsonString(
+            \json_encode($sut->toArray()),
+            \json_encode($sut)
+        );
+    }
 }

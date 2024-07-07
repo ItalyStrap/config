@@ -26,7 +26,9 @@ use function update_option;
  *
  * @template-implements \ItalyStrap\Config\ConfigInterface<TKey,TValue>
  * @psalm-suppress DeprecatedInterface
+ * @deprecated No alternative available yet
  */
+#[\Deprecated]
 class ConfigThemeMods implements ConfigInterface
 {
     /**
