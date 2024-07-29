@@ -32,9 +32,4 @@ interface ConfigInterface extends Config_Interface, StoreInterface, \ArrayAccess
      * @return array<TKey, TValue>
      */
     public function toArray(): array;
-
-    /**
-     * @return string
-     */
-    public function toJson(): string;
 }
