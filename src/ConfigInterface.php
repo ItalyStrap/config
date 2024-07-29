@@ -17,7 +17,7 @@ interface ConfigInterface extends Config_Interface, StoreInterface, \ArrayAccess
     /**
      * Determine if the given configuration value exists.
      *
-     * @param TKey|string  $key
+     * @param TKey  $key
      * @return bool
      */
     public function has($key): bool;

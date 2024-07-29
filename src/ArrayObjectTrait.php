@@ -26,6 +26,7 @@ trait ArrayObjectTrait
      */
     public function offsetGet($index)
     {
+        codecept_debug($index);
         return $this->get($index);
     }
 

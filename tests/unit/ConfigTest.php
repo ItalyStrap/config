@@ -705,7 +705,8 @@ class ConfigTest extends TestCase
         $this->assertSame('value', $sut->get('key.sub-key'));
         $this->assertSame('value', $sut['key.sub-key']);
         $this->assertSame('value', $sut['key']['sub-key']);
-//      $this->assertSame(null, $sut['key']['not-exists']);
+        $this->assertSame(false, isset($sut['key']['not-exists']));
+        $this->assertSame(false, $sut['key']['not-exists'] ?? false);
         $this->assertSame(null, $sut['key.not-exists']);
         $this->assertSame(null, $sut['key.not-exists.not-exists']);
     }
