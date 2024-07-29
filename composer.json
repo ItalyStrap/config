@@ -113,7 +113,7 @@
             "@php vendor/bin/codecept clean"
         ],
         "examples": [
-            "@php index.php"
+            "@php example.php"
         ]
     },
     "support"    : {

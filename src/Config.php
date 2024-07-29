@@ -97,10 +97,10 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
     public function set($key, $value): bool
     {
         return $this->insertValue(
-			$this->storage,
-			$this->buildLevels($key),
-			$value
-		);
+            $this->storage,
+            $this->buildLevels($key),
+            $value
+        );
     }
 
     public function update($key, $value): bool
@@ -108,9 +108,9 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
         return $this->set($key, $value);
     }
 
-	/**
-	 * @param TKey|string|int|array $key
-	 */
+    /**
+     * @param TKey|string|int|array $key
+     */
     public function delete($key): bool
     {
         return $this->deleteValue($this->storage, $this->buildLevels($key));
@@ -155,18 +155,18 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
 
     /**
      * @param TKey|string|int|array $key
-	 * @return array<array-key, string>
+     * @return array<array-key, string>
      */
     private function buildLevels($key): array
     {
-		if (\is_array($key)) {
-			/**
-			 * @psalm-suppress MixedArgument
-			 * @todo Remove this suppression when PHP 8.0 will be the minimum required version
-			 *       so Union Types will be available
-			 */
-			return \array_map('strval', $key);
-		}
+        if (\is_array($key)) {
+            /**
+             * @psalm-suppress MixedArgument
+             * @todo Remove this suppression when PHP 8.0 will be the minimum required version
+             *       so Union Types will be available
+             */
+            return \array_map('strval', $key);
+        }
 
         return \explode($this->delimiter, (string)$key);
     }

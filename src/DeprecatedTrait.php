@@ -63,15 +63,15 @@ trait DeprecatedTrait
         return $this->getArrayCopy();
     }
 
-	/**
-	 * @deprecated This is a soft deprecation, I'm working on a different solution to dump a Json format,
-	 * in the meantime you can use:
-	 * (string)\json_encode(mew Config(), JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-	 * @psalm-suppress RedundantCastGivenDocblockType
-	 */
-	#[\Deprecated]
-	public function toJson(): string
-	{
-		return (string)\json_encode($this->toArray(), JSON_THROW_ON_ERROR);
-	}
+    /**
+     * @deprecated This is a soft deprecation, I'm working on a different solution to dump a Json format,
+     * in the meantime you can use:
+     * (string)\json_encode(mew Config(), JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+     * @psalm-suppress RedundantCastGivenDocblockType
+     */
+    #[\Deprecated]
+    public function toJson(): string
+    {
+        return (string)\json_encode($this->toArray(), JSON_THROW_ON_ERROR);
+    }
 }

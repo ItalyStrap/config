@@ -233,17 +233,17 @@ class ConfigTest extends TestCase
         );
     }
 
-	public function testWrongKeyProvided(): void
-	{
-		$sut = $this->makeInstance();
+    public function testWrongKeyProvided(): void
+    {
+        $sut = $this->makeInstance();
 
-		$sut->set('key.key2.key3', 'value');
-		try {
-			$sut->get(['key','key2',['key3']]);
-		} catch (\Exception $e) {
-			$this->assertStringContainsString('Array to string conversion', $e->getMessage());
-		}
-	}
+        $sut->set('key.key2.key3', 'value');
+        try {
+            $sut->get(['key','key2',['key3']]);
+        } catch (\Exception $e) {
+            $this->assertStringContainsString('Array to string conversion', $e->getMessage());
+        }
+    }
 
     /**
      * @test
@@ -347,11 +347,11 @@ class ConfigTest extends TestCase
         $this->assertEquals('Value', $config->get('var'));
         $this->assertEquals('Value', $config->var);
 
-		$config->set('var2.subVar', 'Value2');
-		$this->assertEquals('Value2', $config->get('var2.subVar'));
+        $config->set('var2.subVar', 'Value2');
+        $this->assertEquals('Value2', $config->get('var2.subVar'));
 
-		$config->set(['var2','subVar'], 'Value2');
-		$this->assertEquals('Value2', $config->get('var2.subVar'));
+        $config->set(['var2','subVar'], 'Value2');
+        $this->assertEquals('Value2', $config->get('var2.subVar'));
     }
 
     /**
@@ -469,10 +469,10 @@ class ConfigTest extends TestCase
         $config->delete(0);
         $this->assertFalse($config->has(0));
 
-		$config->set(['var2','subVar'], 'Value2');
-		$this->assertSame('Value2', $config->get('var2.subVar'));
-		$config->delete(['var2','subVar']);
-		$this->assertFalse($config->has('var2.subVar'));
+        $config->set(['var2','subVar'], 'Value2');
+        $this->assertSame('Value2', $config->get('var2.subVar'));
+        $config->delete(['var2','subVar']);
+        $this->assertFalse($config->has('var2.subVar'));
     }
 
     /**

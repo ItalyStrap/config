@@ -12,7 +12,7 @@ trait ArrayObjectTrait
 {
     /**
      * @param TKey $index
-	 * @psalm-suppress MixedArgumentTypeCoercion
+     * @psalm-suppress MixedArgumentTypeCoercion
      */
     public function offsetExists($index): bool
     {
