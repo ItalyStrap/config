@@ -12,44 +12,41 @@ trait ArrayObjectTrait
 {
     /**
      * @param TKey $index
-     * @psalm-suppress InvalidArgument
      * @psalm-suppress MixedArgumentTypeCoercion
      */
     public function offsetExists($index): bool
     {
-        return $this->has((string)$index);
+        return $this->has($index);
     }
 
     /**
      * @param TKey $index
      * @return TValue
-     * @psalm-suppress InvalidArgument
      * @psalm-suppress MixedArgumentTypeCoercion
      */
     public function offsetGet($index)
     {
-        return $this->get((string)$index);
+        codecept_debug($index);
+        return $this->get($index);
     }
 
     /**
      * @param TKey $index
      * @param TValue $newval
-     * @psalm-suppress InvalidArgument
      * @psalm-suppress MixedArgumentTypeCoercion
      */
     public function offsetSet($index, $newval)
     {
-        $this->set((string)$index, $newval);
+        $this->set($index, $newval);
     }
 
     /**
      * @param TKey $index
-     * @psalm-suppress InvalidArgument
      * @psalm-suppress MixedArgumentTypeCoercion
      */
     public function offsetUnset($index)
     {
-        $this->delete((string)$index);
+        $this->delete($index);
     }
 
     public function count(): int

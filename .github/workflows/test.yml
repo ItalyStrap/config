@@ -27,7 +27,7 @@ jobs:
             composer-options: "--ignore-platform-reqs"
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
@@ -37,7 +37,7 @@ jobs:
         # extensions: gd, zip
         tools: composer:v2
 
-    - uses: ramsey/composer-install@v2
+    - uses: ramsey/composer-install@v3
       with:
 #        ignore-cache: "yes"
         composer-options: "--prefer-dist"
