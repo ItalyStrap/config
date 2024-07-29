@@ -115,6 +115,7 @@ class ConfigTest extends TestCase
         $this->assertTrue($config->has('object'));
         $this->assertTrue($config->has('object.key'));
         $this->assertTrue($config->has('object.sub-object.sub-key'));
+        $this->assertTrue($config->has(['object','sub-object','sub-key']));
 
         $this->assertFalse($config->has('cesare'));
         $this->assertFalse($config->has('cheeseburger'));
@@ -225,7 +226,24 @@ class ConfigTest extends TestCase
             $this->config_arr['object']['sub-object']['sub-key'],
             $config->get('object.sub-object.sub-key')
         );
+
+        $this->assertEquals(
+            $this->config_arr['object']['sub-object']['sub-key'],
+            $config->get(['object','sub-object','sub-key'])
+        );
     }
+
+	public function testWrongKeyProvided(): void
+	{
+		$sut = $this->makeInstance();
+
+		$sut->set('key.key2.key3', 'value');
+		try {
+			$sut->get(['key','key2',['key3']]);
+		} catch (\Exception $e) {
+			$this->assertStringContainsString('Array to string conversion', $e->getMessage());
+		}
+	}
 
     /**
      * @test
@@ -328,6 +346,12 @@ class ConfigTest extends TestCase
 
         $this->assertEquals('Value', $config->get('var'));
         $this->assertEquals('Value', $config->var);
+
+		$config->set('var2.subVar', 'Value2');
+		$this->assertEquals('Value2', $config->get('var2.subVar'));
+
+		$config->set(['var2','subVar'], 'Value2');
+		$this->assertEquals('Value2', $config->get('var2.subVar'));
     }
 
     /**
@@ -420,30 +444,35 @@ class ConfigTest extends TestCase
     public function itShouldRemoveValues(): void
     {
         $config = $this->makeInstance($this->config_arr, $this->default_arr);
-        $config->remove('recursive');
+        $config->delete('recursive');
         $this->assertFalse($config->has('recursive'));
 
         $this->assertTrue($config->has('tizio'));
         $this->assertTrue($config->has('caio'));
 
-        $config->remove(['tizio', 'caio']);
+        $config->deleteMultiple(['tizio', 'caio']);
 
         $this->assertFalse($config->has('tizio'));
         $this->assertFalse($config->has('caio'));
 
         $config = $this->makeInstance($this->config_arr, $this->default_arr);
-        $config->remove(['recursive']);
+        $config->deleteMultiple(['recursive']);
         $this->assertFalse($config->has('recursive'));
 
         $config = $this->makeInstance($this->config_arr, $this->default_arr);
         $this->assertTrue($config->has('recursive'));
         $this->assertTrue($config->has('tizio'));
-        $config->remove(['recursive'], 'tizio');
+        $config->deleteMultiple(['recursive', 'tizio']);
         $this->assertFalse($config->has('recursive'));
         $this->assertFalse($config->has('tizio'));
 
-        $config->remove(0);
+        $config->delete(0);
         $this->assertFalse($config->has(0));
+
+		$config->set(['var2','subVar'], 'Value2');
+		$this->assertSame('Value2', $config->get('var2.subVar'));
+		$config->delete(['var2','subVar']);
+		$this->assertFalse($config->has('var2.subVar'));
     }
 
     /**

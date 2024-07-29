@@ -8,7 +8,7 @@ trait AccessValueInArrayWithNotationTrait
 {
     /**
      * @param array<array-key, mixed> $array
-     * @param array<array-key> $levels
+     * @param array<array-key, string> $levels
      * @param mixed $default
      * @return mixed
      */
@@ -32,7 +32,7 @@ trait AccessValueInArrayWithNotationTrait
 
     /**
      * @param array<array-key, mixed> $array
-     * @param array<array-key> $levels
+     * @param array<array-key, string> $levels
      * @param mixed $value
      * @return bool
      */
@@ -62,7 +62,7 @@ trait AccessValueInArrayWithNotationTrait
 
     /**
      * @param array<array-key, mixed> $array
-     * @param array<array-key> $levels
+     * @param array<array-key, string> $levels
      * @return bool
      */
     private function deleteValue(array &$array, array $levels): bool

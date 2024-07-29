@@ -57,7 +57,7 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
     }
 
     /**
-     * @param TKey|string $key
+     * @param TKey|string|int|array $key
      * @param TValue $default
      * @return TValue
      */
@@ -65,7 +65,7 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
     {
         $this->default = $default;
 
-        if (!$this->has((string)$key)) {
+        if (!$this->has($key)) {
             return $default;
         }
 
@@ -74,7 +74,7 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
     }
 
     /**
-     * @param TKey|string $key
+     * @param TKey|string|int|array $key
      */
     public function has($key): bool
     {
@@ -83,7 +83,7 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
          */
         $this->temp = $this->findValue(
             $this->storage,
-            $this->buildLevels((string)$key),
+            $this->buildLevels($key),
             $this->default
         );
         $this->default = null;
@@ -91,20 +91,27 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
     }
 
     /**
-     * @param TKey|string $key
+     * @param TKey|string|int|array $key
      * @param TValue|mixed $value
      */
-    public function set(string $key, $value): bool
+    public function set($key, $value): bool
     {
-        return $this->insertValue($this->storage, $this->buildLevels((string)$key), $value);
+        return $this->insertValue(
+			$this->storage,
+			$this->buildLevels($key),
+			$value
+		);
     }
 
-    public function update(string $key, $value): bool
+    public function update($key, $value): bool
     {
         return $this->set($key, $value);
     }
 
-    public function delete(string $key): bool
+	/**
+	 * @param TKey|string|int|array $key
+	 */
+    public function delete($key): bool
     {
         return $this->deleteValue($this->storage, $this->buildLevels($key));
     }
@@ -141,28 +148,26 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
         return $this->getArrayCopy();
     }
 
-    /**
-     * @deprecated This is a soft deprecation, I'm working on a different solution to dump a Json format,
-     * in the meantime you can use:
-     * (string)\json_encode(mew Config(), JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-     * @psalm-suppress RedundantCastGivenDocblockType
-     */
-    public function toJson(): string
-    {
-        return (string)\json_encode($this->toArray(), JSON_THROW_ON_ERROR);
-    }
-
     public function jsonSerialize(): array
     {
         return $this->toArray();
     }
 
     /**
-     * @param string $key
-     * @return array<array-key>
+     * @param TKey|string|int|array $key
+	 * @return array<array-key, string>
      */
-    private function buildLevels(string $key): array
+    private function buildLevels($key): array
     {
-        return \explode($this->delimiter ?: '.', $key);
+		if (\is_array($key)) {
+			/**
+			 * @psalm-suppress MixedArgument
+			 * @todo Remove this suppression when PHP 8.0 will be the minimum required version
+			 *       so Union Types will be available
+			 */
+			return \array_map('strval', $key);
+		}
+
+        return \explode($this->delimiter, (string)$key);
     }
 }
