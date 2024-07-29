@@ -34,18 +34,20 @@ $config->merge( $default )->merge(
 	]
 );
 
-\print_r($config->get( 'key1.subKey' ));
-\print_r($config->get( 'key1' ));
-\print_r($config->get( 'key2' ));
-\print_r($config->get( 'key1.subKey' ));
-\print_r($config->get( 'key1.nested.subSubKey' ));
-\print_r($config->get( 'key1.nested.subSubKeyfdgd' ));
+\print_r($config->get('key1.subKey'));
+\print_r($config->get(['key1', 'subKey']));
+\print_r($config->get('key1'));
+\print_r($config->get('key2'));
+\print_r($config->get('key1.subKey'));
+\print_r($config->get('key1.nested.subSubKey'));
+\print_r($config->get(['key1', 'nested', 'subSubKey']));
+\print_r($config->get('key1.nested.subSubKeyfdgd'));
 
-\print_r($config->merge( [ 'key1' => [ 1 ] ] ));
+\print_r($config->merge(['key1' => [1]]));
 
-\print_r($config['key1']['subKe'] ?? '' );
-\print_r($config->key1['subKey'] ?? '' );
-\print_r($config->key1->subKey ?? '' );
+\print_r($config['key1']['subKe'] ?? '');
+\print_r($config->key1['subKey'] ?? '');
+\print_r($config->key1->subKey ?? '');
 \print_r($config->getArrayCopy());
 
 \print_r($config->get('test_null'));
