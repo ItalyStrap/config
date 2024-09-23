@@ -24,7 +24,7 @@ trait ArrayObjectTrait
      * @return TValue
      * @psalm-suppress MixedArgumentTypeCoercion
      */
-	#[\ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function offsetGet($index)
     {
         return $this->get($index);
@@ -35,7 +35,7 @@ trait ArrayObjectTrait
      * @param TValue $newval
      * @psalm-suppress MixedArgumentTypeCoercion
      */
-	#[\ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function offsetSet($index, $newval)
     {
         $this->set($index, $newval);
@@ -45,7 +45,7 @@ trait ArrayObjectTrait
      * @param TKey $index
      * @psalm-suppress MixedArgumentTypeCoercion
      */
-	#[\ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function offsetUnset($index)
     {
         $this->delete($index);
