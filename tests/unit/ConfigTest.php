@@ -361,8 +361,8 @@ class ConfigTest extends TestCase
     {
         $config = $this->makeInstance($this->config_arr);
 
-        $this->assertIsArray($config->all());
-        $this->assertEquals($this->config_arr, $config->all());
+        $this->assertIsArray($config->toArray());
+        $this->assertEquals($this->config_arr, $config->toArray());
     }
 
     /**
@@ -524,19 +524,19 @@ class ConfigTest extends TestCase
         $config = $this->makeInstance($this->config_arr);
 
         $config->merge($default);
-        $this->assertArrayHasKey('er', $config->all());
+        $this->assertArrayHasKey('er', $config->toArray());
 
         $newconfig = new Config($default);
-        $this->assertArrayHasKey('er', $newconfig->all());
+        $this->assertArrayHasKey('er', $newconfig->toArray());
 
         $iterator = new ArrayIterator(['recipe' => 'pancakes', 'egg', 'milk', 'flour']);
         $newconfig = new Config($iterator);
-        $this->assertArrayHasKey('recipe', $newconfig->all());
+        $this->assertArrayHasKey('recipe', $newconfig->toArray());
         $this->assertArrayHasKey('recipe', $newconfig);
 
         $iterator = new ArrayIterator(['recipe2' => 'pancakes', 'egg', 'milk', 'flour']);
         $newconfig->merge($iterator);
-        $this->assertArrayHasKey('recipe2', $newconfig->all());
+        $this->assertArrayHasKey('recipe2', $newconfig->toArray());
         $this->assertArrayHasKey('recipe2', $newconfig);
 
         $stdobj = new stdClass();

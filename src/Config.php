@@ -117,7 +117,7 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
     }
 
     /**
-     * @param array<TKey, TValue>|\stdClass|string ...$array_to_merge
+     * @param array<TKey, TValue>|\IteratorAggregate|\stdClass|string ...$array_to_merge
      */
     public function merge(...$array_to_merge): Config
     {

@@ -1,0 +1,19 @@
+* text eol=lf
+
+*.php diff=php
+
+/.docker/ export-ignore
+/.github/ export-ignore
+/docs/ export-ignore
+/tests/ export-ignore
+/.editorconfig export-ignore
+/.env export-ignore
+/.gitattributes export-ignore
+/.gitignore export-ignore
+/codeception.dist.yml export-ignore
+/example.php export-ignore
+/infection.json.dist export-ignore
+/phpbench.json.dist export-ignore
+/phpcs.xml export-ignore
+/psalm.xml export-ignore
+/rector.php export-ignore

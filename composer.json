@@ -15,6 +15,7 @@
     "minimum-stability": "stable",
     "require": {
         "php" : ">=7.4",
+        "ext-json": "*",
         "italystrap/storage": "^1.0.0"
     },
     "require-dev": {
@@ -59,9 +60,6 @@
         },
         "files": [
         ]
-    },
-    "suggest": {
-        "italystrap/event": "EventDispatcher for WordPress"
     },
     "scripts": {
         "qa": [
