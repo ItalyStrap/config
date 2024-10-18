@@ -338,6 +338,39 @@ class TraverseMethodTest extends TestCase
         $this->assertSame('updatedValue2', $config->get('settings.option2'));
     }
 
+    public function testWhichOfTheseIsDoneFirst(): void
+    {
+        $config = new Config([
+            'items' => [
+                'item1' => 'value1',
+                'item2' => [
+                    'subitem1' => 'sub value1',
+                ],
+            ],
+        ]);
+
+        $listOfCalls = [];
+        $config->traverse(static function (&$current, $key, Config $config) use (&$listOfCalls): void {
+            if ($key === 'subitem1') {
+                $listOfCalls[] = 'subitem1';
+            }
+
+            if ($key === 'item2') {
+                $listOfCalls[] = 'item2';
+            }
+
+            if ($key === 'items') {
+                $listOfCalls[] = 'items';
+            }
+        });
+
+        $this->assertSame([
+            'subitem1', // This is the first call
+            'item2', // This is the second call
+            'items' // This is the last call
+        ], $listOfCalls);
+    }
+
     public function testCallbackAddsNewKeys(): void
     {
         $config = new Config([

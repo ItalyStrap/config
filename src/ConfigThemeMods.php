@@ -113,6 +113,10 @@ class ConfigThemeMods implements ConfigInterface
         return $this;
     }
 
+    public function traverse(callable $callback): void
+    {
+    }
+
     /**
      * @inheritDoc
      */

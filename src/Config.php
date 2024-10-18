@@ -117,7 +117,7 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
     }
 
     /**
-     * @param array<TKey, TValue>|\IteratorAggregate|\stdClass|string ...$array_to_merge
+     * @param array<TKey, TValue>|\IteratorAggregate|\Iterator|\stdClass|string ...$array_to_merge
      */
     public function merge(...$array_to_merge): Config
     {
@@ -143,8 +143,6 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
         return $this;
     }
 
-
-
     /**
      * Traverse the config array and call the callback
      * for each element in the array recursively and in a depth-first order.
@@ -156,7 +154,6 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
      * - array $keyPath: The full key path to the current element.
      *
      * @param callable(TValue, TKey, Config, array): void $callback
-     * @return void
      */
     public function traverse(callable $callback): void
     {
@@ -196,7 +193,7 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
 
     public function jsonSerialize(): array
     {
-        return $this->toArray();
+        return $this->getArrayCopy();
     }
 
     /**
