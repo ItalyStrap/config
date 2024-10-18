@@ -19,7 +19,7 @@ use ItalyStrap\Storage\SetMultipleStoreTrait;
 class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
 {
     /**
-     * @use \ItalyStrap\Config\ArrayObjectTrait<TKey,TValue>
+     * @use ArrayObjectTrait<TKey,TValue>
      */
     use ArrayObjectTrait;
     use AccessValueInArrayWithNotationTrait;

@@ -693,9 +693,15 @@ class ConfigTest extends TestCase
         $this->assertSame('value', $sut['key.sub-key']);
         $this->assertSame('value', $sut['key']['sub-key']);
         $this->assertSame(false, isset($sut['key']['not-exists']));
+        $this->assertSame(false, isset($sut['key.not-exists']));
         $this->assertSame(false, $sut['key']['not-exists'] ?? false);
         $this->assertSame(null, $sut['key.not-exists']);
         $this->assertSame(null, $sut['key.not-exists.not-exists']);
+        $sut['key.not-exists.not-exists'] = 'now exists';
+        $this->assertSame('now exists', $sut['key.not-exists.not-exists']);
+
+        // This is not possible
+//         $sut['key']['sub'] = 'sub value';
     }
 
     public function testJsonSerialize(): void
