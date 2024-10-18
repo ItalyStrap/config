@@ -117,7 +117,7 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
     }
 
     /**
-     * @param array<TKey, TValue>|\IteratorAggregate|\stdClass|string ...$array_to_merge
+     * @param array<TKey, TValue>|\IteratorAggregate|\Iterator|\stdClass|string ...$array_to_merge
      */
     public function merge(...$array_to_merge): Config
     {
@@ -143,6 +143,49 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
         return $this;
     }
 
+    /**
+     * Traverse the config array and call the callback
+     * for each element in the array recursively and in a depth-first order.
+     *
+     * The callback can accept up to four parameters:
+     * - mixed &$value: The current value, passed by reference.
+     * - string|int $key: The current key.
+     * - Config $config: The Config instance.
+     * - array $keyPath: The full key path to the current element.
+     *
+     * @param callable(TValue, TKey, Config, array): void $callback
+     */
+    public function traverse(callable $callback): void
+    {
+        $this->traverseArray($this->storage, $callback);
+    }
+
+    private function traverseArray(array &$array, callable $callback, array $keyPath = []): bool
+    {
+        /**
+         * @var TValue $current
+         */
+        foreach ($array as $key => &$current) {
+            $fullKeyPath = \array_merge($keyPath, [$key]);
+
+            if (\is_array($current)) {
+                $keep = $this->traverseArray($current, $callback, $fullKeyPath);
+                if (!$keep) {
+                    unset($array[$key]);
+                    continue;
+                }
+            }
+
+            $callback($current, $key, $this, $fullKeyPath);
+
+            if ($current === null || (is_array($current) && empty($current))) {
+                unset($array[$key]);
+            }
+        }
+
+        return !empty($array);
+    }
+
     public function toArray(): array
     {
         return $this->getArrayCopy();
@@ -150,7 +193,7 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
 
     public function jsonSerialize(): array
     {
-        return $this->toArray();
+        return $this->getArrayCopy();
     }
 
     /**

@@ -156,7 +156,9 @@ List of all deprecated method that will  be removed in the next major release.
 * `Config::add()` => `Config::set()`
 * `Config::remove()` => `Config::delete()`
 * `Config::all()` => `Config::toArray()`
+* `Config::toJson()` => No replacement method is provided
 * `ConfigThemeMods::class`
+* `ConfigThemeModTest::class`
 
 ## Contributing
 

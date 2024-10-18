@@ -18,15 +18,19 @@ interface ConfigInterface extends Config_Interface, StoreInterface, \ArrayAccess
      * Determine if the given configuration value exists.
      *
      * @param TKey  $key
-     * @return bool
      */
     public function has($key): bool;
 
     /**
      * @param array<TKey, TValue> ...$array_to_merge
-     * @return ConfigInterface
      */
     public function merge(...$array_to_merge): ConfigInterface;
+
+    /**
+     *
+     * @param callable(TValue, TKey, Config, array): void $callback
+     */
+    public function traverse(callable $callback): void;
 
     /**
      * @return array<TKey, TValue>

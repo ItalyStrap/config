@@ -371,7 +371,7 @@ class ConfigTest extends TestCase
     public function itShouldAddNewItem(): void
     {
         $config = $this->makeInstance($this->config_arr, $this->default_arr);
-        $config->add('new_item', true);
+        $config->set('new_item', true);
 
         $this->assertTrue($config->get('new_item'));
     }
@@ -566,19 +566,6 @@ class ConfigTest extends TestCase
     /**
      * @test
      */
-    public function itShouldReturnValidJson(): void
-    {
-        $config = $this->makeInstance($this->config_arr);
-        $this->assertJson($config->toJson());
-        foreach ($this->config_arr as $key => $value) {
-            $this->assertStringContainsString($key, $config->toJson());
-        }
-        $this->assertEquals(json_encode($this->config_arr), $config->toJson());
-    }
-
-    /**
-     * @test
-     */
     public function itShouldCloneHaveEmptyValue(): void
     {
         $arr = [ 'key'  => 'value' ];
@@ -668,7 +655,7 @@ class ConfigTest extends TestCase
         ];
 
         $sut = $this->makeInstance($array);
-        $sut->add('test2', $stdclass);
+        $sut->set('test2', $stdclass);
 
         $this->assertSame('value', $sut->get('test2.test'), '');
     }
