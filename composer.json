@@ -39,7 +39,8 @@
         "infection/codeception-adapter": "^0.4.1",
         "italystrap/debug": "^2.1",
         "italystrap/event": "dev-master",
-        "italystrap/storage-tests": "dev-master"
+        "italystrap/storage-tests": "dev-master",
+        "cache/integration-tests": "^0.17.0"
     },
     "autoload": {
         "psr-4": {

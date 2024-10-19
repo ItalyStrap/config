@@ -160,7 +160,25 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
         $this->traverseArray($this->storage, $callback);
     }
 
-    private function traverseArray(array &$array, callable $callback, array $keyPath = []): bool
+    public function traverseTest(callable $callback): void
+    {
+        $this->traverseArrayTest($this->storage, $callback);
+    }
+
+    private function traverseArrayTest(array &$array, callable $callback, array $keyPath = [])
+    {
+        foreach ($array as $key => &$current) {
+            $fullKeyPath = \array_merge($keyPath, [$key]);
+
+            if (\is_array($current)) {
+                $this->traverseArray($current, $callback, $fullKeyPath);
+            }
+
+            $callback($current, $key, $this, $fullKeyPath);
+        }
+    }
+
+    private function traverseArray(array &$array, callable $callback, array $keyPath = [])
     {
         /**
          * @var TValue $current
@@ -178,7 +196,10 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
 
             $callback($current, $key, $this, $fullKeyPath);
 
-            if ($current === null || (is_array($current) && empty($current))) {
+            if (
+                $current === null
+                || (\is_array($current) && empty($current))
+            ) {
                 unset($array[$key]);
             }
         }
