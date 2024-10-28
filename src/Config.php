@@ -173,7 +173,7 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
      * @param array<TKey, TValue> $array
      * @param array<array-key, callable> $visitors
      */
-    private function traverseArray(array &$array, array $visitors, array $keyPath = []): bool
+    private function traverseArray(array &$array, array $visitors, array $keyPath = []): void
     {
         foreach ($array as $key => &$current) {
             $path = \array_merge($keyPath, [$key]);
@@ -190,7 +190,7 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
                 }
 
                 if ($signal === SignalCode::STOP_TRAVERSAL) {
-                    return false; // Stop traversal immediately
+					break 2; // Stop the current iteration and the parent iteration
                 }
 
                 if ($signal === SignalCode::REMOVE_NODE) {
@@ -207,15 +207,9 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
             }
 
             if (!$skipChildren && \is_array($current)) {
-                $continue = $this->traverseArray($current, $visitors, $path);
-                if (!$continue) {
-                    // Stop the current iteration
-                    return false; // Propagate the stop signal upwards
-                }
+                $this->traverseArray($current, $visitors, $path);
             }
         }
-
-        return true; // Continue traversal
     }
 
     public function toArray(): array
