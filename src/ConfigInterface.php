@@ -28,9 +28,9 @@ interface ConfigInterface extends Config_Interface, StoreInterface, \ArrayAccess
 
     /**
      *
-     * @param callable(TValue, TKey, Config, array): void $callback
+     * @param callable(TValue, TKey, Config, array): void $visitor
      */
-    public function traverse(callable $callback): void;
+    public function traverse(callable ...$visitor): void;
 
     /**
      * @return array<TKey, TValue>

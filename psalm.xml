@@ -11,12 +11,6 @@
         <ignoreFiles>
             <directory name="legacy" />
             <directory name="vendor" />
-            <file name="src/DeprecatedTrait.php" />
-            <file name="src/ConfigThemeMods.php" />
         </ignoreFiles>
     </projectFiles>
-
-    <stubs>
-        <file name="vendor/php-stubs/wordpress-stubs/wordpress-stubs.php" />
-    </stubs>
 </psalm>

@@ -52,8 +52,17 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
      */
     public function __construct($config = [], $default = [])
     {
+        /**
+         * @var class-string<\ArrayIterator<TKey, TValue>>|class-string<ArrayObject<TKey, TValue>> $iteratorClass
+         */
+        $iteratorClass = \RecursiveArrayIterator::class;
+
         $this->merge($default, $config);
-        parent::__construct($this->storage, ArrayObject::ARRAY_AS_PROPS);
+        parent::__construct(
+            $this->storage,
+            ArrayObject::ARRAY_AS_PROPS,
+            $iteratorClass
+        );
     }
 
     /**
@@ -153,58 +162,60 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
      * - Config $config: The Config instance.
      * - array $keyPath: The full key path to the current element.
      *
-     * @param callable(TValue, TKey, Config, array): void $callback
+     * @param array<callable(TValue, TKey, Config, array): void> $visitor
      */
-    public function traverse(callable $callback): void
+    public function traverse(callable ...$visitor): void
     {
-        $this->traverseArray($this->storage, $callback);
+        $this->traverseArray($this->storage, $visitor);
     }
 
-    public function traverseTest(callable $callback): void
-    {
-        $this->traverseArrayTest($this->storage, $callback);
-    }
-
-    private function traverseArrayTest(array &$array, callable $callback, array $keyPath = [])
+    /**
+     * @param array<TKey, TValue> $array
+     * @param array<array-key, callable> $visitors
+     */
+    private function traverseArray(array &$array, array $visitors, array $keyPath = []): bool
     {
         foreach ($array as $key => &$current) {
-            $fullKeyPath = \array_merge($keyPath, [$key]);
+            $path = \array_merge($keyPath, [$key]);
+            $skipChildren = false;
 
-            if (\is_array($current)) {
-                $this->traverseArray($current, $callback, $fullKeyPath);
-            }
+            foreach ($visitors as $visitor) {
+                /**
+                 * @var null|int $signal
+                 */
+                $signal = $visitor($current, $key, $this, $path);
 
-            $callback($current, $key, $this, $fullKeyPath);
-        }
-    }
+                if ($signal === SignalCode::NONE) {
+                    continue; // Continue to the next callback
+                }
 
-    private function traverseArray(array &$array, callable $callback, array $keyPath = [])
-    {
-        /**
-         * @var TValue $current
-         */
-        foreach ($array as $key => &$current) {
-            $fullKeyPath = \array_merge($keyPath, [$key]);
+                if ($signal === SignalCode::STOP_TRAVERSAL) {
+                    return false; // Stop traversal immediately
+                }
 
-            if (\is_array($current)) {
-                $keep = $this->traverseArray($current, $callback, $fullKeyPath);
-                if (!$keep) {
+                if ($signal === SignalCode::REMOVE_NODE) {
                     unset($array[$key]);
-                    continue;
+                }
+
+                if ($signal === SignalCode::REMOVE_NODE || $signal === SignalCode::CONTINUE) {
+                    continue 2; // Skip to the next sibling node
+                }
+
+                if ($signal === SignalCode::SKIP_CHILDREN) {
+                    $skipChildren = true;
                 }
             }
 
-            $callback($current, $key, $this, $fullKeyPath);
-
-            if (
-                $current === null
-                || (\is_array($current) && empty($current))
-            ) {
-                unset($array[$key]);
+            if (!$skipChildren && \is_array($current)) {
+                $continue = $this->traverseArray($current, $visitors, $path);
+                if (!$continue) {
+                    // Stop the current iteration
+                    return false; // Propagate the stop signal upwards
+                }
             }
         }
 
-        return !empty($array);
+        return true; // Continue traversal
     }
 
     public function toArray(): array

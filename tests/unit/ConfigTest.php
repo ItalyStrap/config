@@ -27,7 +27,7 @@ class ConfigTest extends TestCase
      */
     public function factory(): void
     {
-        $sut = ConfigFactory::make([]);
+        $sut = (new ConfigFactory())->make([]);
         $this->assertInstanceOf(Config::class, $sut);
         $this->assertInstanceOf(ConfigInterface::class, $sut);
     }
@@ -248,7 +248,7 @@ class ConfigTest extends TestCase
     /**
      * @test
      */
-    public function itShouldSearchSubkeys(): void
+    public function itShouldSearchSubKeys(): void
     {
         $arr = [
             'key'   => [
@@ -441,7 +441,7 @@ class ConfigTest extends TestCase
     /**
      * @test
      */
-    public function itShouldRemoveValues(): void
+    public function itShouldDeleteValues(): void
     {
         $config = $this->makeInstance($this->config_arr, $this->default_arr);
         $config->delete('recursive');
@@ -473,6 +473,39 @@ class ConfigTest extends TestCase
         $this->assertSame('Value2', $config->get('var2.subVar'));
         $config->delete(['var2','subVar']);
         $this->assertFalse($config->has('var2.subVar'));
+    }
+
+    public function testItShouldDeleteAndReturnValueDependingOnTheCurrentCalled(): void
+    {
+        $data = [
+            'falseValue' => false,
+            'nullValue' => null,
+            'emptyString' => '',
+            'zeroValue' => 0,
+            'emptyArray' => [],
+            'validArray' => ['key' => 'value'],
+            'deeperArrayWithScalarValue' => [
+                'key' => [
+                    'falseValue' => false,
+                    'nullValue' => null,
+                    'emptyString' => '',
+                    'zeroValue' => 0,
+                    'emptyArray' => [],
+                    'validArray' => ['key' => 'value'],
+                ],
+            ],
+        ];
+
+        $config = $this->makeInstance($data);
+
+        $this->assertTrue($config->has('validArray.key'));
+        $this->assertSame('value', $config->get('validArray.key'));
+        $this->assertTrue($config->delete('validArray.key'));
+        $this->assertFalse($config->has('validArray.key'));
+        $this->assertSame([], $config->get('validArray'));
+
+        $this->assertTrue($config->has('deeperArrayWithScalarValue.key.falseValue'));
+        $this->assertSame(false, $config->get('deeperArrayWithScalarValue.key.falseValue'));
     }
 
     /**

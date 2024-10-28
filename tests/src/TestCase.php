@@ -62,14 +62,6 @@ abstract class TestCase extends Unit
         parent::_after();
     }
 
-    /**
-     * @test
-     */
-    public function instanceOk()
-    {
-        $sut = $this->makeInstance();
-    }
-
     protected function prepareSetMultipleReturnFalse(): void
     {
     }

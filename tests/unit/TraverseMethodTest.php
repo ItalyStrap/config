@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace ItalyStrap\Tests;
 
 use ItalyStrap\Config\Config;
+use ItalyStrap\Config\ConfigInterface;
+use ItalyStrap\Config\SignalCode;
 
 class TraverseMethodTest extends TestCase
 {
-    protected function makeInstance(array $default = []): Config
+    protected function makeInstance(array $default = []): ConfigInterface
     {
         return new Config($default);
     }
@@ -147,20 +149,105 @@ class TraverseMethodTest extends TestCase
         $this->assertSame($expected, $config->toArray());
     }
 
+    public function testAppendValueToNestedArray(): void
+    {
+        $config = new Config([
+            'items' => [
+                ['type' => 'fruit', 'name' => 'apple'],
+                ['type' => 'vegetable', 'name' => 'carrot'],
+                ['type' => 'fruit', 'name' => 'banana'],
+            ],
+        ]);
+
+        $config->traverse(static function (&$current, $key): void {
+            if ($key === 'items') {
+                $current[] = ['type' => 'fruit', 'name' => 'orange'];
+            }
+        });
+
+        $expected = [
+            'items' => [
+                ['type' => 'fruit', 'name' => 'apple'],
+                ['type' => 'vegetable', 'name' => 'carrot'],
+                ['type' => 'fruit', 'name' => 'banana'],
+                ['type' => 'fruit', 'name' => 'orange'],
+            ],
+        ];
+
+        $this->assertSame($expected, $config->toArray());
+    }
+
+    public function testModifyNodeWith2Callbacks(): void
+    {
+        $sut = $this->makeInstance([
+            'root' => [
+                'key1' => 'value1',
+                'key2' => 'value2',
+            ],
+        ]);
+
+        $secondCallbackVisited = [];
+
+        $this->assertSame('value1', $sut->get(['root', 'key1']), 'Key1 should exists');
+        $this->assertSame('value2', $sut->get(['root', 'key2']), 'Key2 should exists');
+
+        $sut->traverse(
+            static function (&$current, $key, ConfigInterface $config, array $path) {
+                if ($path === ['root', 'key1']) {
+                    $current = 'new value1';
+                }
+
+                if ($path === ['root', 'key2']) {
+                    $config->set($path, 'new value2');
+                }
+            },
+            function (&$current, $key, ConfigInterface $config, array $path) use (&$secondCallbackVisited) {
+                $pathString = \implode('.', $path);
+                $keyPathString = '2° callback: ' . $pathString;
+
+                if ($path === ['root', 'key1']) {
+                    $secondCallbackVisited[$keyPathString] = $current;
+                }
+
+                if ($path === ['root', 'key2']) {
+                    $secondCallbackVisited[$keyPathString] = $current;
+                }
+            }
+        );
+
+        $this->assertSame(
+            'new value1',
+            $secondCallbackVisited['2° callback: root.key1'],
+            'Key1 should be modified'
+        );
+
+        $this->assertSame(
+            'new value2',
+            $secondCallbackVisited['2° callback: root.key2'],
+            'Key2 should be modified'
+        );
+
+        $this->assertSame('new value1', $sut->get(['root', 'key1']), 'Key1 should be modified');
+        $this->assertSame('new value2', $sut->get(['root', 'key2']), 'Key2 should be modified');
+    }
+
     /**
-     * Removes the number 3 by setting it to null.
+     * Removes the number 3 from the Instance.
      * Checks that the array no longer contains the value 3.
      */
-    public function testRemoveElementsBySettingNull(): void
+    public function testRemoveElementsUsingConfigInstance(): void
     {
         $config = new Config([
             'numbers' => [1, 2, 3, 4, 5],
         ]);
 
-        $config->traverse(static function (&$current): void {
+        $config->traverse(static function (&$current, $key, ConfigInterface $config, array $path) {
             if ($current === 3) {
-                $current = null; // This should remove the element
+                $config->delete($path);
+                return SignalCode::CONTINUE;
             }
+
+            return SignalCode::NONE;
         });
 
         $this->assertSame([1, 2, 4, 5], \array_values($config->get('numbers')));
@@ -184,10 +271,13 @@ class TraverseMethodTest extends TestCase
             ],
         ]);
 
-        $config->traverse(static function (&$current, $key): void {
+        $config->traverse(static function (&$current, $key, ConfigInterface $config, array $path) {
             if ($key === 'item1') {
-                $current = null;
+                $config->delete($path);
+                return SignalCode::CONTINUE;
             }
+
+            return SignalCode::NONE;
         });
 
         $this->assertSame(['item2' => 'value2'], $config->get('group'));
@@ -201,14 +291,31 @@ class TraverseMethodTest extends TestCase
     {
         $config = new Config([
             'group' => [
-                'item1' => 'value1',
+                [[[['item1' => 'value1']]]],
             ],
         ]);
 
-        $config->traverse(static function (&$current): void {
-            $current = null; // Remove all items
+        $count = 0;
+        $config->traverse(static function (&$current, $key, ConfigInterface $config, array $path) use (&$count) {
+            if ($key === 'item1') {
+                $config->delete($path);
+
+                while ($path !== []) {
+                    \array_pop($path);
+                    if ($config->get($path) !== []) {
+                        break;
+                    }
+                    $config->delete($path);
+                }
+
+                return SignalCode::CONTINUE;
+            }
+
+            $count++;
+            return SignalCode::NONE;
         });
 
+        $this->assertFalse($config->has('group.item1'));
         $this->assertNull($config->get('group'));
         $this->assertCount(0, $config);
         $array = $config->toArray();
@@ -231,10 +338,22 @@ class TraverseMethodTest extends TestCase
             ],
         ]);
 
-        $config->traverse(static function (&$current, $key): void {
+        $config->traverse(static function (&$current, $key, ConfigInterface $config, $path) {
             if ($key === 'item') {
-                $current = null;
+                $config->delete($path);
+
+                while ($path !== []) {
+                    \array_pop($path);
+                    if ($config->get($path) !== []) {
+                        break;
+                    }
+                    $config->delete($path);
+                }
+
+                return SignalCode::CONTINUE;
             }
+
+            return SignalCode::NONE;
         });
 
         $this->assertNull($config->get('level1'));
@@ -270,7 +389,7 @@ class TraverseMethodTest extends TestCase
         $this->assertTrue($called);
     }
 
-    public function testDataStructureWithEmptyArrayAndValidArray(): void
+    public function testDataStructureWithFalseyValueAreNotDeleted(): void
     {
         $data = [
             'falseValue' => false,
@@ -297,38 +416,35 @@ class TraverseMethodTest extends TestCase
 
         $visited = [];
 
-        $config->traverseTest(static function ($current, $key, $config, $keyPath) use (&$visited): void {
-//          if (!is_array($current)) {
-                $visited[] = [
-                    'keyPath' => $keyPath,
-                    'value' => $current,
-                ];
-//              $config->delete($keyPath);
-//          }
-                if ($key === 'key' && $current === 'value') {
-                    $config->delete($keyPath);
-                }
+        $config->traverse(static function (
+            $current,
+            $key,
+            ConfigInterface $config,
+            array $keyPath
+        ) use (&$visited): void {
+            $visited[] = $key;
         });
 
-//      $config->traverse(static function ($current, $key, $config, $keyPath) use (&$visited): void {
-////            if (!is_array($current)) {
-//              $visited[] = [
-//                  'keyPath' => $keyPath,
-//                  'value' => $current,
-//              ];
-////            }
-//      });
+        $this->assertSame([
+            'falseValue',
+            'nullValue',
+            'emptyString',
+            'zeroValue',
+            'emptyArray',
+            'validArray',
+            'key',
+            'deeperArray',
+            'key',
+            'key',
+        ], $visited);
 
+        $this->assertTrue($config->has('falseValue'), 'False value should be present');
+//      $this->assertTrue($config->has('nullValue'), 'Null value should be present');
+        $this->assertTrue($config->has('emptyString'), 'Empty string should be present');
+        $this->assertTrue($config->has('zeroValue'), 'Zero value should be present');
         $this->assertTrue($config->has('emptyArray'), 'Empty array should be present');
-
-//      $expected = [
-//          ['keyPath' => ['validArray', 'key'], 'value' => 'value'],
-//      ];
-//
-//      $this->assertSame($expected, $visited);
-//      $this->assertSame(['validArray' => ['key' => 'value']], $config->toArray());
-        codecept_debug($config->toArray());
-        codecept_debug($visited);
+        $this->assertTrue($config->has('validArray'), 'Valid array should be present');
+        $this->assertTrue($config->has('deeperArray'), 'Deeper array should be present');
     }
 
     /**
@@ -430,9 +546,9 @@ class TraverseMethodTest extends TestCase
         });
 
         $this->assertSame([
-            'subitem1', // This is the first call
-            'item2', // This is the second call
-            'items' // This is the last call
+            'items',
+            'item2',
+            'subitem1',
         ], $listOfCalls);
     }
 
@@ -451,28 +567,23 @@ class TraverseMethodTest extends TestCase
          * - The 'item3' key will be added when the 'item1' key is modified with the value 'newValue3'.
          * - Because the 'item3' is added after the traversal of the 'item1' key, the 'item3' is available
          *   in the callback, so we can change the value of 'item3' to 'modifiedValue3'.
-         *   Normally you should not need to do this, but it is possible.
-         *   Remember to check the order of the callback execution, deeper levels are traversed first.
-         *   Because of that adding an element when the traversal is finished you will not be able
-         *   to modify the value of the new element in the same callback.
+         *   The same is for the 'item2' key.
+         * The flow is parent to child.
          */
-        $config->traverse(static function (&$current, $key, Config $config): void {
+        $config->traverse(static function (&$current, $key, Config $config, array $path): void {
             static $childModified = false;
             if ($key === 'item1') {
                 $current = 'modifiedValue1';
                 $config->set('items.item3', 'newValue3');
-                $childModified = true;
+                $config->set('items.item2', 'newValue1');
             }
 
             if ($key === 'item3') {
                 $current = 'modifiedValue3';
             }
 
-            if ($key === 'items') {
-                $current['item2'] = 'newValue1';
-                if ($childModified) {
-                    $current['item2'] = 'newValue2';
-                }
+            if ($key === 'item2') {
+                $current = 'newValue2';
             }
         });
 
@@ -541,17 +652,22 @@ class TraverseMethodTest extends TestCase
          * If performance is a concern assigning null to the value
          * it is faster than deleting using the delete method.
          */
-        $config->traverse(function (&$current, $key, Config $config, array $keyPath): void {
+        $config->traverse(function (&$current, $key, Config $config, array $keyPath) {
             $fullKeyPath = \implode('.', $keyPath);
             if ($fullKeyPath === 'items.item1') {
                 $config->delete($keyPath);
+                return SignalCode::CONTINUE;
             }
+
             if ($fullKeyPath === 'items.item2') {
                 $current = null;
             }
+
+            return SignalCode::NONE;
         });
 
         $this->assertNull($config->get('items.item1'));
+//        $this->assertTrue($config->has('items.item2'));
         $this->assertNull($config->get('items.item2'));
         $this->assertTrue(true);
     }
@@ -591,13 +707,23 @@ class TraverseMethodTest extends TestCase
     {
         $config = new Config($this->getSampleArray());
 
-        $config->traverse(static function (&$current, $key): void {
+        $config->traverse(static function (&$current, $key, ConfigInterface $config, array $path) {
             if ($key === 'identifier' && $current === 'path/to/resource2') {
-                // Remove the parent 'properties' array
-                $current = null;
-                // Set the parent to null by navigating back in the key path
-                // Since we cannot directly modify the parent here, we rely on the unset in traversal
+                $config->delete($path);
+
+                // Remove the parent 'properties' array if it is empty
+                while ($path !== []) {
+                    \array_pop($path);
+                    if ($config->get($path) !== []) {
+                        break;
+                    }
+                    $config->delete($path);
+                }
+
+                return SignalCode::CONTINUE;
             }
+
+            return SignalCode::NONE;
         });
 
         $expected = [
@@ -661,7 +787,7 @@ class TraverseMethodTest extends TestCase
             }
         });
 
-        $expected = ['subitem1', 'subitem2', 'item1', 'items'];
+        $expected = ['items', 'item1', 'subitem1', 'subitem2'];
         $this->assertSame($expected, $orderOfCallbacks);
     }
 }
