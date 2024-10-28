@@ -57,10 +57,10 @@ class TraverseMethodTest extends TestCase
 
         $visited = [];
 
-        $config->traverse(static function ($current, $key, $config, $keyPath) use (&$visited): void {
+        $config->traverse(static function ($current, $key, $config, $path) use (&$visited): void {
             if (!is_array($current)) {
                 $visited[] = [
-                    'keyPath' => $keyPath,
+                    'keyPath' => $path,
                     'value' => $current,
                 ];
             }
@@ -203,14 +203,14 @@ class TraverseMethodTest extends TestCase
             },
             function (&$current, $key, ConfigInterface $config, array $path) use (&$secondCallbackVisited) {
                 $pathString = \implode('.', $path);
-                $keyPathString = '2° callback: ' . $pathString;
+                $pathString = '2° callback: ' . $pathString;
 
                 if ($path === ['root', 'key1']) {
-                    $secondCallbackVisited[$keyPathString] = $current;
+                    $secondCallbackVisited[$pathString] = $current;
                 }
 
                 if ($path === ['root', 'key2']) {
-                    $secondCallbackVisited[$keyPathString] = $current;
+                    $secondCallbackVisited[$pathString] = $current;
                 }
             }
         );
@@ -420,7 +420,7 @@ class TraverseMethodTest extends TestCase
             $current,
             $key,
             ConfigInterface $config,
-            array $keyPath
+            array $path
         ) use (&$visited): void {
             $visited[] = $key;
         });
@@ -490,9 +490,9 @@ class TraverseMethodTest extends TestCase
             ],
         ]);
 
-        $config->traverse(function ($current, $key, $config, $keyPath): void {
+        $config->traverse(function ($current, $key, $config, $path): void {
             if ($current === 'finalValue') {
-                $this->assertSame(['level1', 'level2', 'level3'], $keyPath);
+                $this->assertSame(['level1', 'level2', 'level3'], $path);
             }
         });
     }
@@ -510,8 +510,8 @@ class TraverseMethodTest extends TestCase
             ],
         ]);
 
-        $config->traverse(static function (&$current, $key, $config, $keyPath): void {
-            if (implode('.', $keyPath) === 'settings.option2') {
+        $config->traverse(static function (&$current, $key, $config, $path): void {
+            if (implode('.', $path) === 'settings.option2') {
                 $current = 'updatedValue2';
             }
         });
@@ -531,7 +531,7 @@ class TraverseMethodTest extends TestCase
         ]);
 
         $listOfCalls = [];
-        $config->traverse(static function (&$current, $key, Config $config) use (&$listOfCalls): void {
+        $config->traverse(static function (&$current, $key) use (&$listOfCalls): void {
             if ($key === 'subitem1') {
                 $listOfCalls[] = 'subitem1';
             }
@@ -606,22 +606,22 @@ class TraverseMethodTest extends TestCase
          * @var mixed $current
          * @var array-key|string|int $key
          * @var Config $config
-         * @var array<array-key, string> $keyPath
+         * @var array<array-key, string> $path
          */
         $config->traverse(function (
             &$current,
             $key,
             Config $config,
-            array $keyPath
+            array $path
         ) use (&$isCalled): void {
             $isCalled = true;
-            $fullKeyPath = \implode('.', $keyPath);
+            $fullKeyPath = \implode('.', $path);
             if ($fullKeyPath === 'items') {
-                $config->set($keyPath, []);
+                $config->set($path, []);
                 $config->set('items.item2', 'newValue2');
             }
 
-            $this->assertNotNull($config->get($keyPath));
+            $this->assertNotNull($config->get($path));
         });
 
         $this->assertTrue($isCalled);
@@ -652,10 +652,10 @@ class TraverseMethodTest extends TestCase
          * If performance is a concern assigning null to the value
          * it is faster than deleting using the delete method.
          */
-        $config->traverse(function (&$current, $key, Config $config, array $keyPath) {
-            $fullKeyPath = \implode('.', $keyPath);
+        $config->traverse(function (&$current, $key, Config $config, array $path) {
+            $fullKeyPath = \implode('.', $path);
             if ($fullKeyPath === 'items.item1') {
-                $config->delete($keyPath);
+                $config->delete($path);
                 return SignalCode::CONTINUE;
             }
 
@@ -708,17 +708,11 @@ class TraverseMethodTest extends TestCase
         $config = new Config($this->getSampleArray());
 
         $config->traverse(static function (&$current, $key, ConfigInterface $config, array $path) {
-            if ($key === 'identifier' && $current === 'path/to/resource2') {
-                $config->delete($path);
-
-                // Remove the parent 'properties' array if it is empty
-                while ($path !== []) {
-                    \array_pop($path);
-                    if ($config->get($path) !== []) {
-                        break;
-                    }
+            if ($key === 'identifier' && ($current === 'path/to/resource2' || $current === 'path/to/resource1' )) {
+                do {
                     $config->delete($path);
-                }
+                    \array_pop($path);
+                } while ($config->get($path) === []);
 
                 return SignalCode::CONTINUE;
             }
@@ -728,16 +722,7 @@ class TraverseMethodTest extends TestCase
 
         $expected = [
             'nodes' => [
-                [
-                    'element' => [
-                        [
-                            'properties' => [
-                                'identifier' => 'path/to/resource1',
-                            ],
-                        ],
-                    ],
-                ],
-                [
+                1 => [
                     'element' => [
                         [
                             'properties' => [
