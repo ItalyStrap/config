@@ -2,6 +2,8 @@
 
 The `traverse` method allows you to recursively traverse and manipulate your configuration data. It applies one or many callbacks (Visitors) function to each node in the configuration array, providing a powerful way to modify values, remove nodes, or perform actions based on the data.
 
+The `traverse` behavior follow the Visitor pattern and is inspired by the [PHP-Parser](https://github.com/nikic/PHP-Parser) library.
+
 ---
 
 ## Table of Contents
