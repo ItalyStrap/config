@@ -170,12 +170,12 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
     }
 
     /**
-     * @param array<TKey, TValue> $array
+     * @param array<TKey, TValue> $storage
      * @param array<array-key, callable> $visitors
      */
-    private function traverseArray(array &$array, array $visitors, array $keyPath = []): void
+    private function traverseArray(array &$storage, array $visitors, array $keyPath = []): void
     {
-        foreach ($array as $key => &$current) {
+        foreach ($storage as $key => &$current) {
             $path = \array_merge($keyPath, [$key]);
             $skipChildren = false;
 
@@ -190,11 +190,11 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
                 }
 
                 if ($signal === SignalCode::STOP_TRAVERSAL) {
-					break 2; // Stop the current iteration and the parent iteration
+                    break 2; // Stop the current iteration and the parent iteration
                 }
 
                 if ($signal === SignalCode::REMOVE_NODE) {
-                    unset($array[$key]);
+                    unset($storage[$key]);
                 }
 
                 if ($signal === SignalCode::REMOVE_NODE || $signal === SignalCode::CONTINUE) {
