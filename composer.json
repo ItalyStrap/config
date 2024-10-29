@@ -29,7 +29,6 @@
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
 
         "vimeo/psalm": "^4.26",
-        "humanmade/psalm-plugin-wordpress": "^2.0.3",
 
         "phpbench/phpbench": "^1.2",
         "phpmetrics/phpmetrics": "^2.8",
@@ -76,10 +75,10 @@
             "@infection"
         ],
         "cs": [
-            "@php vendor/bin/phpcs -p --ignore=./tests/_support/* ./src/ ./tests/"
+            "@php vendor/bin/phpcs"
         ],
         "cs:fix": [
-            "@php vendor/bin/phpcbf -p --ignore=./tests/_support/* ./src/ ./tests/"
+            "@php vendor/bin/phpcbf"
         ],
         "psalm": [
             "@php vendor/bin/psalm --no-cache"
@@ -121,7 +120,6 @@
     },
     "config": {
         "allow-plugins": {
-            "codeception/c3": true,
             "composer/package-versions-deprecated": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "infection/extension-installer": true
