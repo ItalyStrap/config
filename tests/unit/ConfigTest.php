@@ -17,7 +17,7 @@ class ConfigTest extends TestCase
 {
     use CommonStoreMultipleTestsTrait;
 
-    protected function makeInstance($val = [], $default = []): Config
+    protected function makeInstance($val = [], $default = []): ConfigInterface
     {
         return new Config($val, $default);
     }

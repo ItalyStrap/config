@@ -48,10 +48,19 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
      * Config constructor
      *
      * @param array<TKey, TValue> $config
-     * @param array<TKey, TValue> $default
+     * @param array<TKey, TValue> $default Deprecated
      */
     public function __construct($config = [], $default = [])
     {
+        if ($default !== []) {
+            \trigger_error(
+                'The second argument `$default` is deprecated and will be removed in the next major version.'
+                . ' Use the first argument `$config` to provide a default value and `class::merge()` method'
+                . ' to add more arrays to merge with the default one.',
+                \E_USER_DEPRECATED
+            );
+        }
+
         /**
          * @var class-string<\ArrayIterator<TKey, TValue>>|class-string<ArrayObject<TKey, TValue>> $iteratorClass
          */

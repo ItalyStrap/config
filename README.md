@@ -32,7 +32,7 @@ composer require italystrap/config
 
 ## Deprecation
 
-List of all deprecated method that will  be removed in the next major release.
+List of all deprecated method that will be removed in the next major release (v3.x):
 
 * `Config::push()` => `Config::set()`
 * `Config::add()` => `Config::set()`
@@ -44,6 +44,23 @@ List of all deprecated method that will  be removed in the next major release.
 * `Config_Factory::class` => `ConfigFactory::class`
 * `Config_Interface::class` => `ConfigInterface::class`
 * Move `\JsonSerializable` at the `ConfigInterface::class` level
+* The second parameter of `Config::__construct()` is deprecated and will be removed in the next major release, the first parameter is now the default value used for the configuration, to add additional configuration you can use the `Config::merge()` method like in the example below:
+```php
+$defaultData = [
+    'key'	=> 'value',
+];
+
+$additionalData = [
+    'key'	=> 'new value',
+];
+
+$config = (new Config($defaultData))->merge($additionalData);
+```
+* The static method `ConfigFactory::make()` will be converted to a non-static, so you will need to instantiate the class to use it, like in the example below:
+```php
+$config = new ConfigFactory();
+$config->make($data);
+```
 
 ## Contributing
 
