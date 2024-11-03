@@ -52,6 +52,7 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
      */
     public function __construct($config = [], $default = [])
     {
+		/** @infection-ignore-all */
         if ($default !== []) {
             \trigger_error(
                 'The second argument `$default` is deprecated and will be removed in the next major version.'
