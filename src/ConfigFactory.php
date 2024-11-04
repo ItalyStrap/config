@@ -28,7 +28,7 @@ class ConfigFactory
      */
     public function make($config = [], $defaults = []): ConfigInterface
     {
-		/** @infection-ignore-all */
+        /** @infection-ignore-all */
         if ($defaults !== []) {
             \trigger_error(
                 'The second argument `$default` is deprecated and will be removed in the next major version.'

@@ -8,6 +8,7 @@ use Codeception\Test\Unit;
 use ItalyStrap\Config\ConfigInterface;
 use ItalyStrap\Event\EventDispatcherInterface;
 use Prophecy\PhpUnit\ProphecyTrait;
+use Prophecy\Prophecy\ObjectProphecy;
 use UnitTester;
 
 abstract class TestCase extends Unit
@@ -16,14 +17,14 @@ abstract class TestCase extends Unit
 
     protected UnitTester $tester;
 
-    protected \Prophecy\Prophecy\ObjectProphecy $config;
+    protected ObjectProphecy $config;
 
     public function makeDispatcher(): EventDispatcherInterface
     {
         return $this->dispatcher->reveal();
     }
 
-    protected \Prophecy\Prophecy\ObjectProphecy $dispatcher;
+    protected ObjectProphecy $dispatcher;
 
     public function makeConfig($val = [], $default = []): ConfigInterface
     {
