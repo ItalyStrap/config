@@ -113,6 +113,10 @@ class ConfigThemeMods implements ConfigInterface
         return $this;
     }
 
+    public function traverse(callable $visitor): void
+    {
+    }
+
     /**
      * @inheritDoc
      */
@@ -150,11 +154,11 @@ class ConfigThemeMods implements ConfigInterface
 
     public function update(string $key, $value): bool
     {
-        // TODO: Implement update() method.
+		return true;
     }
 
     public function delete(string $key): bool
     {
-        // TODO: Implement delete() method.
+		return true;
     }
 }

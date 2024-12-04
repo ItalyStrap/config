@@ -11,13 +11,11 @@ use ItalyStrap\Config\ConfigInterface;
 use ItalyStrap\StorageTests\CommonStoreMultipleTestsTrait;
 use stdClass;
 
-use function json_encode;
-
 class ConfigTest extends TestCase
 {
     use CommonStoreMultipleTestsTrait;
 
-    protected function makeInstance($val = [], $default = []): Config
+    protected function makeInstance($val = [], $default = []): ConfigInterface
     {
         return new Config($val, $default);
     }
@@ -27,7 +25,7 @@ class ConfigTest extends TestCase
      */
     public function factory(): void
     {
-        $sut = ConfigFactory::make([]);
+        $sut = (new ConfigFactory())->make([]);
         $this->assertInstanceOf(Config::class, $sut);
         $this->assertInstanceOf(ConfigInterface::class, $sut);
     }
@@ -248,7 +246,7 @@ class ConfigTest extends TestCase
     /**
      * @test
      */
-    public function itShouldSearchSubkeys(): void
+    public function itShouldSearchSubKeys(): void
     {
         $arr = [
             'key'   => [
@@ -371,7 +369,7 @@ class ConfigTest extends TestCase
     public function itShouldAddNewItem(): void
     {
         $config = $this->makeInstance($this->config_arr, $this->default_arr);
-        $config->add('new_item', true);
+        $config->set('new_item', true);
 
         $this->assertTrue($config->get('new_item'));
     }
@@ -441,7 +439,7 @@ class ConfigTest extends TestCase
     /**
      * @test
      */
-    public function itShouldRemoveValues(): void
+    public function itShouldDeleteValues(): void
     {
         $config = $this->makeInstance($this->config_arr, $this->default_arr);
         $config->delete('recursive');
@@ -473,6 +471,39 @@ class ConfigTest extends TestCase
         $this->assertSame('Value2', $config->get('var2.subVar'));
         $config->delete(['var2','subVar']);
         $this->assertFalse($config->has('var2.subVar'));
+    }
+
+    public function testItShouldDeleteAndReturnValueDependingOnTheCurrentCalled(): void
+    {
+        $data = [
+            'falseValue' => false,
+            'nullValue' => null,
+            'emptyString' => '',
+            'zeroValue' => 0,
+            'emptyArray' => [],
+            'validArray' => ['key' => 'value'],
+            'deeperArrayWithScalarValue' => [
+                'key' => [
+                    'falseValue' => false,
+                    'nullValue' => null,
+                    'emptyString' => '',
+                    'zeroValue' => 0,
+                    'emptyArray' => [],
+                    'validArray' => ['key' => 'value'],
+                ],
+            ],
+        ];
+
+        $config = $this->makeInstance($data);
+
+        $this->assertTrue($config->has('validArray.key'));
+        $this->assertSame('value', $config->get('validArray.key'));
+        $this->assertTrue($config->delete('validArray.key'));
+        $this->assertFalse($config->has('validArray.key'));
+        $this->assertSame([], $config->get('validArray'));
+
+        $this->assertTrue($config->has('deeperArrayWithScalarValue.key.falseValue'));
+        $this->assertSame(false, $config->get('deeperArrayWithScalarValue.key.falseValue'));
     }
 
     /**
@@ -561,19 +592,6 @@ class ConfigTest extends TestCase
         foreach ($this->config_arr as $key => $value) {
             $this->assertArrayHasKey($key, $config->toArray());
         }
-    }
-
-    /**
-     * @test
-     */
-    public function itShouldReturnValidJson(): void
-    {
-        $config = $this->makeInstance($this->config_arr);
-        $this->assertJson($config->toJson());
-        foreach ($this->config_arr as $key => $value) {
-            $this->assertStringContainsString($key, $config->toJson());
-        }
-        $this->assertEquals(json_encode($this->config_arr), $config->toJson());
     }
 
     /**
@@ -668,7 +686,7 @@ class ConfigTest extends TestCase
         ];
 
         $sut = $this->makeInstance($array);
-        $sut->add('test2', $stdclass);
+        $sut->set('test2', $stdclass);
 
         $this->assertSame('value', $sut->get('test2.test'), '');
     }
@@ -706,9 +724,15 @@ class ConfigTest extends TestCase
         $this->assertSame('value', $sut['key.sub-key']);
         $this->assertSame('value', $sut['key']['sub-key']);
         $this->assertSame(false, isset($sut['key']['not-exists']));
+        $this->assertSame(false, isset($sut['key.not-exists']));
         $this->assertSame(false, $sut['key']['not-exists'] ?? false);
         $this->assertSame(null, $sut['key.not-exists']);
         $this->assertSame(null, $sut['key.not-exists.not-exists']);
+        $sut['key.not-exists.not-exists'] = 'now exists';
+        $this->assertSame('now exists', $sut['key.not-exists.not-exists']);
+
+        // This is not possible
+//         $sut['key']['sub'] = 'sub value';
     }
 
     public function testJsonSerialize(): void

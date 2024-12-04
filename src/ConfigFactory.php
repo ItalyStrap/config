@@ -26,8 +26,18 @@ class ConfigFactory
      *
      * @return Config Returns the Config object
      */
-    public static function make($config = [], $defaults = []): ConfigInterface
+    public function make($config = [], $defaults = []): ConfigInterface
     {
+        /** @infection-ignore-all */
+        if ($defaults !== []) {
+            \trigger_error(
+                'The second argument `$default` is deprecated and will be removed in the next major version.'
+                . ' Use the first argument `$config` to provide a default value and `class::merge()` method'
+                . ' to add more arrays to merge with the default one.',
+                \E_USER_DEPRECATED
+            );
+        }
+
         return new Config($config, $defaults);
     }
 }
