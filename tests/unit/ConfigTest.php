@@ -11,8 +11,6 @@ use ItalyStrap\Config\ConfigInterface;
 use ItalyStrap\StorageTests\CommonStoreMultipleTestsTrait;
 use stdClass;
 
-use function json_encode;
-
 class ConfigTest extends TestCase
 {
     use CommonStoreMultipleTestsTrait;

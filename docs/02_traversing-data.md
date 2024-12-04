@@ -2,7 +2,7 @@
 
 The `traverse` method allows you to recursively traverse and manipulate your configuration data. It applies one or many callbacks (Visitors) function to each node in the configuration array, providing a powerful way to modify values, remove nodes, or perform actions based on the data.
 
-The `traverse` behavior follow the Visitor pattern and is inspired by the [PHP-Parser](https://github.com/nikic/PHP-Parser) library.
+The `traverse` behavior follow the Visitor pattern, and it is inspired by the [PHP-Parser](https://github.com/nikic/PHP-Parser) library.
 
 ---
 
@@ -63,6 +63,8 @@ You can use the `SignalCode` helper class to return specific values for the trav
 - `SignalCode::SKIP_CHILDREN`: Indicates that the traversal should skip the children of the current node and continue the traversal.
 
 **Note:** Other return types not listed here will be ignored.
+
+**Warning:** Always use the constants provided by the `SignalCode` class to return a specific value other than `null`. Do not return any number directly, as the numeric values may change in the future, leading to unexpected behavior in the traversal.
 
 ---
 
