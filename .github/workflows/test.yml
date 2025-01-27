@@ -14,7 +14,7 @@ jobs:
 
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '--skip ci') && !github.event.pull_request.draft"
-    continue-on-error: ${{ matrix.php_versions == '8.2' }}
+    continue-on-error: ${{ matrix.php_versions == '8.4' }}
 
     strategy:
       matrix:
@@ -22,8 +22,10 @@ jobs:
           - "7.4"
           - "8.0"
           - "8.1"
+          - "8.2"
+          - "8.3"
         include:
-          - php-version: "8.2"
+          - php-version: "8.4"
             composer-options: "--ignore-platform-reqs"
     steps:
     - name: Checkout
