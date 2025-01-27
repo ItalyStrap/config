@@ -39,6 +39,7 @@ abstract class TestCase extends Unit
     }
 
     protected array $config_arr = [];
+
     protected array $default_arr = [];
 
     /**

@@ -1,0 +1,12 @@
+services:
+  php83:
+    build:
+      context: .
+      dockerfile: php83/Dockerfile
+    container_name: php83
+    volumes:
+      - ../:/app
+    environment:
+      UID: "${UID:-1000}"
+      GID: "${GID:-1000}"
+    working_dir: /app

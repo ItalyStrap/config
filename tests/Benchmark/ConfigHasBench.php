@@ -26,7 +26,7 @@ final class ConfigHasBench
 
     public function benchHasWithEmptyIndexAndEmptyDefaultValue(): void
     {
-        $this->config->has('', '');
+        $this->config->has('');
     }
 
     public function benchHasEmptyIndexWithDefault(): void

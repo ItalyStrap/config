@@ -35,12 +35,12 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
     /**
      * @var ?TValue
      */
-    private $temp = null;
+    private $temp;
 
     /**
      * @var ?TValue
      */
-    private $default = null;
+    private $default;
 
     private string $delimiter = '.';
 
@@ -106,7 +106,7 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
             $this->default
         );
         $this->default = null;
-        return isset($this->temp);
+        return $this->temp !== null;
     }
 
     /**

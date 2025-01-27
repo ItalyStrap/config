@@ -14,5 +14,7 @@ codeception.yml
 infection.json
 c3.php
 phpbench.json
-rector.php
+rector-*.php
 **/*.bak
+
+Makefile

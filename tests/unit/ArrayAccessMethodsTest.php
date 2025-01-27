@@ -15,9 +15,9 @@ use function array_replace_recursive;
 use function is_array;
 use function json_encode;
 
-class ArrayAccessMethodsTest extends TestCase
+final class ArrayAccessMethodsTest extends TestCase
 {
-    protected function makeInstance($val = [], $default = []): Config
+    private function makeInstance(array $val = [], $default = []): Config
     {
         $sut = new Config($val, $default);
         $this->assertInstanceOf(Config_Interface::class, $sut);
@@ -118,7 +118,7 @@ class ArrayAccessMethodsTest extends TestCase
 
         $sut = $this->makeInstance($array);
 
-        foreach ($sut as $k => $v) {
+        foreach ($sut as $v) {
             $this->assertTrue(true);
         }
 
@@ -133,7 +133,7 @@ class ArrayAccessMethodsTest extends TestCase
 
         $new_sut = clone $sut;
 
-        foreach ($new_sut as $k => $v) {
+        foreach ($new_sut as $v) {
             $this->fail();
         }
 
@@ -145,7 +145,7 @@ class ArrayAccessMethodsTest extends TestCase
         }
     }
 
-    public function testCallAllArrayAccessMethods()
+    public function testCallAllArrayAccessMethods(): void
     {
         $sut = $this->makeInstance();
 

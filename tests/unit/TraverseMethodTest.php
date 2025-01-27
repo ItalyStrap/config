@@ -8,9 +8,9 @@ use ItalyStrap\Config\Config;
 use ItalyStrap\Config\ConfigInterface;
 use ItalyStrap\Config\SignalCode;
 
-class TraverseMethodTest extends TestCase
+final class TraverseMethodTest extends TestCase
 {
-    protected function makeInstance(array $default = []): ConfigInterface
+    private function makeInstance(array $default = []): ConfigInterface
     {
         return new Config($default);
     }
@@ -192,7 +192,7 @@ class TraverseMethodTest extends TestCase
         $this->assertSame('value2', $sut->get(['root', 'key2']), 'Key2 should exists');
 
         $sut->traverse(
-            static function (&$current, $key, ConfigInterface $config, array $path) {
+            static function (&$current, $key, ConfigInterface $config, array $path): void {
                 if ($path === ['root', 'key1']) {
                     $current = 'new value1';
                 }
@@ -201,7 +201,7 @@ class TraverseMethodTest extends TestCase
                     $config->set($path, 'new value2');
                 }
             },
-            function (&$current, $key, ConfigInterface $config, array $path) use (&$secondCallbackVisited) {
+            function (&$current, $key, ConfigInterface $config, array $path) use (&$secondCallbackVisited): void {
                 $pathString = \implode('.', $path);
                 $pathString = '2° callback: ' . $pathString;
 
@@ -241,7 +241,7 @@ class TraverseMethodTest extends TestCase
             'numbers' => [1, 2, 3, 4, 5],
         ]);
 
-        $config->traverse(static function (&$current, $key, ConfigInterface $config, array $path) {
+        $config->traverse(static function (&$current, $key, ConfigInterface $config, array $path): ?int {
             if ($current === 3) {
                 $config->delete($path);
                 return SignalCode::CONTINUE;
@@ -271,7 +271,7 @@ class TraverseMethodTest extends TestCase
             ],
         ]);
 
-        $config->traverse(static function (&$current, $key, ConfigInterface $config, array $path) {
+        $config->traverse(static function (&$current, $key, ConfigInterface $config, array $path): ?int {
             if ($key === 'item1') {
                 $config->delete($path);
                 return SignalCode::CONTINUE;
@@ -296,7 +296,7 @@ class TraverseMethodTest extends TestCase
         ]);
 
         $count = 0;
-        $config->traverse(static function (&$current, $key, ConfigInterface $config, array $path) use (&$count) {
+        $config->traverse(static function (&$current, $key, ConfigInterface $config, array $path) use (&$count): ?int {
             if ($key === 'item1') {
                 $config->delete($path);
 
@@ -305,13 +305,14 @@ class TraverseMethodTest extends TestCase
                     if ($config->get($path) !== []) {
                         break;
                     }
+
                     $config->delete($path);
                 }
 
                 return SignalCode::CONTINUE;
             }
 
-            $count++;
+            ++$count;
             return SignalCode::NONE;
         });
 
@@ -338,7 +339,7 @@ class TraverseMethodTest extends TestCase
             ],
         ]);
 
-        $config->traverse(static function (&$current, $key, ConfigInterface $config, $path) {
+        $config->traverse(static function (&$current, $key, ConfigInterface $config, $path): ?int {
             if ($key === 'item') {
                 $config->delete($path);
 
@@ -347,6 +348,7 @@ class TraverseMethodTest extends TestCase
                     if ($config->get($path) !== []) {
                         break;
                     }
+
                     $config->delete($path);
                 }
 
@@ -652,7 +654,7 @@ class TraverseMethodTest extends TestCase
          * If performance is a concern assigning null to the value
          * it is faster than deleting using the delete method.
          */
-        $config->traverse(function (&$current, $key, Config $config, array $path) {
+        $config->traverse(function (&$current, $key, Config $config, array $path): ?int {
             $fullKeyPath = \implode('.', $path);
             if ($fullKeyPath === 'items.item1') {
                 $config->delete($path);
@@ -707,7 +709,7 @@ class TraverseMethodTest extends TestCase
     {
         $config = new Config($this->getSampleArray());
 
-        $config->traverse(static function (&$current, $key, ConfigInterface $config, array $path) {
+        $config->traverse(static function (&$current, $key, ConfigInterface $config, array $path): ?int {
             if ($key === 'identifier' && ($current === 'path/to/resource2' || $current === 'path/to/resource1' )) {
                 do {
                     $config->delete($path);

@@ -11,11 +11,11 @@ use ItalyStrap\Config\ConfigInterface;
 use ItalyStrap\StorageTests\CommonStoreMultipleTestsTrait;
 use stdClass;
 
-class ConfigTest extends TestCase
+final class ConfigTest extends TestCase
 {
     use CommonStoreMultipleTestsTrait;
 
-    protected function makeInstance($val = [], $default = []): ConfigInterface
+    private function makeInstance($val = [], array $default = []): ConfigInterface
     {
         return new Config($val, $default);
     }
@@ -83,9 +83,9 @@ class ConfigTest extends TestCase
      * @test
      * @dataProvider valueProvider()
      */
-    public function itShouldBeInstantiatableWith($value, $default)
+    public function itShouldBeInstantiatableWith($value, $default): void
     {
-        $sut = $this->makeInstance((array) $value, (array) $default);
+        $this->makeInstance((array) $value, (array) $default);
     }
 
     /**
@@ -137,7 +137,7 @@ class ConfigTest extends TestCase
      * @test
      * @dataProvider keyTypeProvider()
      */
-    public function itShouldHaveKeyWith($key, $value)
+    public function itShouldHaveKeyWith($key, string $value): void
     {
         $config = $this->makeInstance([
             $key    => $value
@@ -238,8 +238,8 @@ class ConfigTest extends TestCase
         $sut->set('key.key2.key3', 'value');
         try {
             $sut->get(['key','key2',['key3']]);
-        } catch (\Exception $e) {
-            $this->assertStringContainsString('Array to string conversion', $e->getMessage());
+        } catch (\Exception $exception) {
+            $this->assertStringContainsString('Array to string conversion', $exception->getMessage());
         }
     }
 
@@ -328,7 +328,7 @@ class ConfigTest extends TestCase
      * @test
      * @dataProvider defaultValueProvider()
      */
-    public function itShouldReturnDefaultValueIf($data, $key, $expected)
+    public function itShouldReturnDefaultValueIf(array $data, string $key, $expected): void
     {
         $config = $this->makeInstance($data);
         $this->assertEquals($expected, $config->get($key, $expected));
@@ -589,7 +589,7 @@ class ConfigTest extends TestCase
     {
         $config = $this->makeInstance($this->config_arr);
         $this->assertIsArray($config->toArray());
-        foreach ($this->config_arr as $key => $value) {
+        foreach (\array_keys($this->config_arr) as $key) {
             $this->assertArrayHasKey($key, $config->toArray());
         }
     }
@@ -620,9 +620,7 @@ class ConfigTest extends TestCase
     public function itShouldHaveCallableInCollection(): void
     {
         $arr = [
-            'key'   => function (): string {
-                return 'Ciao';
-            },
+            'key'   => fn(): string => 'Ciao',
         ];
 
         $config = $this->makeInstance($arr);

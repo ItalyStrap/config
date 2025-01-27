@@ -7,14 +7,14 @@ namespace ItalyStrap\Config\Tests\Unit;
 use ItalyStrap\Tests\Stubs\AccessValueInArrayWithNotation;
 use ItalyStrap\Tests\TestCase;
 
-class AccessValueInArrayWithNotationTest extends TestCase
+final class AccessValueInArrayWithNotationTest extends TestCase
 {
     public function makeInstance(): AccessValueInArrayWithNotation
     {
         return new AccessValueInArrayWithNotation();
     }
 
-    public function testFindValue()
+    public function testFindValue(): void
     {
         $array = [
             'key1' => [
@@ -33,7 +33,7 @@ class AccessValueInArrayWithNotationTest extends TestCase
         $this->assertSame('value', $result);
     }
 
-    public function testFindValueReturnDefault()
+    public function testFindValueReturnDefault(): void
     {
 
         $array = [
@@ -53,7 +53,7 @@ class AccessValueInArrayWithNotationTest extends TestCase
         $this->assertSame('default', $result);
     }
 
-    public function testInsertValueCoverNullKeyReturnFromArrayShift()
+    public function testInsertValueCoverNullKeyReturnFromArrayShift(): void
     {
         $array = [];
         $levels = [];
@@ -68,7 +68,7 @@ class AccessValueInArrayWithNotationTest extends TestCase
         $this->assertSame([], $array);
     }
 
-    public function testInsertValueCoverEmptyLevels()
+    public function testInsertValueCoverEmptyLevels(): void
     {
         $array = [];
         $levels = ['key1', 'key2', 'key3'];
@@ -82,7 +82,7 @@ class AccessValueInArrayWithNotationTest extends TestCase
         $this->assertSame(['key1' => ['key2' => ['key3' => 'new value']]], $array);
     }
 
-    public function testInsertValueCoverArrayKeyExists()
+    public function testInsertValueCoverArrayKeyExists(): void
     {
         $array = [
             'key1' => [
@@ -110,7 +110,7 @@ class AccessValueInArrayWithNotationTest extends TestCase
         ], $array);
     }
 
-    public function testDeleteValueCoverNullKeyReturnFromArrayShift()
+    public function testDeleteValueCoverNullKeyReturnFromArrayShift(): void
     {
         $array = [
             'key1' => [
@@ -137,7 +137,7 @@ class AccessValueInArrayWithNotationTest extends TestCase
         ], $array);
     }
 
-    public function testDeleteValueCoverReturnTrueIfArrayKeyDoesNotExists()
+    public function testDeleteValueCoverReturnTrueIfArrayKeyDoesNotExists(): void
     {
 
         $array = [

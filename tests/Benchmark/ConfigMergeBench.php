@@ -12,8 +12,11 @@ use ItalyStrap\Config\Config;
 final class ConfigMergeBench
 {
     private Config $config;
+
     private \stdClass $stdClass;
+
     private array $config_arr;
+
     private array $default_arr;
 
     public function setUp(): void

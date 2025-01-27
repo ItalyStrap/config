@@ -8,9 +8,9 @@ use ItalyStrap\Config\Config;
 use ItalyStrap\Config\ConfigInterface;
 use ItalyStrap\Config\SignalCode;
 
-class TraverseMethodSignalTest extends TestCase
+final class TraverseMethodSignalTest extends TestCase
 {
-    protected function makeInstance(array $default = []): ConfigInterface
+    private function makeInstance(array $default = []): ConfigInterface
     {
         return new Config($default);
     }
@@ -46,7 +46,7 @@ class TraverseMethodSignalTest extends TestCase
         $visitedPath = [];
 
         $sut->traverse(
-            static function (&$current, $key, ConfigInterface $config, array $path) use (&$visitedPath) {
+            static function (&$current, $key, ConfigInterface $config, array $path) use (&$visitedPath): ?int {
                 $visitedPath[] = $path;
                 if ($path === ['root']) {
                     return SignalCode::STOP_TRAVERSAL;
@@ -65,7 +65,7 @@ class TraverseMethodSignalTest extends TestCase
         $visitedPath = [];
 
         $sut->traverse(
-            static function (&$current, $key, ConfigInterface $config, array $path) use (&$visitedPath) {
+            static function (&$current, $key, ConfigInterface $config, array $path) use (&$visitedPath): ?int {
                 $visitedPath[] = $path;
                 if ($path === ['root']) {
                     return SignalCode::STOP_TRAVERSAL;
@@ -73,7 +73,7 @@ class TraverseMethodSignalTest extends TestCase
 
                 return SignalCode::NONE;
             },
-            function (&$current, $key, ConfigInterface $config, array $path) {
+            function (&$current, $key, ConfigInterface $config, array $path): void {
                 $this->fail('This callback should not be called');
             }
         );
@@ -87,7 +87,7 @@ class TraverseMethodSignalTest extends TestCase
         $visitedPath = [];
 
         $sut->traverse(
-            static function (&$current, $key, ConfigInterface $config, array $path) use (&$visitedPath) {
+            static function (&$current, $key, ConfigInterface $config, array $path) use (&$visitedPath): ?int {
                 $visitedPath[] = $path;
                 if ($path === ['root']) {
                     return SignalCode::STOP_TRAVERSAL;
@@ -95,10 +95,10 @@ class TraverseMethodSignalTest extends TestCase
 
                 return SignalCode::NONE;
             },
-            function (&$current, $key, ConfigInterface $config, array $path) {
+            function (&$current, $key, ConfigInterface $config, array $path): void {
                 $this->fail('This 2° callback should not be called');
             },
-            function (&$current, $key, ConfigInterface $config, array $path) {
+            function (&$current, $key, ConfigInterface $config, array $path): void {
                 $this->fail('This 3° callback should not be called');
             }
         );
@@ -114,7 +114,7 @@ class TraverseMethodSignalTest extends TestCase
         $thirdVisitedPath = [];
 
         $sut->traverse(
-            static function (&$current, $key, ConfigInterface $config, array $path) use (&$firstVisitedPath) {
+            static function (&$current, $key, ConfigInterface $config, array $path) use (&$firstVisitedPath): ?int {
                 $firstVisitedPath[] = $path;
                 if ($path === ['root']) {
                     return SignalCode::SKIP_CHILDREN;
@@ -122,10 +122,10 @@ class TraverseMethodSignalTest extends TestCase
 
                 return SignalCode::NONE;
             },
-            function (&$current, $key, ConfigInterface $config, array $path) use (&$secondVisitedPath) {
+            function (&$current, $key, ConfigInterface $config, array $path) use (&$secondVisitedPath): void {
                 $secondVisitedPath[] = $path;
             },
-            function (&$current, $key, ConfigInterface $config, array $path) use (&$thirdVisitedPath) {
+            function (&$current, $key, ConfigInterface $config, array $path) use (&$thirdVisitedPath): void {
                 $thirdVisitedPath[] = $path;
             }
         );
@@ -147,7 +147,12 @@ class TraverseMethodSignalTest extends TestCase
                 $firstCallbackVisitedPath[] = $path;
                 return SignalCode::NONE;
             },
-            static function (&$current, $key, ConfigInterface $config, array $path) use (&$secondCallbackVisitedPath) {
+            static function (
+                &$current,
+                $key,
+                ConfigInterface $config,
+                array $path
+            ) use (&$secondCallbackVisitedPath): ?int {
                 $secondCallbackVisitedPath[] = $path;
                 if ($path === ['root','key2']) {
                     return SignalCode::STOP_TRAVERSAL;
@@ -187,7 +192,7 @@ class TraverseMethodSignalTest extends TestCase
         $this->assertTrue($sut->has(['root', 'key2']), 'Key2 should exists');
 
         $sut->traverse(
-            static function (&$current, $key, ConfigInterface $config, array $path) {
+            static function (&$current, $key, ConfigInterface $config, array $path): ?int {
                 if ($path === ['root', 'key2']) {
                     return SignalCode::REMOVE_NODE;
                 }
@@ -208,7 +213,12 @@ class TraverseMethodSignalTest extends TestCase
         $this->assertTrue($sut->has(['root', 'key4']), 'Key2 should exists');
 
         $sut->traverse(
-            static function (&$current, $key, ConfigInterface $config, array $path) use (&$firsCallbackVisitedPath) {
+            static function (
+                &$current,
+                $key,
+                ConfigInterface $config,
+                array $path
+            ) use (&$firsCallbackVisitedPath): ?int {
                 $firsCallbackVisitedPath[] = $path;
                 if ($path === ['root', 'key4']) {
                     return SignalCode::REMOVE_NODE;
@@ -216,7 +226,7 @@ class TraverseMethodSignalTest extends TestCase
 
                 return SignalCode::NONE;
             },
-            function (&$current, $key, ConfigInterface $config, array $path) use (&$secondCallbackVisitedPath) {
+            function (&$current, $key, ConfigInterface $config, array $path) use (&$secondCallbackVisitedPath): void {
                 $secondCallbackVisitedPath[] = $path;
             }
         );
@@ -241,12 +251,17 @@ class TraverseMethodSignalTest extends TestCase
         $this->assertTrue($sut->has(['root', 0]), 'Array should exists');
 
         $sut->traverse(
-            static function (&$current, $key, ConfigInterface $config, array $path) use (&$firsCallbackVisitedPath) {
+            static function (
+                &$current,
+                $key,
+                ConfigInterface $config,
+                array $path
+            ) use (&$firsCallbackVisitedPath): void {
                 $pathString = \implode('.', $path);
                 $keyPathString = '1°: ' . $pathString;
                 $firsCallbackVisitedPath[$keyPathString] = $path;
             },
-            function (&$current, $key, ConfigInterface $config, array $path) use (&$secondCallbackVisitedPath) {
+            function (&$current, $key, ConfigInterface $config, array $path) use (&$secondCallbackVisitedPath): ?int {
                 $pathString = \implode('.', $path);
                 $keyPathString = '2°: ' . $pathString;
                 $secondCallbackVisitedPath[$keyPathString] = $path;
@@ -262,7 +277,7 @@ class TraverseMethodSignalTest extends TestCase
 
                 return SignalCode::NONE;
             },
-            function (&$current, $key, ConfigInterface $config, array $path) use (&$thirdCallbackVisitedPath) {
+            function (&$current, $key, ConfigInterface $config, array $path) use (&$thirdCallbackVisitedPath): void {
                 $pathString = \implode('.', $path);
                 $keyPathString = '3°: ' . $pathString;
                 $thirdCallbackVisitedPath[$keyPathString] = $path;
@@ -295,7 +310,7 @@ class TraverseMethodSignalTest extends TestCase
         $this->assertFalse($sut->has(['newKey']), 'New key should not exists');
         $this->assertCount(1, $sut, 'The array should have only one key');
 
-        $updateDeprecatedKeys = static function (&$current, $key, ConfigInterface $config, array $path) {
+        $updateDeprecatedKeys = static function (&$current, $key, ConfigInterface $config, array $path): ?int {
             if ($key === 'oldKey') {
                 $config->set('newKey', $current);
                 return SignalCode::REMOVE_NODE; // Remove the old key node
@@ -304,7 +319,7 @@ class TraverseMethodSignalTest extends TestCase
             return SignalCode::NONE;
         };
 
-        $validateValues = function (&$current, $key, ConfigInterface $config, array $path) {
+        $validateValues = function (&$current, $key, ConfigInterface $config, array $path): void {
             // Validate the value based on a schema
             if (!\is_string($current)) {
                 // Log or handle validation error
@@ -312,7 +327,7 @@ class TraverseMethodSignalTest extends TestCase
             }
         };
 
-        $logChanges = static function (&$current, $key, ConfigInterface $config, array $path) {
+        $logChanges = static function (&$current, $key, ConfigInterface $config, array $path): void {
             // Log the current value
             codecept_debug('Visited ' . \implode('.', $path) . ' with value: ' . \print_r($current, true));
         };

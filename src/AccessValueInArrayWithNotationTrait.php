@@ -34,7 +34,6 @@ trait AccessValueInArrayWithNotationTrait
      * @param array<array-key, mixed> $array
      * @param array<array-key, string> $levels
      * @param mixed $value
-     * @return bool
      */
     private function insertValue(array &$array, array $levels, $value): bool
     {
@@ -47,7 +46,7 @@ trait AccessValueInArrayWithNotationTrait
             return false;
         }
 
-        if (empty($levels)) {
+        if ($levels === []) {
             /** @psalm-suppress MixedAssignment */
             $array[$key] = $value;
             return true;
@@ -63,7 +62,6 @@ trait AccessValueInArrayWithNotationTrait
     /**
      * @param array<array-key, mixed> $array
      * @param array<array-key, string> $levels
-     * @return bool
      */
     private function deleteValue(array &$array, array $levels): bool
     {
@@ -76,7 +74,7 @@ trait AccessValueInArrayWithNotationTrait
             return true;
         }
 
-        if (!empty($levels) && \is_array($array[$key])) {
+        if ($levels !== [] && \is_array($array[$key])) {
             return $this->deleteValue($array[$key], $levels);
         }
 

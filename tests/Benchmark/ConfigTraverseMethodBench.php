@@ -43,7 +43,7 @@ final class ConfigTraverseMethodBench
 
     public function benchEmptyCallback(): void
     {
-        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path) {
+        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path): void {
         });
     }
 
@@ -55,7 +55,7 @@ final class ConfigTraverseMethodBench
 
     public function benchModifyNode1Level(): void
     {
-        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path) {
+        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path): void {
             if ($path === ['root']) {
                 $current = 'new value';
             }
@@ -64,7 +64,7 @@ final class ConfigTraverseMethodBench
 
     public function benchModifyNode1LevelWithObj(): void
     {
-        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path) {
+        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path): void {
             if ($path === ['root']) {
                 $config->set($path, 'new value');
             }
@@ -73,7 +73,7 @@ final class ConfigTraverseMethodBench
 
     public function benchModifyNode4Level(): void
     {
-        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path) {
+        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path): void {
             if ($path === ['root', 'key4', 'key3', 'key3']) {
                 $current = 'new value';
             }
@@ -82,7 +82,7 @@ final class ConfigTraverseMethodBench
 
     public function benchModifyNode4LevelWithObj(): void
     {
-        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path) {
+        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path): void {
             if ($path === ['root', 'key4', 'key3', 'key3']) {
                 $config->set($path, 'new value');
             }
@@ -91,7 +91,7 @@ final class ConfigTraverseMethodBench
 
     public function benchModifyNode4LevelReturn1(): void
     {
-        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path) {
+        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path): ?int {
             if ($path === ['root', 'key4', 'key3', 'key3']) {
                 $current = 'new value';
                 return SignalCode::STOP_TRAVERSAL;
@@ -103,7 +103,7 @@ final class ConfigTraverseMethodBench
 
     public function benchModifyNode4LevelWithObjReturn1(): void
     {
-        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path) {
+        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path): ?int {
             if ($path === ['root', 'key4', 'key3', 'key3']) {
                 $config->set($path, 'new value');
                 return SignalCode::STOP_TRAVERSAL;
@@ -115,7 +115,7 @@ final class ConfigTraverseMethodBench
 
     public function benchModifyNode4LevelWithImplode(): void
     {
-        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path) {
+        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path): void {
             if (\implode('.', $path) === 'root.key4.key3.key3') {
                 $current = 'new value';
             }
@@ -130,7 +130,7 @@ final class ConfigTraverseMethodBench
 
     public function benchDeleteNode1Level(): void
     {
-        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path) {
+        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path): ?int {
             if ($path === ['root']) {
                 return SignalCode::REMOVE_NODE;
             }
@@ -141,7 +141,7 @@ final class ConfigTraverseMethodBench
 
     public function benchDeleteNode1LevelWithObj(): void
     {
-        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path) {
+        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path): ?int {
             if ($path === ['root']) {
                 $config->delete($path);
                 return SignalCode::CONTINUE;
@@ -153,7 +153,7 @@ final class ConfigTraverseMethodBench
 
     public function benchDeleteNode4Level(): void
     {
-        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path) {
+        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path): ?int {
             if ($path === ['root', 'key4', 'key3', 'key3']) {
                 return SignalCode::REMOVE_NODE;
             }
@@ -164,7 +164,7 @@ final class ConfigTraverseMethodBench
 
     public function benchDeleteNode4LevelWithObj(): void
     {
-        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path) {
+        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path): ?int {
             if ($path === ['root', 'key4', 'key3', 'key3']) {
                 $config->delete($path);
                 return SignalCode::CONTINUE;
@@ -176,7 +176,7 @@ final class ConfigTraverseMethodBench
 
     public function benchDeleteNode4LevelWithObjReturn1(): void
     {
-        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path) {
+        $this->config->traverse(static function (&$current, $key, ConfigInterface $config, array $path): ?int {
             if ($path === ['root', 'key4', 'key3', 'key3']) {
                 $config->delete($path);
                 return SignalCode::STOP_TRAVERSAL;
@@ -195,17 +195,17 @@ final class ConfigTraverseMethodBench
     public function benchStopTraversalAtRootWith3Callbacks(): void
     {
         $this->config->traverse(
-            static function (&$current, $key, ConfigInterface $config, array $path) {
+            static function (&$current, $key, ConfigInterface $config, array $path): ?int {
                 if ($path === ['root']) {
                     return SignalCode::STOP_TRAVERSAL;
                 }
 
                 return SignalCode::NONE;
             },
-            function (&$current, $key, ConfigInterface $config, array $path) {
+            function (&$current, $key, ConfigInterface $config, array $path): void {
                 // Do nothing
             },
-            function (&$current, $key, ConfigInterface $config, array $path) {
+            function (&$current, $key, ConfigInterface $config, array $path): void {
                 // Do nothing
             }
         );
@@ -214,17 +214,17 @@ final class ConfigTraverseMethodBench
     public function benchSkipChildrenTraversalAtRootWith3Callbacks(): void
     {
         $this->config->traverse(
-            static function (&$current, $key, ConfigInterface $config, array $path) {
+            static function (&$current, $key, ConfigInterface $config, array $path): ?int {
                 if ($path === ['root']) {
                     return SignalCode::SKIP_CHILDREN;
                 }
 
                 return SignalCode::NONE;
             },
-            function (&$current, $key, ConfigInterface $config, array $path) {
+            function (&$current, $key, ConfigInterface $config, array $path): void {
                 // Do nothing
             },
-            function (&$current, $key, ConfigInterface $config, array $path) {
+            function (&$current, $key, ConfigInterface $config, array $path): void {
                 // Do nothing
             }
         );

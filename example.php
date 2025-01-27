@@ -163,7 +163,7 @@ $config = new Config([
 ]);
 $visited = [];
 $config->traverse(
-    static function (&$current, $key, ConfigInterface $config, array $keyPath) {
+    static function (&$current, $key, ConfigInterface $config, array $keyPath): ?int {
         if (\is_array($current) && \array_key_exists('remove', $current) && $current['remove'] === true) {
             return SignalCode::REMOVE_NODE;
         }

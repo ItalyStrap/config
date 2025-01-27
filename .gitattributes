@@ -17,3 +17,4 @@
 /phpcs.xml export-ignore
 /psalm.xml export-ignore
 /rector.php export-ignore
+/rector-downgrade-php-74.php export-ignore
