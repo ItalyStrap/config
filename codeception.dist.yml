@@ -9,7 +9,7 @@ extensions:
     enabled:
         - Codeception\Extension\RunFailed
 params:
-  - .env
+  - tests/.env
 coverage:
   enabled: true
   include:

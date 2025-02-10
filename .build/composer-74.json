@@ -1,7 +1,10 @@
 {
     "name": "italystrap/config",
     "description": "ItalyStrap Config Module - a simple and useful configuration package the OOP way",
-    "keywords": ["Config", "Configuration Object"],
+    "keywords": [
+        "Config",
+        "Configuration Object"
+    ],
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -15,7 +18,7 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php" : ">=7.4",
+        "php": ">=7.4 <7.4",
         "ext-json": "*",
         "italystrap/storage": "^1.0.0"
     },
@@ -24,18 +27,13 @@
         "lucatume/function-mocker-le": "^1.0",
         "codeception/module-asserts": "^1.0",
         "phpspec/prophecy-phpunit": "^2.0",
-
         "squizlabs/php_codesniffer": "^3.7",
         "phpcompatibility/php-compatibility": "^9.3",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
-
         "vimeo/psalm": "^4.26",
-
         "phpbench/phpbench": "^1.2",
         "phpmetrics/phpmetrics": "^2.8",
-
         "rector/rector": "^2.0",
-
         "infection/infection": "^0.26.6",
         "infection/codeception-adapter": "^0.4.1",
         "italystrap/debug": "^2.1",
@@ -60,8 +58,7 @@
             "ItalyStrap\\Tests\\Unit\\": "tests/unit",
             "ItalyStrap\\Tests\\Stubs\\": "tests/_data/Stubs"
         },
-        "files": [
-        ]
+        "files": []
     },
     "scripts": {
         "qa": [
@@ -125,7 +122,7 @@
             "@php example.php"
         ]
     },
-    "support"    : {
+    "support": {
         "issues": "https://github.com/ItalyStrap/config/issues",
         "source": "https://github.com/ItalyStrap/config"
     },

@@ -1,12 +1,29 @@
+x-php-base: &php-base
+  build:
+    context: .
+    dockerfile: php/Dockerfile
+  container_name: ${PROJECT_NAME:-package}_php
+  volumes:
+    - ../:/app
+  environment:
+    UID: "${UID:-1000}"
+    GID: "${GID:-1000}"
+  working_dir: /app
+
 services:
-  php83:
+  php:
+    <<: *php-base
     build:
       context: .
-      dockerfile: php83/Dockerfile
-    container_name: php83
-    volumes:
-      - ../:/app
-    environment:
-      UID: "${UID:-1000}"
-      GID: "${GID:-1000}"
-    working_dir: /app
+      dockerfile: php/Dockerfile
+      args:
+        PHP_VERSION: 7.4
+    container_name: ${PROJECT_NAME:-package}_php74
+  php83:
+    <<: *php-base
+    build:
+      context: .
+      dockerfile: php/Dockerfile
+      args:
+        PHP_VERSION: 8.3
+    container_name: ${PROJECT_NAME:-package}_php83

@@ -17,4 +17,5 @@ phpbench.json
 rector-*.php
 **/*.bak
 
+bone.*
 Makefile

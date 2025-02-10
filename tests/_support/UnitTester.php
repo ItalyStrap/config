@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use _generated\UnitTesterActions;
+
 /**
  * Inherited Methods
  * @method void wantToTest($text)
@@ -19,7 +21,7 @@ declare(strict_types=1);
 */
 class UnitTester extends \Codeception\Actor
 {
-    use _generated\UnitTesterActions;
+    use UnitTesterActions;
 
    /**
     * Define custom actions here
