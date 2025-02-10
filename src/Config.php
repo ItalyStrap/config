@@ -159,6 +159,7 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
          * @psalm-suppress PossiblyInvalidArgument
          */
         $this->storage = \array_replace_recursive($this->storage, ...$array_to_merge);
+        parent::exchangeArray($this->storage);
         return $this;
     }
 

@@ -748,4 +748,29 @@ final class ConfigTest extends TestCase
             \json_encode($sut)
         );
     }
+
+    public function testMergeConfigIntoProjectConfig(): void
+    {
+        $baseConfig = new Config();
+        $default = [
+            'key' => 'default',
+        ];
+
+        $actual = [
+            'key' => 'value',
+        ];
+
+        $config = new Config($actual);
+        $baseConfig->merge($config);
+        $this->assertSame('value', $baseConfig->get('key'));
+
+        $config = new Config($default);
+        $config->merge($actual);
+        $this->assertSame('value', $config->get('key'));
+        $baseConfig->merge($config);
+        $this->assertSame('value', $baseConfig->get('key'));
+        $anotherConfig = new Config();
+        $anotherConfig->merge($baseConfig);
+        $this->assertSame('value', $anotherConfig->get('key'));
+    }
 }
