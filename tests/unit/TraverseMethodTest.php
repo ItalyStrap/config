@@ -739,6 +739,42 @@ final class TraverseMethodTest extends TestCase
         $this->assertSame($expected, $config->toArray());
     }
 
+    public static function arrayWithLeafEmptyStringDataProvider(): \Generator
+    {
+        yield 'case 1' => [['templatesPath' => ['/var/www/html/project' => '']]];
+        yield 'case 2' => [['templatesPath' => ['var' => '']]];
+        yield 'case 3' => [['templatesPath' => '']];
+    }
+
+    /**
+     * @dataProvider arrayWithLeafEmptyStringDataProvider
+     */
+    public function testNoInfiniteLoop($data): void
+    {
+        $config = new Config($data);
+        $config->traverse(static function (&$current, $key, ConfigInterface $config, array $path) {
+            if (
+                $current === ''
+            ) {
+                do {
+                    $config->delete($path);
+                    $return = \array_pop($path);
+
+                    // Prevent infinite loops
+                    if ($return === null) {
+                        break;
+                    }
+                } while ($config->get($path) === []);
+
+                return SignalCode::CONTINUE;
+            }
+
+            return SignalCode::NONE;
+        });
+
+        $this->assertCount(0, $config);
+    }
+
     public function testOrderOfTraversalExecution(): void
     {
         $config = new Config([
