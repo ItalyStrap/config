@@ -137,11 +137,15 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
 
     /**
      * @param TKey|string|int|array $key
-     * @param TValue|mixed $value
+     * @param TValue $value
      */
     public function appendTo($key, $value): bool
     {
-        $oldValue = $this->get($key, []);
+        /** @var TValue $default */
+        $default = [];
+
+        /** @var array<array-key, TValue> $oldValue */
+        $oldValue = $this->get($key, $default);
         $this->assertList($key, $oldValue);
 
         $oldValue = \array_merge($oldValue, (array)$value);
@@ -150,11 +154,15 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
 
     /**
      * @param TKey|string|int|array $key
-     * @param TValue|mixed $value
+     * @param TValue $value
      */
     public function prependTo($key, $value): bool
     {
-        $oldValue = $this->get($key, []);
+        /** @var TValue $default */
+        $default = [];
+
+        /** @var array<array-key, TValue> $oldValue */
+        $oldValue = $this->get($key, $default);
         $this->assertList($key, $oldValue);
 
         $oldValue = \array_merge((array)$value, $oldValue);
@@ -167,7 +175,11 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
      */
     public function insertAt($key, $value, int $position): bool
     {
-        $oldValue = $this->get($key, []);
+        /** @var TValue $default */
+        $default = [];
+
+        /** @var array<array-key, TValue> $oldValue */
+        $oldValue = $this->get($key, $default);
 
         $this->assertList($key, $oldValue);
 
@@ -186,6 +198,7 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
      */
     public function deleteFrom($key, $value): bool
     {
+        /** @var array<array-key, TValue>|null $oldValue */
         $oldValue = $this->get($key);
 
         if ($oldValue === null) {
@@ -194,6 +207,7 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
 
         $this->assertList($key, $oldValue, 'delete');
 
+        /** @var array<array-key, TValue> $toRemove */
         $toRemove = (array) $value;
         foreach ($toRemove as $needle) {
             $index = \array_search($needle, $oldValue, true);
@@ -217,15 +231,13 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
      */
     private function assertList($key, $value, string $methodName = 'set'): void
     {
-        if (\is_int($key) || \is_string($key)) {
-            $key = [$key];
-        }
+        $levels = $this->buildLevels($key);
 
         if (!\is_array($value)) {
             throw new \RuntimeException(
                 \sprintf(
                     'The value at "%s" is not an array, if you want to set a value use the `%s::%s` method',
-                    \implode('.', $key),
+                    \implode('.', $levels),
                     self::class,
                     $methodName
                 )
