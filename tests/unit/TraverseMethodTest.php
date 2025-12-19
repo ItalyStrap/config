@@ -813,4 +813,124 @@ final class TraverseMethodTest extends TestCase
         $expected = ['items', 'item1', 'subitem1', 'subitem2'];
         $this->assertSame($expected, $orderOfCallbacks);
     }
+
+    /**
+     * Removes duplicate entries
+     */
+    public function testRemoveDuplicateEntriesAtPath(): void
+    {
+        $config = new Config([
+            'values' => ['a', 'b', 'a', 'c', 'b'],
+        ]);
+
+        $config->traverse(static function (&$current, $key, ConfigInterface $config, array $path): ?int {
+            if ($key === 'values' && is_array($current)) {
+                $current = array_values(array_unique($current));
+                return SignalCode::CONTINUE;
+            }
+
+            return SignalCode::NONE;
+        });
+        $this->assertSame(['a', 'b', 'c'], $config->get('values'));
+    }
+
+    /**
+     * Removes all duplicate entries in the whole structure
+     */
+    public function testRemoveAllDuplicateEntries(): void
+    {
+        $config = new Config([
+            'group1' => [
+                'values' => ['a', 'b', 'a'],
+            ],
+            'group2' => [
+                'values' => ['b', 'c', 'c'],
+            ],
+        ]);
+
+        $config->traverse(static function (&$current): ?int {
+            // Only process arrays that are sequential/list-like (numeric keys starting from 0)
+            // and check if it's a list (sequential numeric keys)
+            if (
+                \is_array($current)
+                && $current !== []
+                && \array_keys($current) === \range(0, \count($current) - 1)
+            ) {
+                // Remove duplicates and reindex
+                $current = \array_values(\array_unique($current, \SORT_REGULAR));
+            }
+
+            return SignalCode::NONE;
+        });
+
+        $this->assertSame([
+            'group1' => [
+                'values' => ['a', 'b'],
+            ],
+            'group2' => [
+                'values' => ['b', 'c'],
+            ],
+        ], $config->toArray());
+    }
+
+    /**
+     * Removes all duplicate entries in complex nested structure
+     * while preserving associative arrays
+     */
+    public function testRemoveAllDuplicateEntriesInComplexStructure(): void
+    {
+        $config = new Config([
+            'config' => [
+                'allow-plugins' => [
+                    'plugin-a',
+                    'plugin-b',
+                    'plugin-a', // duplicate
+                    'plugin-c',
+                    'plugin-b', // duplicate
+                ],
+            ],
+            'nested' => [
+                'level1' => [
+                    'items' => [1, 2, 3, 2, 1], // duplicates
+                    'settings' => [ // associative array, should NOT be modified
+                        'key1' => 'value1',
+                        'key2' => 'value2',
+                    ],
+                ],
+                'level2' => [
+                    'tags' => ['php', 'javascript', 'php', 'python'], // duplicates
+                ],
+            ],
+        ]);
+
+        $config->traverse(static function (&$current): ?int {
+            if (
+                \is_array($current)
+                && $current !== []
+                && \array_keys($current) === \range(0, \count($current) - 1)
+            ) {
+                $current = \array_values(\array_unique($current, \SORT_REGULAR));
+            }
+
+            return SignalCode::NONE;
+        });
+
+        $this->assertSame([
+            'config' => [
+                'allow-plugins' => ['plugin-a', 'plugin-b', 'plugin-c'],
+            ],
+            'nested' => [
+                'level1' => [
+                    'items' => [1, 2, 3],
+                    'settings' => [
+                        'key1' => 'value1',
+                        'key2' => 'value2',
+                    ],
+                ],
+                'level2' => [
+                    'tags' => ['php', 'javascript', 'python'],
+                ],
+            ],
+        ], $config->toArray());
+    }
 }
