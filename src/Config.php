@@ -136,6 +136,116 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
     }
 
     /**
+     * @param TKey|string|int|array $key
+     * @param TValue $value
+     */
+    public function appendTo($key, $value): bool
+    {
+        /** @var TValue $default */
+        $default = [];
+
+        /** @var array<array-key, TValue> $oldValue */
+        $oldValue = $this->get($key, $default);
+        $this->assertList($key, $oldValue);
+
+        $oldValue = \array_merge($oldValue, (array)$value);
+        return $this->set($key, $oldValue);
+    }
+
+    /**
+     * @param TKey|string|int|array $key
+     * @param TValue $value
+     */
+    public function prependTo($key, $value): bool
+    {
+        /** @var TValue $default */
+        $default = [];
+
+        /** @var array<array-key, TValue> $oldValue */
+        $oldValue = $this->get($key, $default);
+        $this->assertList($key, $oldValue);
+
+        $oldValue = \array_merge((array)$value, $oldValue);
+        return $this->set($key, $oldValue);
+    }
+
+    /**
+     * @param TKey|string|int|array $key
+     * @param TValue|mixed $value
+     */
+    public function insertAt($key, $value, int $position): bool
+    {
+        /** @var TValue $default */
+        $default = [];
+
+        /** @var array<array-key, TValue> $oldValue */
+        $oldValue = $this->get($key, $default);
+
+        $this->assertList($key, $oldValue);
+
+        $oldValue = \array_merge(
+            \array_slice($oldValue, 0, $position),
+            (array)$value,
+            \array_slice($oldValue, $position)
+        );
+
+        return $this->set($key, $oldValue);
+    }
+
+    /**
+     * @param TKey|string|int|array $key
+     * @param TValue|mixed $value
+     */
+    public function deleteFrom($key, $value): bool
+    {
+        /** @var array<array-key, TValue>|null $oldValue */
+        $oldValue = $this->get($key);
+
+        if ($oldValue === null) {
+            return true;
+        }
+
+        $this->assertList($key, $oldValue, 'delete');
+
+        /** @var array<array-key, TValue> $toRemove */
+        $toRemove = (array) $value;
+        foreach ($toRemove as $needle) {
+            $index = \array_search($needle, $oldValue, true);
+            if ($index !== false) {
+                unset($oldValue[$index]); // rimuove una sola occorrenza
+            }
+        }
+
+        if ($oldValue === []) {
+            $this->delete($key);
+            return true;
+        }
+
+        $oldValue = \array_merge($oldValue);
+        return $this->set($key, $oldValue);
+    }
+
+    /**
+     * @param TKey|string|int|array $key
+     * @param mixed $value
+     */
+    private function assertList($key, $value, string $methodName = 'set'): void
+    {
+        $levels = $this->buildLevels($key);
+
+        if (!\is_array($value)) {
+            throw new \RuntimeException(
+                \sprintf(
+                    'The value at "%s" is not an array, if you want to set a value use the `%s::%s` method',
+                    \implode('.', $levels),
+                    self::class,
+                    $methodName
+                )
+            );
+        }
+    }
+
+    /**
      * @param array<TKey, TValue>|\IteratorAggregate|\Iterator|\stdClass|string ...$array_to_merge
      */
     public function merge(...$array_to_merge): Config
