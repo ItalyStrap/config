@@ -237,7 +237,7 @@ class Config extends ArrayObject implements ConfigInterface, NodeManipulationInt
         if (!\is_array($value)) {
             throw new \RuntimeException(
                 \sprintf(
-                    'The value at "%s" is not an array, if you want to set a value use the `%s::%s` method',
+                    'The value at "%s" is not an array, use the `%s::%s()` method instead',
                     \implode('.', $levels),
                     self::class,
                     $methodName
