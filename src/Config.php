@@ -142,15 +142,17 @@ class Config extends ArrayObject implements ConfigInterface, NodeManipulationInt
      */
     public function appendTo($key, $value): bool
     {
+        $levels = $this->buildLevels($key);
+
         /** @var TValue $default */
         $default = [];
 
         /** @var array<array-key, TValue> $oldValue */
-        $oldValue = $this->get($key, $default);
-        $this->assertList($key, $oldValue);
+        $oldValue = $this->findValue($this->storage, $levels, $default);
+        $this->assertList($levels, $oldValue);
 
         $oldValue = \array_merge($oldValue, (array)$value);
-        return $this->set($key, $oldValue);
+        return $this->insertValue($this->storage, $levels, $oldValue);
     }
 
     /**
@@ -159,15 +161,17 @@ class Config extends ArrayObject implements ConfigInterface, NodeManipulationInt
      */
     public function prependTo($key, $value): bool
     {
+        $levels = $this->buildLevels($key);
+
         /** @var TValue $default */
         $default = [];
 
         /** @var array<array-key, TValue> $oldValue */
-        $oldValue = $this->get($key, $default);
-        $this->assertList($key, $oldValue);
+        $oldValue = $this->findValue($this->storage, $levels, $default);
+        $this->assertList($levels, $oldValue);
 
         $oldValue = \array_merge((array)$value, $oldValue);
-        return $this->set($key, $oldValue);
+        return $this->insertValue($this->storage, $levels, $oldValue);
     }
 
     /**
@@ -176,13 +180,15 @@ class Config extends ArrayObject implements ConfigInterface, NodeManipulationInt
      */
     public function insertAt($key, $value, int $position): bool
     {
+        $levels = $this->buildLevels($key);
+
         /** @var TValue $default */
         $default = [];
 
         /** @var array<array-key, TValue> $oldValue */
-        $oldValue = $this->get($key, $default);
+        $oldValue = $this->findValue($this->storage, $levels, $default);
 
-        $this->assertList($key, $oldValue);
+        $this->assertList($levels, $oldValue);
 
         $oldValue = \array_merge(
             \array_slice($oldValue, 0, $position),
@@ -190,7 +196,7 @@ class Config extends ArrayObject implements ConfigInterface, NodeManipulationInt
             \array_slice($oldValue, $position)
         );
 
-        return $this->set($key, $oldValue);
+        return $this->insertValue($this->storage, $levels, $oldValue);
     }
 
     /**
@@ -199,14 +205,16 @@ class Config extends ArrayObject implements ConfigInterface, NodeManipulationInt
      */
     public function deleteFrom($key, $value): bool
     {
+        $levels = $this->buildLevels($key);
+
         /** @var array<array-key, TValue>|null $oldValue */
-        $oldValue = $this->get($key);
+        $oldValue = $this->findValue($this->storage, $levels);
 
         if ($oldValue === null) {
             return true;
         }
 
-        $this->assertList($key, $oldValue, 'delete');
+        $this->assertList($levels, $oldValue, 'delete');
 
         /** @var array<array-key, TValue> $toRemove */
         $toRemove = (array) $value;
@@ -218,22 +226,20 @@ class Config extends ArrayObject implements ConfigInterface, NodeManipulationInt
         }
 
         if ($oldValue === []) {
-            $this->delete($key);
+            $this->deleteValue($this->storage, $levels);
             return true;
         }
 
         $oldValue = \array_merge($oldValue);
-        return $this->set($key, $oldValue);
+        return $this->insertValue($this->storage, $levels, $oldValue);
     }
 
     /**
-     * @param TKey|string|int|array $key
+     * @param array<array-key, string> $levels Pre-computed key levels
      * @param mixed $value
      */
-    private function assertList($key, $value, string $methodName = 'set'): void
+    private function assertList(array $levels, $value, string $methodName = 'set'): void
     {
-        $levels = $this->buildLevels($key);
-
         if (!\is_array($value)) {
             throw new \RuntimeException(
                 \sprintf(
