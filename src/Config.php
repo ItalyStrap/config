@@ -13,10 +13,11 @@ use ItalyStrap\Storage\SetMultipleStoreTrait;
  * @template TValue
  *
  * @template-implements \ItalyStrap\Config\ConfigInterface<TKey,TValue>
+ * @template-implements \ItalyStrap\Config\NodeManipulationInterface<TKey,TValue>
  * @template-extends \ArrayObject<TKey,TValue>
  * @psalm-suppress DeprecatedInterface
  */
-class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
+class Config extends ArrayObject implements ConfigInterface, NodeManipulationInterface, \JsonSerializable
 {
     /**
      * @use ArrayObjectTrait<TKey,TValue>
