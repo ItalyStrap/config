@@ -213,7 +213,7 @@ class Config extends ArrayObject implements ConfigInterface, NodeManipulationInt
         foreach ($toRemove as $needle) {
             $index = \array_search($needle, $oldValue, true);
             if ($index !== false) {
-                unset($oldValue[$index]); // rimuove una sola occorrenza
+                unset($oldValue[$index]); // removes only the first occurrence.
             }
         }
 
