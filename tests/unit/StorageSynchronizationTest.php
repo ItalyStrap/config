@@ -34,7 +34,7 @@ class StorageSynchronizationTest extends TestCase
         }
 
         $this->assertArrayHasKey('key2', $result);
-        $this->assertEquals('value2', $result['key2']);
+        $this->assertSame('value2', $result['key2']);
     }
 
     public function testForeachAfterDeleteReturnsUpdatedData(): void
@@ -60,7 +60,7 @@ class StorageSynchronizationTest extends TestCase
         /** @var string $value */
         $value = $config->key2;
 
-        $this->assertEquals('value2', $value);
+        $this->assertSame('value2', $value);
     }
 
     public function testPropertyAccessAfterDeleteReturnsUpdatedData(): void
@@ -86,7 +86,7 @@ class StorageSynchronizationTest extends TestCase
         $result = \iterator_to_array($iterator);
 
         $this->assertArrayHasKey('key2', $result);
-        $this->assertEquals('value2', $result['key2']);
+        $this->assertSame('value2', $result['key2']);
     }
 
     public function testGetIteratorAfterDeleteReturnsUpdatedData(): void
@@ -128,7 +128,7 @@ class StorageSynchronizationTest extends TestCase
         $copy = $config->getArrayCopy();
 
         $this->assertArrayHasKey('key2', $copy);
-        $this->assertEquals('value2', $copy['key2']);
+        $this->assertSame('value2', $copy['key2']);
     }
 
     public function testGetArrayCopyAfterDeleteReturnsUpdatedData(): void
@@ -152,7 +152,7 @@ class StorageSynchronizationTest extends TestCase
         $decoded = \json_decode($json, true);
 
         $this->assertArrayHasKey('key2', $decoded);
-        $this->assertEquals('value2', $decoded['key2']);
+        $this->assertSame('value2', $decoded['key2']);
     }
 
     public function testJsonSerializeAfterDeleteReturnsUpdatedData(): void
@@ -199,7 +199,7 @@ class StorageSynchronizationTest extends TestCase
         }
 
         $this->assertArrayHasKey('plugins', $result);
-        $this->assertEquals('plugin0', $result['plugins'][0]);
+        $this->assertSame('plugin0', $result['plugins'][0]);
     }
 
     public function testForeachAfterInsertAtReturnsUpdatedData(): void
@@ -214,7 +214,7 @@ class StorageSynchronizationTest extends TestCase
         }
 
         $this->assertArrayHasKey('plugins', $result);
-        $this->assertEquals('plugin2', $result['plugins'][1]);
+        $this->assertSame('plugin2', $result['plugins'][1]);
     }
 
     public function testForeachAfterDeleteFromReturnsUpdatedData(): void
@@ -284,7 +284,7 @@ class StorageSynchronizationTest extends TestCase
         $plugins = $config->plugins;
 
         $this->assertIsArray($plugins);
-        $this->assertEquals('plugin0', $plugins[0]);
+        $this->assertSame('plugin0', $plugins[0]);
     }
 
     public function testPropertyAccessAfterInsertAtReturnsUpdatedData(): void
@@ -297,7 +297,7 @@ class StorageSynchronizationTest extends TestCase
         $plugins = $config->plugins;
 
         $this->assertIsArray($plugins);
-        $this->assertEquals('plugin2', $plugins[1]);
+        $this->assertSame('plugin2', $plugins[1]);
     }
 
     public function testPropertyAccessAfterDeleteFromReturnsUpdatedData(): void
@@ -476,7 +476,7 @@ class StorageSynchronizationTest extends TestCase
             $result[$key] = $value;
         }
 
-        $this->assertEquals(['plugin1', 'plugin2', 'plugin2.5', 'plugin3'], $result['plugins']);
+        $this->assertSame(['plugin1', 'plugin2', 'plugin2.5', 'plugin3'], $result['plugins']);
     }
 
     public function testMixedNodeManipulationsAndStandardSetOperations(): void
@@ -489,8 +489,8 @@ class StorageSynchronizationTest extends TestCase
 
         $result = $config->toArray();
 
-        $this->assertEquals(['plugin2'], $result['plugins']);
-        $this->assertEquals('newValue', $result['newKey']);
+        $this->assertSame(['plugin2'], $result['plugins']);
+        $this->assertSame('newValue', $result['newKey']);
     }
 
     // =========================================================================
@@ -694,8 +694,8 @@ class StorageSynchronizationTest extends TestCase
             $result[$key] = $value;
         }
 
-        $this->assertEquals('VALUE1', $result['key1']);
-        $this->assertEquals('VALUE2', $result['key2']);
+        $this->assertSame('VALUE1', $result['key1']);
+        $this->assertSame('VALUE2', $result['key2']);
     }
 
     public function testForeachAfterTraverseRemovesNodeReturnsUpdatedData(): void
@@ -778,8 +778,8 @@ class StorageSynchronizationTest extends TestCase
 
         $copy = $config->getArrayCopy();
 
-        $this->assertEquals(10, $copy['nested']['a']);
-        $this->assertEquals(20, $copy['nested']['b']);
+        $this->assertSame(10, $copy['nested']['a']);
+        $this->assertSame(20, $copy['nested']['b']);
     }
 
     public function testJsonSerializeAfterTraverseRemovesNodeReturnsUpdatedData(): void
