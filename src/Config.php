@@ -237,9 +237,9 @@ class Config extends ArrayObject implements ConfigInterface, NodeManipulationInt
         }
 
         if ($oldValue === []) {
-            $this->deleteValue($this->storage, $levels);
+            $result = $this->deleteValue($this->storage, $levels);
             parent::exchangeArray($this->storage);
-            return true;
+            return $result;
         }
 
         $oldValue = \array_merge($oldValue);
