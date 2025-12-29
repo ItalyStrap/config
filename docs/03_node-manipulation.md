@@ -24,6 +24,11 @@ These methods are useful when you want to:
     - [Example 4: Removing values from a list](#example-4-removing-values-from-a-list)
     - [Example 5: Using `traverse()` for bulk cleanup](#example-5-using-traverse-for-bulk-cleanup)
 - [Important Notes](#important-notes)
+    - [1) These methods work on lists (arrays)](#1-these-methods-work-on-lists-arrays)
+    - [2) Duplicates are allowed](#2-duplicates-are-allowed)
+    - [3) `deleteFrom()` removes only the first occurrence](#3-deletefrom-removes-only-the-first-occurrence)
+    - [4) `deleteFrom()` searches by VALUE, not by KEY](#4-deletefrom-searches-by-value-not-by-key)
+    - [5) Integers, strings, and strict comparisons](#5-integers-strings-and-strict-comparisons)
 - [Conclusion](#conclusion)
 
 ---
@@ -280,7 +285,43 @@ This behavior is intentionally similar to list semantics in other languages.
 
 If you need to remove all occurrences, use `traverse()` or perform repeated `deleteFrom()` calls.
 
-### 4) Integers, strings, and strict comparisons
+### 4) `deleteFrom()` searches by VALUE, not by KEY
+
+`deleteFrom()` is designed for **list manipulation**, not associative array key removal.
+
+It uses `array_search()` internally, which means:
+
+- It searches for the **value** you want to remove, not the key.
+- Passing a key name will **not** remove that key; it will search for an element whose value equals that key name.
+
+```php
+$config = new Config([
+    'plugins' => [
+        'plugin1' => 'value1',
+        'plugin2' => 'value2',
+    ],
+]);
+
+// This does NOT remove the 'plugin1' key!
+// It searches for an element with value 'plugin1' (which doesn't exist)
+$config->deleteFrom('plugins', 'plugin1');
+// Result: ['plugin1' => 'value1', 'plugin2' => 'value2'] (unchanged)
+
+// To remove by value, pass the actual value:
+$config->deleteFrom('plugins', 'value1');
+// Result: ['plugin2' => 'value2']
+
+// To remove by key, use the delete() method instead:
+$config->delete('plugins.plugin1');
+// or
+$config->delete(['plugins', 'plugin1']);
+```
+
+**Rule of thumb:**
+- Use `deleteFrom()` for **sequential lists** where you want to remove items by their value.
+- Use `delete()` for **associative arrays** where you want to remove items by their key.
+
+### 5) Integers, strings, and strict comparisons
 
 `deleteFrom()` uses strict comparisons (`array_search(..., true)`), so:
 

@@ -437,6 +437,129 @@ class NodeManipulationTest extends TestCase
         );
     }
 
+    // =========================================================================
+    // deleteFrom behavior with associative arrays
+    // These tests document the current behavior where deleteFrom searches by VALUE, not by KEY
+    // =========================================================================
+
+    /**
+     * deleteFrom uses array_search which searches for VALUES, not KEYS.
+     * When trying to "delete" a key name, it will only work if that key name
+     * happens to also exist as a VALUE in the array.
+     */
+    public function testDeleteFromSearchesByValueNotByKey(): void
+    {
+        $config = $this->makeInstance([
+            'plugins' => [
+                'pluginA' => 'enabled',
+                'pluginB' => 'disabled',
+                'pluginC' => 'enabled',
+            ]
+        ]);
+
+        // Trying to delete 'pluginA' will search for the VALUE 'pluginA', not the KEY
+        // Since 'pluginA' is a KEY and not a VALUE, nothing will be deleted
+        $config->deleteFrom('plugins', 'pluginA');
+
+        // The array remains unchanged because 'pluginA' is not a value in the array
+        $this->assertSame([
+            'pluginA' => 'enabled',
+            'pluginB' => 'disabled',
+            'pluginC' => 'enabled',
+        ], $config->get('plugins'));
+    }
+
+    /**
+     * When the value to delete matches an actual VALUE in the associative array,
+     * it removes the element with that value.
+     */
+    public function testDeleteFromRemovesElementByValueInAssociativeArray(): void
+    {
+        $config = $this->makeInstance([
+            'plugins' => [
+                'pluginA' => 'enabled',
+                'pluginB' => 'disabled',
+                'pluginC' => 'enabled',
+            ]
+        ]);
+
+        // Delete 'disabled' will remove the element with value 'disabled'
+        $config->deleteFrom('plugins', 'disabled');
+
+        // pluginB is removed because its VALUE was 'disabled'
+        $this->assertSame([
+            'pluginA' => 'enabled',
+            'pluginC' => 'enabled',
+        ], $config->get('plugins'));
+    }
+
+    /**
+     * When multiple elements have the same value, only the first occurrence is removed.
+     */
+    public function testDeleteFromRemovesFirstOccurrenceInAssociativeArray(): void
+    {
+        $config = $this->makeInstance([
+            'plugins' => [
+                'pluginA' => 'enabled',
+                'pluginB' => 'enabled',
+                'pluginC' => 'disabled',
+            ]
+        ]);
+
+        // Delete 'enabled' will only remove the first occurrence (pluginA)
+        $config->deleteFrom('plugins', 'enabled');
+
+        $this->assertSame([
+            'pluginB' => 'enabled',
+            'pluginC' => 'disabled',
+        ], $config->get('plugins'));
+    }
+
+    /**
+     * Boolean values in associative arrays - deleteFrom can remove by boolean value.
+     */
+    public function testDeleteFromWithBooleanValuesInAssociativeArray(): void
+    {
+        $config = $this->makeInstance([
+            'features' => [
+                'darkMode' => true,
+                'notifications' => false,
+                'autoSave' => true,
+            ]
+        ]);
+
+        // Delete false will remove the element with value false
+        $config->deleteFrom('features', false);
+
+        $this->assertSame([
+            'darkMode' => true,
+            'autoSave' => true,
+        ], $config->get('features'));
+    }
+
+    /**
+     * Mixed array with string keys and numeric indices.
+     */
+    public function testDeleteFromWithMixedKeysArray(): void
+    {
+        $config = $this->makeInstance([
+            'items' => [
+                'named' => 'namedValue',
+                0 => 'indexedValue0',
+                1 => 'indexedValue1',
+            ]
+        ]);
+
+        // Delete 'indexedValue0' removes the element at index 0
+        $config->deleteFrom('items', 'indexedValue0');
+
+        // Note: array_merge in deleteFrom reindexes numeric keys
+        $result = $config->get('items');
+        $this->assertArrayHasKey('named', $result);
+        $this->assertContains('indexedValue1', $result);
+        $this->assertNotContains('indexedValue0', $result);
+    }
+
     public function testComplexArrayBehaviourWithMixedTypes(): void
     {
         $config = $this->makeInstance();
