@@ -178,3 +178,74 @@ $config->traverse(
 );
 $style->listing($visited);
 $style->newLine();
+
+// =============================================================================
+// Node Manipulation Methods
+// =============================================================================
+
+$style->section('Node Manipulation Methods');
+
+$style->writeln('appendTo - Add values to the end of an array:');
+$config = new Config([
+    'plugins' => ['plugin1', 'plugin2'],
+]);
+$style->text('Initial plugins: ' . \implode(', ', $config->get('plugins')));
+$config->appendTo('plugins', 'plugin3');
+$style->text('After appendTo("plugins", "plugin3"): ' . \implode(', ', $config->get('plugins')));
+$config->appendTo('plugins', ['plugin4', 'plugin5']);
+$style->text('After appendTo("plugins", ["plugin4", "plugin5"]): ' . \implode(', ', $config->get('plugins')));
+$style->newLine();
+
+$style->writeln('prependTo - Add values to the beginning of an array:');
+$config = new Config([
+    'queue' => ['task2', 'task3'],
+]);
+$style->text('Initial queue: ' . \implode(', ', $config->get('queue')));
+$config->prependTo('queue', 'task1');
+$style->text('After prependTo("queue", "task1"): ' . \implode(', ', $config->get('queue')));
+$config->prependTo('queue', ['urgent1', 'urgent2']);
+$style->text('After prependTo("queue", ["urgent1", "urgent2"]): ' . \implode(', ', $config->get('queue')));
+$style->newLine();
+
+$style->writeln('insertAt - Insert values at a specific position:');
+$config = new Config([
+    'steps' => ['step1', 'step3', 'step4'],
+]);
+$style->text('Initial steps: ' . \implode(', ', $config->get('steps')));
+$config->insertAt('steps', 'step2', 1);
+$style->text('After insertAt("steps", "step2", 1): ' . \implode(', ', $config->get('steps')));
+$config->insertAt('steps', ['step2a', 'step2b'], 2);
+$style->text('After insertAt("steps", ["step2a", "step2b"], 2): ' . \implode(', ', $config->get('steps')));
+$style->newLine();
+
+$style->writeln('deleteFrom - Remove values from an array:');
+$config = new Config([
+    'tags' => ['php', 'javascript', 'python', 'ruby', 'go'],
+]);
+$style->text('Initial tags: ' . \implode(', ', $config->get('tags')));
+$config->deleteFrom('tags', 'javascript');
+$style->text('After deleteFrom("tags", "javascript"): ' . \implode(', ', $config->get('tags')));
+$config->deleteFrom('tags', ['python', 'ruby']);
+$style->text('After deleteFrom("tags", ["python", "ruby"]): ' . \implode(', ', $config->get('tags')));
+$style->newLine();
+
+$style->writeln('Node manipulation with dot notation:');
+$config = new Config([
+    'settings' => [
+        'features' => ['feature1', 'feature2'],
+    ],
+]);
+$style->text('Initial settings.features: ' . \implode(', ', $config->get('settings.features')));
+$config->appendTo('settings.features', 'feature3');
+$style->text('After appendTo("settings.features", "feature3"): ' . \implode(', ', $config->get('settings.features')));
+$config->deleteFrom('settings.features', 'feature1');
+$style->text('After deleteFrom("settings.features", "feature1"): ' . \implode(', ', $config->get('settings.features')));
+$style->newLine();
+
+$style->writeln('Creating new arrays with appendTo:');
+$config = new Config([]);
+$config->appendTo('newList', 'firstItem');
+$style->text('appendTo on non-existent key creates array: ' . \implode(', ', $config->get('newList')));
+$config->appendTo('newList', 'secondItem');
+$style->text('After another appendTo: ' . \implode(', ', $config->get('newList')));
+$style->newLine();

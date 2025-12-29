@@ -13,10 +13,11 @@ use ItalyStrap\Storage\SetMultipleStoreTrait;
  * @template TValue
  *
  * @template-implements \ItalyStrap\Config\ConfigInterface<TKey,TValue>
+ * @template-implements \ItalyStrap\Config\NodeManipulationInterface<TKey,TValue>
  * @template-extends \ArrayObject<TKey,TValue>
  * @psalm-suppress DeprecatedInterface
  */
-class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
+class Config extends ArrayObject implements ConfigInterface, NodeManipulationInterface, \JsonSerializable
 {
     /**
      * @use ArrayObjectTrait<TKey,TValue>
@@ -115,11 +116,15 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
      */
     public function set($key, $value): bool
     {
-        return $this->insertValue(
+        $result = $this->insertValue(
             $this->storage,
             $this->buildLevels($key),
             $value
         );
+
+        parent::exchangeArray($this->storage);
+
+        return $result;
     }
 
     public function update($key, $value): bool
@@ -132,7 +137,133 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
      */
     public function delete($key): bool
     {
-        return $this->deleteValue($this->storage, $this->buildLevels($key));
+        $result = $this->deleteValue($this->storage, $this->buildLevels($key));
+        parent::exchangeArray($this->storage);
+        return $result;
+    }
+
+    /**
+     * @param TKey|string|int|array $key
+     * @param TValue $value
+     */
+    public function appendTo($key, $value): bool
+    {
+        $levels = $this->buildLevels($key);
+
+        /** @var TValue $default */
+        $default = [];
+
+        /** @var array<array-key, TValue> $oldValue */
+        $oldValue = $this->findValue($this->storage, $levels, $default);
+        $this->assertList($oldValue, $levels);
+
+        $oldValue = \array_merge($oldValue, (array)$value);
+        $result = $this->insertValue($this->storage, $levels, $oldValue);
+        parent::exchangeArray($this->storage);
+        return $result;
+    }
+
+    /**
+     * @param TKey|string|int|array $key
+     * @param TValue $value
+     */
+    public function prependTo($key, $value): bool
+    {
+        $levels = $this->buildLevels($key);
+
+        /** @var TValue $default */
+        $default = [];
+
+        /** @var array<array-key, TValue> $oldValue */
+        $oldValue = $this->findValue($this->storage, $levels, $default);
+        $this->assertList($oldValue, $levels);
+
+        $oldValue = \array_merge((array)$value, $oldValue);
+        $result = $this->insertValue($this->storage, $levels, $oldValue);
+        parent::exchangeArray($this->storage);
+        return $result;
+    }
+
+    /**
+     * @param TKey|string|int|array $key
+     * @param TValue|mixed $value
+     */
+    public function insertAt($key, $value, int $position): bool
+    {
+        $levels = $this->buildLevels($key);
+
+        /** @var TValue $default */
+        $default = [];
+
+        /** @var array<array-key, TValue> $oldValue */
+        $oldValue = $this->findValue($this->storage, $levels, $default);
+        $this->assertList($oldValue, $levels);
+
+        $oldValue = \array_merge(
+            \array_slice($oldValue, 0, $position),
+            (array)$value,
+            \array_slice($oldValue, $position)
+        );
+
+        $result = $this->insertValue($this->storage, $levels, $oldValue);
+        parent::exchangeArray($this->storage);
+        return $result;
+    }
+
+    /**
+     * @param TKey|string|int|array $key
+     * @param TValue|mixed $value
+     */
+    public function deleteFrom($key, $value): bool
+    {
+        $levels = $this->buildLevels($key);
+
+        /** @var array<array-key, TValue>|null $oldValue */
+        $oldValue = $this->findValue($this->storage, $levels);
+
+        if ($oldValue === null) {
+            return true;
+        }
+
+        $this->assertList($oldValue, $levels, 'delete');
+
+        /** @var array<array-key, TValue> $toRemove */
+        $toRemove = (array) $value;
+        foreach ($toRemove as $needle) {
+            $index = \array_search($needle, $oldValue, true);
+            if ($index !== false) {
+                unset($oldValue[$index]); // removes only the first occurrence.
+            }
+        }
+
+        if ($oldValue === []) {
+            $result = $this->deleteValue($this->storage, $levels);
+            parent::exchangeArray($this->storage);
+            return $result;
+        }
+
+        $oldValue = \array_merge($oldValue);
+        $result = $this->insertValue($this->storage, $levels, $oldValue);
+        parent::exchangeArray($this->storage);
+        return $result;
+    }
+
+    /**
+     * @param mixed $value
+     * @param array<array-key, string> $levels Pre-computed key levels
+     */
+    private function assertList($value, array $levels, string $methodName = 'set'): void
+    {
+        if (!\is_array($value)) {
+            throw new \RuntimeException(
+                \sprintf(
+                    'The value at "%s" is not an array, use the `%s::%s()` method instead',
+                    \implode('.', $levels),
+                    self::class,
+                    $methodName
+                )
+            );
+        }
     }
 
     /**
@@ -178,6 +309,7 @@ class Config extends ArrayObject implements ConfigInterface, \JsonSerializable
     public function traverse(callable ...$visitor): void
     {
         $this->traverseArray($this->storage, $visitor);
+        parent::exchangeArray($this->storage);
     }
 
     /**
