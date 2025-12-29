@@ -120,7 +120,7 @@ Current behavior:
 // Initial state: ['items' => ['apple', 'banana', 'orange', 'banana']]
 
 $config->deleteFrom('items', 'banana');
-// ['items' => ['apple', 'orange', 'banana']]
+// ['items' => ['apple', 'orange', 'banana']] // only the first 'banana' is removed
 
 $config->deleteFrom('items', ['banana', 'orange']);
 // ['items' => ['apple']]
