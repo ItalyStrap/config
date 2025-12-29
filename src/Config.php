@@ -116,11 +116,15 @@ class Config extends ArrayObject implements ConfigInterface, NodeManipulationInt
      */
     public function set($key, $value): bool
     {
-        return $this->insertValue(
+        $result = $this->insertValue(
             $this->storage,
             $this->buildLevels($key),
             $value
         );
+
+        parent::exchangeArray($this->storage);
+
+        return $result;
     }
 
     public function update($key, $value): bool
@@ -133,7 +137,9 @@ class Config extends ArrayObject implements ConfigInterface, NodeManipulationInt
      */
     public function delete($key): bool
     {
-        return $this->deleteValue($this->storage, $this->buildLevels($key));
+        $result = $this->deleteValue($this->storage, $this->buildLevels($key));
+        parent::exchangeArray($this->storage);
+        return $result;
     }
 
     /**
@@ -149,10 +155,12 @@ class Config extends ArrayObject implements ConfigInterface, NodeManipulationInt
 
         /** @var array<array-key, TValue> $oldValue */
         $oldValue = $this->findValue($this->storage, $levels, $default);
-        $this->assertList($levels, $oldValue);
+        $this->assertList($oldValue, $levels);
 
         $oldValue = \array_merge($oldValue, (array)$value);
-        return $this->insertValue($this->storage, $levels, $oldValue);
+        $result = $this->insertValue($this->storage, $levels, $oldValue);
+        parent::exchangeArray($this->storage);
+        return $result;
     }
 
     /**
@@ -168,10 +176,12 @@ class Config extends ArrayObject implements ConfigInterface, NodeManipulationInt
 
         /** @var array<array-key, TValue> $oldValue */
         $oldValue = $this->findValue($this->storage, $levels, $default);
-        $this->assertList($levels, $oldValue);
+        $this->assertList($oldValue, $levels);
 
         $oldValue = \array_merge((array)$value, $oldValue);
-        return $this->insertValue($this->storage, $levels, $oldValue);
+        $result = $this->insertValue($this->storage, $levels, $oldValue);
+        parent::exchangeArray($this->storage);
+        return $result;
     }
 
     /**
@@ -187,8 +197,7 @@ class Config extends ArrayObject implements ConfigInterface, NodeManipulationInt
 
         /** @var array<array-key, TValue> $oldValue */
         $oldValue = $this->findValue($this->storage, $levels, $default);
-
-        $this->assertList($levels, $oldValue);
+        $this->assertList($oldValue, $levels);
 
         $oldValue = \array_merge(
             \array_slice($oldValue, 0, $position),
@@ -196,7 +205,9 @@ class Config extends ArrayObject implements ConfigInterface, NodeManipulationInt
             \array_slice($oldValue, $position)
         );
 
-        return $this->insertValue($this->storage, $levels, $oldValue);
+        $result = $this->insertValue($this->storage, $levels, $oldValue);
+        parent::exchangeArray($this->storage);
+        return $result;
     }
 
     /**
@@ -214,7 +225,7 @@ class Config extends ArrayObject implements ConfigInterface, NodeManipulationInt
             return true;
         }
 
-        $this->assertList($levels, $oldValue, 'delete');
+        $this->assertList($oldValue, $levels, 'delete');
 
         /** @var array<array-key, TValue> $toRemove */
         $toRemove = (array) $value;
@@ -227,18 +238,21 @@ class Config extends ArrayObject implements ConfigInterface, NodeManipulationInt
 
         if ($oldValue === []) {
             $this->deleteValue($this->storage, $levels);
+            parent::exchangeArray($this->storage);
             return true;
         }
 
         $oldValue = \array_merge($oldValue);
-        return $this->insertValue($this->storage, $levels, $oldValue);
+        $result = $this->insertValue($this->storage, $levels, $oldValue);
+        parent::exchangeArray($this->storage);
+        return $result;
     }
 
     /**
-     * @param array<array-key, string> $levels Pre-computed key levels
      * @param mixed $value
+     * @param array<array-key, string> $levels Pre-computed key levels
      */
-    private function assertList(array $levels, $value, string $methodName = 'set'): void
+    private function assertList($value, array $levels, string $methodName = 'set'): void
     {
         if (!\is_array($value)) {
             throw new \RuntimeException(
@@ -295,6 +309,7 @@ class Config extends ArrayObject implements ConfigInterface, NodeManipulationInt
     public function traverse(callable ...$visitor): void
     {
         $this->traverseArray($this->storage, $visitor);
+        parent::exchangeArray($this->storage);
     }
 
     /**

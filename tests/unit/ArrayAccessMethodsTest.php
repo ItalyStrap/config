@@ -74,15 +74,28 @@ final class ArrayAccessMethodsTest extends TestCase
         $sut = $this->makeInstance($array);
 
         $this->assertCount(2, $sut, '');
+        $this->assertSame($array, $sut->getArrayCopy(), '');
 
-        $sut->add('new-key', 'new-value');
+        $sut->set('new-key', 'new-value');
         $this->assertCount(3, $sut, '');
+        $this->assertSame([
+            'test'     => 'val1',
+            'test2'    => 'val2',
+            'new-key'  => 'new-value',
+        ], $sut->getArrayCopy(), '');
 
-        $sut->remove('test', 'test2');
+        $sut->deleteMultiple(['test', 'test2']);
         $this->assertCount(1, $sut, '');
+        $this->assertSame([
+            'new-key'  => 'new-value',
+        ], $sut->getArrayCopy(), '');
 
         $sut->merge(['add-key' => 'add-value']);
         $this->assertCount(2, $sut, '');
+        $this->assertSame([
+            'new-key'  => 'new-value',
+            'add-key'  => 'add-value',
+        ], $sut->getArrayCopy(), '');
     }
 
     /**

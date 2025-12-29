@@ -51,16 +51,19 @@ trait ArrayObjectTrait
         $this->delete($index);
     }
 
-    public function count(): int
+    /**
+     * @param array<TKey, TValue> $array
+     * @return array<TKey, TValue>
+     */
+    public function exchangeArray($array): array
     {
-        parent::exchangeArray($this->storage);
-        return parent::count();
-    }
+        $oldData = $this->storage;
 
-    public function getArrayCopy(): array
-    {
+        // Replace storage with new array
+        $this->storage = $array;
         parent::exchangeArray($this->storage);
-        return parent::getArrayCopy();
+
+        return $oldData;
     }
 
     public function __clone()

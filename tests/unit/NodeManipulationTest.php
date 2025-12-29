@@ -94,6 +94,72 @@ class NodeManipulationTest extends TestCase
         );
     }
 
+    public static function nonArrayThrowsExceptionDataProvider(): \Generator
+    {
+        yield 'appendTo on non-array throws exception' => [
+            'appendTo',
+            ['items' => 'not-an-array'],
+            'items',
+            'value',
+            'set',
+        ];
+
+        yield 'prependTo on non-array throws exception' => [
+            'prependTo',
+            ['items' => 'not-an-array'],
+            'items',
+            'value',
+            'set',
+        ];
+
+        yield 'insertAt on non-array throws exception' => [
+            'insertAt',
+            ['items' => 'not-an-array'],
+            'items',
+            'value',
+            'set',
+        ];
+
+        yield 'deleteFrom on non-array throws exception' => [
+            'deleteFrom',
+            ['items' => 'not-an-array'],
+            'items',
+            'value',
+            'delete',
+        ];
+    }
+
+    /**
+     * @dataProvider nonArrayThrowsExceptionDataProvider
+     * @param mixed $value
+     */
+    public function testNodeManipulationOnNonArrayThrowsException(
+        string $method,
+        array $initialData,
+        string $key,
+        $value,
+        string $expectedMethodInMessage
+    ): void {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage(
+            \sprintf(
+                'The value at "%s" is not an array, use the `%s::%s()` method instead',
+                $key,
+                \ItalyStrap\Config\Config::class,
+                $expectedMethodInMessage
+            )
+        );
+
+        $config = $this->makeInstance($initialData);
+
+        if ($method === 'insertAt') {
+            $config->insertAt($key, $value, 0);
+            return;
+        }
+
+        $config->$method($key, $value);
+    }
+
     public function testAppendToNonArrayThrowsException(): void
     {
         $this->expectException(\RuntimeException::class);
@@ -298,14 +364,16 @@ class NodeManipulationTest extends TestCase
     public function testDeleteFromLastValueRemovesKey(): void
     {
         $config = $this->makeInstance(['items' => ['apple']]);
-        $config->deleteFrom('items', 'apple');
+        $result = $config->deleteFrom('items', 'apple');
+        $this->assertTrue($result);
         $this->assertNull($config->get('items'));
     }
 
     public function testDeleteFromAllValuesRemovesKey(): void
     {
         $config = $this->makeInstance(['settings' => ['plugins' => ['plugin1' => true]]]);
-        $config->deleteFrom('settings.plugins', ['plugin1' => true]);
+        $result = $config->deleteFrom('settings.plugins', ['plugin1' => true]);
+        $this->assertTrue($result);
         $this->assertNull($config->get('settings.plugins'));
     }
 

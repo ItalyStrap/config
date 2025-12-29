@@ -95,7 +95,7 @@ final class ConfigTest extends TestCase
     {
         $sut = $this->makeInstance();
         $sut->push('key', 42);
-        $this->assertSame($sut->toArray(), ['key' => 42]);
+        $this->assertSame(['key' => 42], $sut->toArray());
     }
 
     /**
