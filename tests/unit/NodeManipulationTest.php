@@ -274,6 +274,14 @@ class NodeManipulationTest extends TestCase
             1,
             ['value1', 'value2', 'value3'],
         ];
+
+        yield 'Insert at position greater than array length appends to end' => [
+            ['items' => ['apple', 'banana']],
+            'items',
+            'orange',
+            5,
+            ['apple', 'banana', 'orange'],
+        ];
     }
 
     /**
