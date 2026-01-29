@@ -672,6 +672,28 @@ final class ConfigTest extends TestCase
         $this->assertSame('default-value', $sut->get('test2.test1.sub', 'default-value'), '');
     }
 
+    public function testScalarToArrayCoercionReturnsDefaultAndLeavesScalarUntouched(): void
+    {
+        $sut = $this->makeInstance(['flag' => 'value']);
+
+        $this->assertSame('value', $sut->get('flag'));
+        $this->assertFalse($sut->has('flag.sub')); // scalar gets cast to array during lookup
+        $this->assertSame('fallback', $sut->get('flag.sub', 'fallback'));
+        $this->assertSame('value', $sut->get('flag')); // original scalar preserved
+    }
+
+    public function testLiteralKeyContainingDelimiterMustUseArrayPath(): void
+    {
+        $sut = $this->makeInstance();
+        $sut->set(['foo.bar'], 'literal');
+
+        $this->assertFalse($sut->has('foo.bar')); // interpreted as nested path
+        $this->assertSame('default', $sut->get('foo.bar', 'default'));
+
+        $this->assertTrue($sut->has(['foo.bar']));
+        $this->assertSame('literal', $sut->get(['foo.bar']));
+    }
+
     /**
      * @test
      */
