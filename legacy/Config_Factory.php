@@ -28,6 +28,6 @@ class Config_Factory {
 	 * @return Config Returns the Config object
 	 */
 	public static function make( $config = [], $defaults = [] ) : ConfigInterface {
-		return ConfigFactory::make( $config, $defaults );
+		return ( new ConfigFactory() )->make( $config, $defaults );
 	}
 }
