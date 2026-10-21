@@ -28,7 +28,6 @@ use function update_option;
  * @psalm-suppress DeprecatedInterface
  * @deprecated No alternative available yet
  */
-#[\Deprecated]
 class ConfigThemeMods implements ConfigInterface
 {
     /**
