@@ -48,8 +48,8 @@ class Config extends ArrayObject implements ConfigInterface, NodeManipulationInt
     /**
      * Config constructor
      *
-     * @param array<TKey, TValue> $config
-     * @param array<TKey, TValue> $default Deprecated
+     * @param array<TKey, TValue>|\IteratorAggregate|\Iterator|\stdClass|string $config
+     * @param array<TKey, TValue>|\IteratorAggregate|\Iterator|\stdClass|string $default Deprecated
      */
     public function __construct($config = [], $default = [])
     {

@@ -88,6 +88,27 @@ final class ConfigTest extends TestCase
         $this->makeInstance((array) $value, (array) $default);
     }
 
+    public function mergeableValueProvider(): iterable
+    {
+        $object = new stdClass();
+        $object->key = 'value';
+
+        yield 'Iterator' => [new ArrayIterator(['key' => 'value'])];
+        yield 'IteratorAggregate' => [new \ArrayObject(['key' => 'value'])];
+        yield 'stdClass' => [$object];
+    }
+
+    /**
+     * @test
+     * @dataProvider mergeableValueProvider()
+     */
+    public function itShouldAcceptTheSameTypesAsMerge($value): void
+    {
+        $sut = new Config($value);
+
+        $this->assertSame(['key' => 'value'], $sut->toArray());
+    }
+
     /**
      * @test
      */
